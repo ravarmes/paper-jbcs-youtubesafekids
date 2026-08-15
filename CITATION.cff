@@ -1,0 +1,66 @@
+cff-version: 1.2.0
+message: "If you use this corpus or code, please cite the paper below."
+title: "YouTube Safe Kids — toxicity filter: corpus and code"
+abstract: >-
+  Annotated corpus of 1,506 Brazilian Portuguese sentences transcribed from 251
+  public YouTube videos, labelled by three raters into three toxicity levels,
+  together with the training and evaluation code of a BERTimbau classifier and
+  the web service that reranks children's video search results by an
+  interpretable safety score.
+type: dataset
+license: MIT
+repository-code: "https://github.com/ravarmes/paper-jisa-youtubesafekids"
+authors:
+  - family-names: "Vargas Mesquita Santos"
+    given-names: "Rafael"
+    orcid: "https://orcid.org/0009-0003-2915-7642"
+    affiliation: "Instituto Federal do Espírito Santo"
+    email: "rafaelv@ifes.edu.br"
+  - family-names: "Louzada da Silva"
+    given-names: "Gabriel"
+    affiliation: "Instituto Federal do Espírito Santo"
+    email: "gabriellouzadadasilva@gmail.com"
+  - family-names: "Vargas"
+    given-names: "Sabrina"
+    affiliation: "Faculdade do Espírito Santo (UNES)"
+    email: "brinabrug@gmail.com"
+  - family-names: "Pedrosa"
+    given-names: "Daniela"
+    orcid: "https://orcid.org/0000-0001-9536-4234"
+    affiliation: "Instituto de Educação, Universidade de Lisboa"
+    email: "daniela.pedrosa@ie.ulisboa.pt"
+  - family-names: "Maroquio Bernardo"
+    given-names: "Ricardo"
+    orcid: "https://orcid.org/0000-0003-1988-489X"
+    affiliation: "Instituto Federal do Espírito Santo"
+    email: "ricardo.maroquio@ifes.edu.br"
+keywords:
+  - toxicity detection
+  - Brazilian Portuguese
+  - content moderation
+  - search result reranking
+  - children's online safety
+preferred-citation:
+  type: article
+  title: >-
+    A Toxicity-Aware Reranking Service for Children's Video Search: Brazilian
+    Portuguese Classification with an Interpretable Safety Score
+  journal: "Journal of Internet Services and Applications"
+  year: 2026
+  notes: >-
+    Manuscript under review. The journal reference and the DOI will be filled
+    in on acceptance.
+  authors:
+    - family-names: "Vargas Mesquita Santos"
+      given-names: "Rafael"
+      orcid: "https://orcid.org/0009-0003-2915-7642"
+    - family-names: "Louzada da Silva"
+      given-names: "Gabriel"
+    - family-names: "Vargas"
+      given-names: "Sabrina"
+    - family-names: "Pedrosa"
+      given-names: "Daniela"
+      orcid: "https://orcid.org/0000-0001-9536-4234"
+    - family-names: "Maroquio Bernardo"
+      given-names: "Ricardo"
+      orcid: "https://orcid.org/0000-0003-1988-489X"

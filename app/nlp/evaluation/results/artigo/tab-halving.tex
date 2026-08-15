@@ -1,0 +1,23 @@
+% Gerado por app/nlp/evaluation/scripts/gerar_figuras_artigo.py
+% NAO EDITAR A MAO: reexecute o script apos retreinar.
+\begin{table*}[!t]
+\centering
+\caption{Stage 2 of the search: configurations promoted from screening, evaluated with 5-fold cross-validation. LLRD is the layer-wise learning rate decay factor; \emph{Over}.\ indicates whether the training split of the fold was balanced by oversampling. CE stands for cross-entropy.}
+\label{tab:halving}
+\begin{tabular}{ccccccc}
+\hline
+Epochs & Batch & Learn.\ rate & LLRD & Loss & \emph{Over}. & F1 (macro) \\
+\hline
+\textbf{8} & \textbf{8} & \textbf{5e-5} & \textbf{1.00} & \textbf{CE} & \textbf{no} & \textbf{0.9192 $\pm$ 0.017} \\
+8 & 8 & 5e-5 & 0.90 & CE & no & 0.9151 $\pm$ 0.018 \\
+3 & 8 & 5e-5 & 0.90 & Focal & yes & 0.9083 $\pm$ 0.026 \\
+5 & 8 & 3e-5 & 1.00 & Focal & no & 0.9063 $\pm$ 0.033 \\
+5 & 16 & 5e-5 & 0.95 & Focal & yes & 0.9060 $\pm$ 0.025 \\
+3 & 8 & 3e-5 & 1.00 & CE & no & 0.9034 $\pm$ 0.032 \\
+8 & 16 & 2e-5 & 0.95 & Focal & yes & 0.9033 $\pm$ 0.029 \\
+8 & 8 & 3e-5 & 0.90 & Focal & yes & 0.9009 $\pm$ 0.027 \\
+5 & 8 & 3e-5 & 1.00 & Focal & yes & 0.9004 $\pm$ 0.041 \\
+4 & 16 & 2e-5 & 0.95 & Focal & yes & 0.8948 $\pm$ 0.029 \\
+\hline
+\end{tabular}
+\end{table*}
