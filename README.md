@@ -1,7 +1,8 @@
 # YouTube Safe Kids — toxicity filter
 
-Research artifact for the paper **"A Toxicity-Aware Reranking Service for Children's Video
-Search: Brazilian Portuguese Classification with an Interpretable Safety Score"**.
+Research artifact for the paper **"Toxicity Detection in Brazilian Portuguese Children's
+Video Transcripts: An Annotated Corpus, a Three-Level Classifier and an Interpretable
+Safety Score"**.
 
 This repository contains the annotated corpus, the training and evaluation code, the stored
 result files, and the scripts that regenerate **every figure, table and number reported in
@@ -292,8 +293,8 @@ failure analysis from the stored files alone — that needs re-running the colle
 ## 7. Citing
 
 Machine-readable metadata is in [`CITATION.cff`](CITATION.cff); GitHub renders it as a
-*Cite this repository* button. The manuscript is under review at the *Journal of Internet
-Services and Applications*: once it has a DOI, add it to `CITATION.cff` and here.
+*Cite this repository* button. The manuscript is under review at the *Journal of the
+Brazilian Computer Society*: once it has a DOI, add it to `CITATION.cff` and here.
 
 ```bibtex
 @misc{santos2026youtubesafekids,
@@ -301,7 +302,7 @@ Services and Applications*: once it has a DOI, add it to `CITATION.cff` and here
             Vargas, Sabrina and Pedrosa, Daniela and Maroquio Bernardo, Ricardo},
   title  = {{YouTube Safe Kids --- toxicity filter: corpus and code}},
   year   = {2026},
-  url    = {https://github.com/ravarmes/paper-jisa-youtubesafekids}
+  url    = {https://github.com/ravarmes/paper-jbcs-youtubesafekids}
 }
 ```
 
@@ -317,7 +318,7 @@ any transcribed content from the platform.
 
 ## 9. Anonymity
 
-The journal this work targets, JISA, operates **single-blind** review: reviewers see the
+The journal this work targets, JBCS, operates **single-blind** review: reviewers see the
 authors' identities, and the manuscript itself carries names and affiliations. This
 repository therefore **does not need to be anonymous**, and making it anonymous would be
 inconsistent with the submitted PDF.
