@@ -1,0 +1,883 @@
+{
+  "timestamp": "2026-08-08T21:33:14.867666",
+  "top_n": 10,
+  "origem": "data/reordenacao_buscas.csv",
+  "termos": [
+    "desenho animado infantil",
+    "vídeo educativo para crianças",
+    "south park português dublado",
+    "rick and morty engraçado"
+  ],
+  "buscas": [
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "videos": [
+        {
+          "posicao_youtube": 1,
+          "id": "fZw2wKvH1ieGU_BJ",
+          "titulo": "As 5 melhores músicas infantis! Cante com Léo, o caminhão curioso! Desenho animado para crianças",
+          "descricao": "Fizemos uma compilação especial com as 5 melhores músicas infantis do Léo, o caminhão curioso no novo desenho animado para crianças. Cante com Léo!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.917487520724535,
+          "score_completo": 0.9185791090130806,
+          "_rank_yt": 1,
+          "_rank_modelo": 1
+        },
+        {
+          "posicao_youtube": 2,
+          "id": "i27tUeqr792metrF",
+          "titulo": "Bento e Totó - O Patinho Colorido (Desenho Infantil)",
+          "descricao": "Bento e Totó - O Patinho Colorido",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9082060487320026,
+          "score_completo": 0.9090524200350046,
+          "_rank_yt": 2,
+          "_rank_modelo": 10
+        },
+        {
+          "posicao_youtube": 3,
+          "id": "YBrdoEo1UZdU8bG0",
+          "titulo": "🌧️ Chuva, Chuva, Vá Embora | Desenho Infantil | Lalafun em Português",
+          "descricao": "Chuva, chuva vá embora Volte uma outra hora Pocotó fazem os cavalos Chuva, chuva vá embora",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.913498954847455,
+          "score_completo": 0.915051893517375,
+          "_rank_yt": 3,
+          "_rank_modelo": 3
+        },
+        {
+          "posicao_youtube": 4,
+          "id": "dKC4oRVr6VibfXM-",
+          "titulo": "Bento e Totó - Funk do Patinho (Desenho Infantil)",
+          "descricao": "Bento e Totó - Funk do Patinho Inscreva-se no nosso canal para assistir aos vídeos da série sempre em primeira mão.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9158407393842936,
+          "score_completo": 0.914083992317319,
+          "_rank_yt": 4,
+          "_rank_modelo": 5
+        },
+        {
+          "posicao_youtube": 5,
+          "id": "KYGZY6pmc70",
+          "titulo": "Desenho Infantil | 22 Minutos de Histórias do José Totoy | Em Português Completo",
+          "descricao": "Indicado para crianças de 3 a 7 anos. Conteúdo seguro, sem violência e divertido.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.916442917038997,
+          "score_completo": 0.9148813493549823,
+          "_rank_yt": 5,
+          "_rank_modelo": 4
+        },
+        {
+          "posicao_youtube": 6,
+          "id": "uhaV6NmzlhE",
+          "titulo": "Brincar com Slime é Legal | Músicas Infantis | Sim! Neo | BabyBus Português",
+          "descricao": "Boing, boing! Aperte o play e venha se esticar com a gente!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9075268258651098,
+          "score_completo": 0.9106842666864395,
+          "_rank_yt": 6,
+          "_rank_modelo": 9
+        },
+        {
+          "posicao_youtube": 7,
+          "id": "5r8GeeH2ygw",
+          "titulo": "🔴 AO VIVO 🔴 Detetive Labrador 👮‍♂ Regras de Segurança no Elevador⚠️ Desenhos Infantis",
+          "descricao": "Bem-vindo ao mundo do Detetive Labrador! O Detetive Labrador e seu assistente, o Policial Doberman têm como compromisso proteger, dar segurança e educar os moradores da Cidade Florestal.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9134738097588221,
+          "score_completo": 0.9117632307112217,
+          "_rank_yt": 7,
+          "_rank_modelo": 7
+        },
+        {
+          "posicao_youtube": 8,
+          "id": "RxJqjNbhYjI",
+          "titulo": "Brincando com Hophop, a coruja, e o pinguinzinho! Desenho animado infantil em português",
+          "descricao": "Crianças, vamos assistir aos novos desenhos animados em português! Nesse desenho animado infantil, vamos brincar no parquinho com HopHop, a coruja, o Peck Peck e o pinguinzinho.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9104160033166409,
+          "score_completo": 0.912093747407198,
+          "_rank_yt": 8,
+          "_rank_modelo": 6
+        },
+        {
+          "posicao_youtube": 9,
+          "id": "j0wVC7-hm5I",
+          "titulo": "Mundo de Papelão | Detetive Labrador | Desenhos Animados | Desenhos Infantis | BabyBus Português",
+          "descricao": "Música infantil, canções de ninar, português para crianças, canções de ninar em português, canções infantis em português, portuguese songs for kids, musica infantil, desenhos animados crianças, Músicas em português para crianças, desenho animado, desenhos.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.915163204073906,
+          "score_completo": 0.9152454860508442,
+          "_rank_yt": 9,
+          "_rank_modelo": 2
+        },
+        {
+          "posicao_youtube": 10,
+          "id": "Oc8r9cRJoZs",
+          "titulo": "O Teste da Amizade 🔍✅ Coleção de desenhos animados",
+          "descricao": "Masha e o Urso. Todos os episódios    • Masha e o Urso - Todos os episódios",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9078783020377159,
+          "score_completo": 0.9111156024038791,
+          "_rank_yt": 10,
+          "_rank_modelo": 8
+        }
+      ],
+      "comparacao_frases": {
+        "n_videos_pontuados": 10,
+        "n_sem_transcricao": 0,
+        "spearman": 0.43030303030303024,
+        "spearman_p": 0.21449233253280775,
+        "kendall": 0.28888888888888886,
+        "kendall_p": 0.2912483465608466,
+        "deslocamento_medio": 2.4,
+        "deslocamento_maximo": 6,
+        "inalterados": 1,
+        "sobreposicao_top3": 0.3333333333333333,
+        "sobreposicao_top5": 0.8,
+        "primeiro_do_youtube_permanece": true,
+        "faixas": {
+          "alta segurança": 10,
+          "segurança média": 0,
+          "baixa segurança": 0
+        }
+      },
+      "comparacao_completo": {
+        "n_videos_pontuados": 10,
+        "n_sem_transcricao": 0,
+        "spearman": 0.19999999999999998,
+        "spearman_p": 0.5795840000000001,
+        "kendall": 0.15555555555555553,
+        "kendall_p": 0.6006536596119929,
+        "deslocamento_medio": 2.4,
+        "deslocamento_maximo": 8,
+        "inalterados": 3,
+        "sobreposicao_top3": 0.6666666666666666,
+        "sobreposicao_top5": 0.8,
+        "primeiro_do_youtube_permanece": true,
+        "faixas": {
+          "alta segurança": 10,
+          "segurança média": 0,
+          "baixa segurança": 0
+        }
+      }
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "videos": [
+        {
+          "posicao_youtube": 1,
+          "id": "ti-xWVkjfF02D4GK",
+          "titulo": "Aeiou - Animaguel | Atividades com as vogais | Vídeo educativo (Música infantil)",
+          "descricao": "Ideal para professoras da Educação Infantil e mães que desejam apoiar o aprendizado das crianças.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9110051970928907,
+          "score_completo": 0.9119222607463598,
+          "_rank_yt": 1,
+          "_rank_modelo": 8
+        },
+        {
+          "posicao_youtube": 2,
+          "id": "O8eQeKn-atw",
+          "titulo": "De Onde Vem a Onda?",
+          "descricao": "Kika quer saber de onde vem as ondas.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.7751329112797976,
+          "score_completo": 0.8309647310525179,
+          "_rank_yt": 2,
+          "_rank_modelo": 10
+        },
+        {
+          "posicao_youtube": 3,
+          "id": "6K6--qKaAefqqrTn",
+          "titulo": "As 5 melhores músicas infantis! Cante com Léo, o caminhão curioso! Desenho animado para crianças",
+          "descricao": "Fizemos uma compilação especial com as 5 melhores músicas infantis do Léo, o caminhão curioso no novo desenho animado para crianças. Cante com Léo!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9109640729924043,
+          "score_completo": 0.9146650403738021,
+          "_rank_yt": 3,
+          "_rank_modelo": 4
+        },
+        {
+          "posicao_youtube": 4,
+          "id": "gHJR9QFQIHR5mWjw",
+          "titulo": "Jac Jacaré | Escova, escova [Clipe Infantil]",
+          "descricao": "Chegou a hora de escovar os dentinhos!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9180060091118017,
+          "score_completo": 0.9162588156759739,
+          "_rank_yt": 4,
+          "_rank_modelo": 2
+        },
+        {
+          "posicao_youtube": 5,
+          "id": "_fTo-tQZ2IL-6c71",
+          "titulo": "Aprenda ADIÇÃO e SUBTRAÇÃO | Episódios Completos | Numberblocks em português Brasil",
+          "descricao": "Bem-vindo ao canal oficial da Numberblocks em Português (Brasil) no YouTube! Aqui você encontrará todos os seus vídeos favoritos do Numberblocks.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9137288201600313,
+          "score_completo": 0.9160395942628383,
+          "_rank_yt": 5,
+          "_rank_modelo": 3
+        },
+        {
+          "posicao_youtube": 6,
+          "id": "unU51V_anuR-jA1A",
+          "titulo": "AO VIVO🔴: Episódios Completos | Bluey",
+          "descricao": "Bluey é uma filhotinha da raça Blue Heeler, cheia de charme e energia, e vive com a Mãe, Pai e sua irmãzinha caçula Bingo.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9166556180765232,
+          "score_completo": 0.9130953770130873,
+          "_rank_yt": 6,
+          "_rank_modelo": 6
+        },
+        {
+          "posicao_youtube": 7,
+          "id": "eyHRi_n5g5IEuUNj",
+          "titulo": "Admita Seu Erro e Não Minta | Nossos Sentimentos | Vídeo Educativo | BabyBus Português",
+          "descricao": "O que devemos fazer quando fazemos algo errado?",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9139243668566147,
+          "score_completo": 0.9084552068263292,
+          "_rank_yt": 7,
+          "_rank_modelo": 9
+        },
+        {
+          "posicao_youtube": 8,
+          "id": "l7qNYJ_j7lmRF2b7",
+          "titulo": "Blippi Português Afunda ou Flutua | Vídeos de ciência para crianças | Vídeos Educativos",
+          "descricao": "Reúna itens com Blippi e jogue Sink of Float.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9169682649274667,
+          "score_completo": 0.912962543964386,
+          "_rank_yt": 8,
+          "_rank_modelo": 7
+        },
+        {
+          "posicao_youtube": 9,
+          "id": "YOg33acopovn79KV",
+          "titulo": "Desenho Infantil Totoy | 53 Minutos de Historinhas do José Totoy!!! Em Português Completo",
+          "descricao": "Neste vídeo, 53 Minutos de Historinhas Educativas do José Totoy!!! Totoy em Português!!! Muito divertido!!!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9178983103483915,
+          "score_completo": 0.9181957479566336,
+          "_rank_yt": 9,
+          "_rank_modelo": 1
+        },
+        {
+          "posicao_youtube": 10,
+          "id": "H1OO_xwiD7yZcOpB",
+          "titulo": "MARATONA DO MEIO AMBIENTE ♻️ O Show da Luna!",
+          "descricao": "",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9133161132534345,
+          "score_completo": 0.9135568272322416,
+          "_rank_yt": 10,
+          "_rank_modelo": 5
+        }
+      ],
+      "comparacao_frases": {
+        "n_videos_pontuados": 10,
+        "n_sem_transcricao": 0,
+        "spearman": -0.5151515151515151,
+        "spearman_p": 0.12755286970323426,
+        "kendall": -0.37777777777777777,
+        "kendall_p": 0.1557418430335097,
+        "deslocamento_medio": 4.4,
+        "deslocamento_maximo": 8,
+        "inalterados": 0,
+        "sobreposicao_top3": 0.0,
+        "sobreposicao_top5": 0.2,
+        "primeiro_do_youtube_permanece": false,
+        "faixas": {
+          "alta segurança": 9,
+          "segurança média": 1,
+          "baixa segurança": 0
+        }
+      },
+      "comparacao_completo": {
+        "n_videos_pontuados": 10,
+        "n_sem_transcricao": 0,
+        "spearman": -0.309090909090909,
+        "spearman_p": 0.38484123026128336,
+        "kendall": -0.19999999999999998,
+        "kendall_p": 0.4843127204585538,
+        "deslocamento_medio": 3.6,
+        "deslocamento_maximo": 8,
+        "inalterados": 1,
+        "sobreposicao_top3": 0.0,
+        "sobreposicao_top5": 0.6,
+        "primeiro_do_youtube_permanece": false,
+        "faixas": {
+          "alta segurança": 10,
+          "segurança média": 0,
+          "baixa segurança": 0
+        }
+      }
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "videos": [
+        {
+          "posicao_youtube": 1,
+          "id": "T83IvGu0NsU",
+          "titulo": "30 Minutos de Risadas com a Galerinha de South Park | Pluto TV",
+          "descricao": "",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9081276276459297,
+          "score_completo": 0.9105768990702927,
+          "_rank_yt": 1,
+          "_rank_modelo": 4
+        },
+        {
+          "posicao_youtube": 2,
+          "id": "ekDNLpj4VcgI9Nzu",
+          "titulo": "Scott Tenorman deve morrer",
+          "descricao": "Cartman quer se vingar de um aluno da oitava série que lhe vendeu pelos pubianos. Começa uma disputa entre os dois meninos. A banda de rock Radiohead aparece na cidade.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.5289319697767496,
+          "score_completo": 0.6808677170425653,
+          "_rank_yt": 2,
+          "_rank_modelo": 10
+        },
+        {
+          "posicao_youtube": 3,
+          "id": "enE9ffO208UYn-kT",
+          "titulo": "patinetes - parte 1 - SOUTH PARK (completo)",
+          "descricao": "As crianças planejam utilizar a última revolução em mobilidade para conseguir mais doces durante o Halloween do que eles já conseguiram antes.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9157780321935812,
+          "score_completo": 0.9140849880874157,
+          "_rank_yt": 3,
+          "_rank_modelo": 3
+        },
+        {
+          "posicao_youtube": 4,
+          "id": "5Gx7XEzSbFilY3RQ",
+          "titulo": "Os Melhores Episódios de South Park | Pluto TV",
+          "descricao": "Assista aos episódios completos de South Park, de graça no meu app!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.7624559849500656,
+          "score_completo": 0.8249753654003144,
+          "_rank_yt": 4,
+          "_rank_modelo": 5
+        },
+        {
+          "posicao_youtube": 5,
+          "id": "nOewrIEkwbsPy5dc",
+          "titulo": "SOUTH PARK - EPISÓDIO - CARTMAN ENCONTRA O AMOR - PARTE 1",
+          "descricao": "SOUTH PARK - EPISÓDIO - CARTMAN ENCONTRA O AMOR - PARTE 1",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9191793786982695,
+          "score_completo": 0.9172725938260555,
+          "_rank_yt": 5,
+          "_rank_modelo": 1
+        },
+        {
+          "posicao_youtube": 6,
+          "id": "rJ37Io1vbEHAotwR",
+          "titulo": "Cartman machista opressor - SOUTH PARK",
+          "descricao": "Wendy abre um debate sobre o Câncer de Mama, e Cartman acha que é o assunto é muito engraçado.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.7502705144385496,
+          "score_completo": 0.7524219505488873,
+          "_rank_yt": 6,
+          "_rank_modelo": 6
+        },
+        {
+          "posicao_youtube": 7,
+          "id": "Z15WhivnvizRupkE",
+          "titulo": "DESENHO PARA ASSISTIR CHAPADO - ASSISTA CHAPADO - SOUTH PARK",
+          "descricao": "em-vindo ao Uni-Verso Cannábico, o canal definitivo para ficar por dentro de tudo o que acontece no mundo da cannabis!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.6262911154578129,
+          "score_completo": 0.7415333148092031,
+          "_rank_yt": 7,
+          "_rank_modelo": 9
+        },
+        {
+          "posicao_youtube": 8,
+          "id": "3B32WRvx-m9LGUYG",
+          "titulo": "30 Minutos de South Park | Pluto TV",
+          "descricao": "Assista aos episódios completos de South Park, de graça no meu app!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.6225699080775181,
+          "score_completo": 0.7417755048722029,
+          "_rank_yt": 8,
+          "_rank_modelo": 7
+        },
+        {
+          "posicao_youtube": 9,
+          "id": "slBXP1lb-DBeF8tC",
+          "titulo": "South Park: A Fenda que Abunda a Força - O Filme (Dublado)",
+          "descricao": "Após os eventos de O Cajado da Verdade, desta vez as crianças de South Park estão brincando de super-herói",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9181443806737661,
+          "score_completo": 0.9152127463370562,
+          "_rank_yt": 9,
+          "_rank_modelo": 2
+        },
+        {
+          "posicao_youtube": 10,
+          "id": "O8sc6q1dKh5DnrUf",
+          "titulo": "30 MINUTOS das MAIORES MALDADES do Cartman | South Park | Pluto TV",
+          "descricao": "Assista aos episódios completos de South Park, de graça no meu app!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.6226484452684721,
+          "score_completo": 0.7417110554873944,
+          "_rank_yt": 10,
+          "_rank_modelo": 8
+        }
+      ],
+      "comparacao_frases": {
+        "n_videos_pontuados": 10,
+        "n_sem_transcricao": 0,
+        "spearman": 0.12727272727272726,
+        "spearman_p": 0.7260570147627894,
+        "kendall": 0.15555555555555553,
+        "kendall_p": 0.6006536596119929,
+        "deslocamento_medio": 2.6,
+        "deslocamento_maximo": 8,
+        "inalterados": 3,
+        "sobreposicao_top3": 0.3333333333333333,
+        "sobreposicao_top5": 0.8,
+        "primeiro_do_youtube_permanece": false,
+        "faixas": {
+          "alta segurança": 4,
+          "segurança média": 6,
+          "baixa segurança": 0
+        }
+      },
+      "comparacao_completo": {
+        "n_videos_pontuados": 10,
+        "n_sem_transcricao": 0,
+        "spearman": 0.10303030303030303,
+        "spearman_p": 0.7769984634438898,
+        "kendall": 0.1111111111111111,
+        "kendall_p": 0.7274895282186948,
+        "deslocamento_medio": 2.8,
+        "deslocamento_maximo": 8,
+        "inalterados": 2,
+        "sobreposicao_top3": 0.3333333333333333,
+        "sobreposicao_top5": 0.8,
+        "primeiro_do_youtube_permanece": false,
+        "faixas": {
+          "alta segurança": 5,
+          "segurança média": 5,
+          "baixa segurança": 0
+        }
+      }
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "videos": [
+        {
+          "posicao_youtube": 1,
+          "id": "Iop7FeYmZng",
+          "titulo": "Sobrevivendo aos Piores Predadores do Universo | Rick and Morty Brasil | adult swim",
+          "descricao": "Os predadores mais perigosos vêm em todas as formas e tamanhos: de Pé Grande e alienígenas assassinos até a própria família Smith!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.6319516133517027,
+          "score_completo": 0.7368832100182772,
+          "_rank_yt": 1,
+          "_rank_modelo": 7
+        },
+        {
+          "posicao_youtube": 2,
+          "id": "GiViJDQ8ViQ",
+          "titulo": "A experiência amorosa | Rick & Morty | Adult Swim Brasil",
+          "descricao": "Rick decide ajudar Morty nos seus assuntos amorosos com uma poção mágica",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.8108899537473917,
+          "score_completo": 0.8531205523759127,
+          "_rank_yt": 2,
+          "_rank_modelo": 3
+        },
+        {
+          "posicao_youtube": 3,
+          "id": "Pkb1PEn7I1g",
+          "titulo": "Rick e Morty: tudo por uma selfie | Rick & Morty | Adult Swim Brasil",
+          "descricao": "",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.8965253755450249,
+          "score_completo": 0.900944672524929,
+          "_rank_yt": 3,
+          "_rank_modelo": 2
+        },
+        {
+          "posicao_youtube": 4,
+          "id": "DUGMReDRzSc",
+          "titulo": "Rick And Morty Dublado - Completo",
+          "descricao": "Rick And Morty Dublado - Completo",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.7719087451696396,
+          "score_completo": 0.831063711643219,
+          "_rank_yt": 4,
+          "_rank_modelo": 5
+        },
+        {
+          "posicao_youtube": 5,
+          "id": "NFjS1DJ5y28",
+          "titulo": "O problema com os problemas | Rick & Morty | Adult Swim Brasil",
+          "descricao": "A 'ajuda' de Rick em ação: preparando-se para um tsunami de problemas!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.8052183339993159,
+          "score_completo": 0.8475472398102284,
+          "_rank_yt": 5,
+          "_rank_modelo": 4
+        },
+        {
+          "posicao_youtube": 6,
+          "id": "VYq6GSsHbMk",
+          "titulo": "Vô fazê sá porra!!!",
+          "descricao": "Não consegue Moisés!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.4698689517875512,
+          "score_completo": 0.5605178520083427,
+          "_rank_yt": 6,
+          "_rank_modelo": 10
+        },
+        {
+          "posicao_youtube": 7,
+          "id": "JDZut6G01WU",
+          "titulo": "Rick Chapa Com Dragão Rick And Morty Dublado",
+          "descricao": "VEJA O QUE NOSSA EQUIPE DO MISTER RICK SEPAROU COM MUITO CARINHO PARA TODOS OS LUNÁTICOS !!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.5026187015076479,
+          "score_completo": 0.6686034247279167,
+          "_rank_yt": 7,
+          "_rank_modelo": 9
+        },
+        {
+          "posicao_youtube": 8,
+          "id": "D1yKnoNrTYA",
+          "titulo": "Os melhores momentos de suspense da 1ª temporada | Rick and Morty | Adult Swim",
+          "descricao": "Uma seleção dos melhores momentos de suspense, incluindo o final da temporada.",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.9120229917267958,
+          "score_completo": 0.9132985055446625,
+          "_rank_yt": 8,
+          "_rank_modelo": 1
+        },
+        {
+          "posicao_youtube": 9,
+          "id": "zcF57osCP_E",
+          "titulo": "Parasitas invasores | Rick & Morty | Adult Swim Brasil",
+          "descricao": "O mundo está em perigo por uma praga de parasitas e Rick é a nossa única esperança!",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.6247710464522243,
+          "score_completo": 0.7150057902559638,
+          "_rank_yt": 9,
+          "_rank_modelo": 8
+        },
+        {
+          "posicao_youtube": 10,
+          "id": "mz__EMYpWPw",
+          "titulo": "🔴 Rick and Morty Brasil: Clipes das Temps. 1-3 | Melhores Momentos | Ao Vivo",
+          "descricao": "",
+          "frases": {
+            "start": "",
+            "middle": "",
+            "end": ""
+          },
+          "tem_transcricao": true,
+          "score_frases": 0.7692152714977661,
+          "score_completo": 0.8062632861547172,
+          "_rank_yt": 10,
+          "_rank_modelo": 6
+        }
+      ],
+      "comparacao_frases": {
+        "n_videos_pontuados": 10,
+        "n_sem_transcricao": 0,
+        "spearman": 0.23636363636363633,
+        "spearman_p": 0.5108853175152002,
+        "kendall": 0.1111111111111111,
+        "kendall_p": 0.7274895282186948,
+        "deslocamento_medio": 2.8,
+        "deslocamento_maximo": 7,
+        "inalterados": 0,
+        "sobreposicao_top3": 0.6666666666666666,
+        "sobreposicao_top5": 0.8,
+        "primeiro_do_youtube_permanece": false,
+        "faixas": {
+          "alta segurança": 4,
+          "segurança média": 5,
+          "baixa segurança": 1
+        }
+      },
+      "comparacao_completo": {
+        "n_videos_pontuados": 10,
+        "n_sem_transcricao": 0,
+        "spearman": 0.23636363636363633,
+        "spearman_p": 0.5108853175152002,
+        "kendall": 0.1111111111111111,
+        "kendall_p": 0.7274895282186948,
+        "deslocamento_medio": 2.8,
+        "deslocamento_maximo": 7,
+        "inalterados": 0,
+        "sobreposicao_top3": 0.6666666666666666,
+        "sobreposicao_top5": 0.8,
+        "primeiro_do_youtube_permanece": false,
+        "faixas": {
+          "alta segurança": 6,
+          "segurança média": 4,
+          "baixa segurança": 0
+        }
+      }
+    }
+  ],
+  "agregado_frases": {
+    "n_buscas": 4,
+    "n_videos": 40,
+    "n_sem_transcricao": 0,
+    "spearman_medio": 0.06969696969696967,
+    "kendall_medio": 0.04444444444444443,
+    "deslocamento_medio": 3.05,
+    "deslocamento_maximo": 8,
+    "pct_posicoes_inalteradas": 0.1,
+    "sobreposicao_top3_media": 0.3333333333333333,
+    "sobreposicao_top5_media": 0.65,
+    "buscas_com_novo_primeiro": 3
+  },
+  "agregado_completo": {
+    "n_buscas": 4,
+    "n_videos": 40,
+    "n_sem_transcricao": 0,
+    "spearman_medio": 0.05757575757575758,
+    "kendall_medio": 0.04444444444444444,
+    "deslocamento_medio": 2.9000000000000004,
+    "deslocamento_maximo": 8,
+    "pct_posicoes_inalteradas": 0.15,
+    "sobreposicao_top3_media": 0.41666666666666663,
+    "sobreposicao_top5_media": 0.75,
+    "buscas_com_novo_primeiro": 3
+  },
+  "agregado_por_estrato": {
+    "A_responsavel": {
+      "n_buscas": 2,
+      "n_videos": 20,
+      "n_sem_transcricao": 0,
+      "spearman_medio": -0.04242424242424245,
+      "kendall_medio": -0.04444444444444445,
+      "deslocamento_medio": 3.4000000000000004,
+      "deslocamento_maximo": 8,
+      "pct_posicoes_inalteradas": 0.05,
+      "sobreposicao_top3_media": 0.16666666666666666,
+      "sobreposicao_top5_media": 0.5,
+      "buscas_com_novo_primeiro": 1
+    },
+    "B_apelo_infantil": {
+      "n_buscas": 2,
+      "n_videos": 20,
+      "n_sem_transcricao": 0,
+      "spearman_medio": 0.1818181818181818,
+      "kendall_medio": 0.1333333333333333,
+      "deslocamento_medio": 2.7,
+      "deslocamento_maximo": 8,
+      "pct_posicoes_inalteradas": 0.15,
+      "sobreposicao_top3_media": 0.5,
+      "sobreposicao_top5_media": 0.8,
+      "buscas_com_novo_primeiro": 2
+    }
+  }
+}

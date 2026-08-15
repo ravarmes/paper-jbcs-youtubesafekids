@@ -1,0 +1,20 @@
+% Gerado por app/nlp/evaluation/scripts/gerar_figuras_artigo.py
+% NAO EDITAR A MAO: reexecute o script apos retreinar.
+\begin{table*}[!t]
+\centering
+\caption{References that do not use the labels of this corpus for training, on the held-out test set. The LLM operates few-shot, with two examples per class drawn from the training split; the zero-shot row queries BERTimbau by masked-token filling, without supervision; the off-the-shelf models are public Portuguese toxicity classifiers, composed into the three-class scheme of this work.}
+\label{tab:sem-finetuning}
+\begin{tabular}{lc}
+\hline
+Reference & F1 (macro) \\
+\hline
+\textbf{BERTimbau (fine-tuned)} & \textbf{0.8778} \\
+llama3.1:8b (\emph{few-shot}) & 0.6930 \\
+Masked zero-shot (best template) & 0.5244 \\
+Off-the-shelf models composed (HateBR + target) & 0.5058 \\
+\hline
+\emph{HateBR alone (toxic vs. non-toxic)} & 0.6347 \\
+\emph{Target classifier alone (Mild vs. Severe)} & 0.7738 \\
+\hline
+\end{tabular}
+\end{table*}

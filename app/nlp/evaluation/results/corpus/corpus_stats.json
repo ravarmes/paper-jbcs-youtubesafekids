@@ -1,0 +1,64 @@
+{
+  "total_sentencas": 1506,
+  "textos_distintos": 1506,
+  "n_videos": 251,
+  "distribuicao": {
+    "Nenhuma": 753,
+    "Leve": 376,
+    "Severa": 377
+  },
+  "distribuicao_pct": {
+    "Nenhuma": 50.0,
+    "Leve": 25.0,
+    "Severa": 25.0
+  },
+  "textos_repetidos": {
+    "n_textos": 0,
+    "n_linhas": 0,
+    "pct_linhas": 0.0
+  },
+  "comprimento_palavras": {
+    "media": 8.8,
+    "mediana": 7.0,
+    "p95": 19.0,
+    "max": 42
+  },
+  "concordancia": {
+    "anotadores_disponiveis": [
+      "P1",
+      "P2",
+      "A1"
+    ],
+    "n_anotadores": 3,
+    "unanimidade_n": 1191,
+    "unanimidade_pct": 0.7908366533864541,
+    "com_maioria_n": 1503,
+    "sem_maioria_n": 3,
+    "acordo_par_a_par": {
+      "P1-P2": 0.8645418326693227,
+      "P1-A1": 0.848605577689243,
+      "P2-A1": 0.8665338645418327
+    },
+    "acordo_par_a_par_medio": 0.8598937583001328,
+    "fleiss_kappa": 0.7795158636506403
+  },
+  "decidibilidade_lexical": {
+    "palavras_de_classe_pura": 132,
+    "sentencas_decidiveis_por_palavra": 691,
+    "pct_decidiveis_por_palavra": 45.9,
+    "sentencas_com_palavrao": 257,
+    "pct_com_palavrao": 17.1,
+    "regra_ingenua_palavrao_f1_macro": 0.501,
+    "nao_toxicas_com_palavrao": 87,
+    "pct_nao_toxicas_com_palavrao": 11.6,
+    "toxicas_sem_palavrao": 583,
+    "pct_toxicas_sem_palavrao": 77.4
+  },
+  "proximidade_treino_teste": {
+    "limiar": 0.8,
+    "n_teste": 302,
+    "com_analogo_proximo": 27,
+    "sem_analogo_proximo": 275,
+    "pct_com_analogo_proximo": 8.9
+  }
+}
