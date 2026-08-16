@@ -15,6 +15,7 @@ Saidas:
   latex/tabelas/tab-estratos.tex
   latex/tabelas/tab-simulacao.tex
   latex/figuras/fig-tox-estratos.png
+  latex/figuras/fig-tox-ordem.png
 
 Uso:
     python -m app.nlp.evaluation.scripts.regerar_tabelas_estudo_caso --idioma en
@@ -25,6 +26,11 @@ import glob
 import json
 import os
 from pathlib import Path
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from matplotlib.transforms import blended_transform_factory
 
 RESULTS_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'results'
@@ -47,9 +53,9 @@ AGREGACOES = [
 
 KS = ['3', '5', '8', '12']
 
-# O template do JIS e de duas colunas: com --duas-colunas as tabelas saem como
-# table*, que ocupa a largura da pagina.
-DUAS_COLUNAS = False
+# O template do JIS/JBCS e de duas colunas: as tabelas saem como table*,
+# que ocupa a largura total da pagina.
+DUAS_COLUNAS = True
 
 
 def _abre_tabela():
@@ -98,7 +104,7 @@ def tabela_estratos(dados, idioma):
     nomes = {'A_responsavel': 'A', 'B_apelo_infantil': 'B'}
     linhas = [_abre_tabela(), '\\centering', legenda,
               '\\label{tab:estratos}',
-              '\\begin{tabular}{llcccc}', '\\hline', cabecalho, '\\hline']
+              '\\begin{tabular}{llcccc}', '\\toprule', cabecalho, '\\midrule']
 
     for termo, d in dados['por_termo'].items():
         seguro = termo.replace('&', '\\&')
@@ -106,7 +112,7 @@ def tabela_estratos(dados, idioma):
             f"{nomes[d['estrato']]} & \\emph{{{seguro}}} & {d['n']} & "
             f"{d['media']:.3f} & {d['min']:.3f} & {d['amplitude']:.3f} \\\\", idioma))
 
-    linhas.append('\\hline')
+    linhas.append('\\midrule')
     for chave, rot in (('estrato_A_responsavel', 'A'), ('estrato_B_apelo_infantil', 'B')):
         d = dados[chave]
         linhas.append(_dec(
@@ -114,7 +120,7 @@ def tabela_estratos(dados, idioma):
             f"\\textbf{{{d['media']:.3f}}} & {d['min']:.3f} & {d['amplitude']:.3f} \\\\",
             idioma))
 
-    linhas += ['\\hline', '\\end{tabular}', _fecha_tabela(), '']
+    linhas += ['\\bottomrule', '\\end{tabular}', _fecha_tabela(), '']
     return '\n'.join(linhas)
 
 
@@ -149,7 +155,7 @@ def tabela_simulacao(dados, idioma, f='0.20'):
 
     linhas = [_abre_tabela(), '\\centering', legenda,
               '\\label{tab:simulacao}',
-              '\\begin{tabular}{lcccc}', '\\hline', cabecalho, '\\hline']
+              '\\begin{tabular}{lcccc}', '\\toprule', cabecalho, '\\midrule']
 
     bloco = dados['deteccao'][f]
     for chave, rot_pt, rot_en in AGREGACOES:
@@ -159,7 +165,7 @@ def tabela_simulacao(dados, idioma, f='0.20'):
             celulas = [f'\\textbf{{{c}}}' for c in celulas]
         linhas.append(' & '.join([rotulo] + celulas) + ' \\\\')
 
-    linhas += ['\\hline', '\\end{tabular}', _fecha_tabela(), '']
+    linhas += ['\\bottomrule', '\\end{tabular}', _fecha_tabela(), '']
     return '\n'.join(linhas)
 
 
@@ -223,7 +229,94 @@ def figura_estratos(dados, idioma):
         ax.spines[lado].set_visible(False)
 
     FIGURAS_DIR.mkdir(parents=True, exist_ok=True)
-    caminho = FIGURAS_DIR / 'fig-tox-estratos.png'
+    nome_arquivo = 'fig11-estratos.png' if idioma == 'en' else 'fig11-estratos-pt.png'
+    caminho = FIGURAS_DIR / nome_arquivo
+    fig.savefig(caminho, dpi=300, bbox_inches='tight')
+    plt.close(fig)
+    return caminho
+
+
+def figura_ordem(dados, idioma):
+    """Posicao devolvida pela plataforma (esquerda) contra a posicao apos a
+    reordenacao (direita), uma linha por video.
+
+    A figura de estratos mostra QUE os scores separam os dois grupos; esta mostra
+    o que essa separacao faz com a lista que o usuario recebe, que e a unidade
+    que o servico manipula. Sao perguntas diferentes: um score pode separar bem
+    e mover pouco, ou mover muito sem corrigir risco nenhum.
+    """
+    COR_A, COR_B = '#2ecc71', '#e74c3c'
+    # Semaforo do artigo: verde para o que passa, ambar para a faixa
+    # intermediaria, vermelho para o que e rebaixado.
+    VERDE, AMBAR, VERMELHO = '#6fc48f', '#e0a127', '#7a1616'
+    limiar = dados['falhas_estrato_b']['limiar']
+
+    def cor_do_score(s):
+        if s >= limiar:
+            return VERDE
+        if s >= limiar - 0.15:
+            return AMBAR
+        return VERMELHO
+
+    termos = list(dados['por_termo'].keys())
+    por_termo = {t: [] for t in termos}
+    for d in dados['deslocamentos']:
+        por_termo[d['termo']].append(d)
+
+    fig, ax = plt.subplots(figsize=(8.2, 4.2))
+    largura, folga = 0.72, 1.55
+    n = max(len(v) for v in por_termo.values())
+
+    for i, termo in enumerate(termos):
+        x0 = i * folga
+        x1 = x0 + largura
+        estrato = dados['por_termo'][termo]['estrato']
+        cor_est = COR_A if estrato == 'A_responsavel' else COR_B
+        for d in por_termo[termo]:
+            ax.plot([x0, x1], [d['de'], d['para']], color=cor_do_score(d['score']),
+                    alpha=0.85, linewidth=1.3, marker='o', markersize=3.2, zorder=3)
+        # Rotulo do estrato acima da moldura, como na figura de estratos.
+        ax.text(x0 + largura / 2, 1.02, 'A' if estrato == 'A_responsavel' else 'B',
+                transform=blended_transform_factory(ax.transData, ax.transAxes),
+                ha='center', va='bottom', fontsize=10, fontweight='bold', color=cor_est)
+
+    if idioma == 'en':
+        rot_y = 'Position in the result list'
+        titulo = ('Platform ordering (left) $\\rightarrow$ '
+                  'safety-score ordering (right)')
+        faixas = [(VERDE, f'score $\\geq$ {limiar:.2f} (not demoted)'),
+                  (AMBAR, f'{limiar - 0.15:.2f} $\\leq$ score $<$ {limiar:.2f}'),
+                  (VERMELHO, f'score $<$ {limiar - 0.15:.2f}')]
+    else:
+        rot_y = 'Posição na lista de resultados'
+        titulo = ('Ordem da plataforma (esquerda) $\\rightarrow$ '
+                  'ordem pelo score (direita)')
+        v = lambda x: f'{x:.2f}'.replace('.', ',')
+        faixas = [(VERDE, f'score $\\geq$ {v(limiar)} (não rebaixado)'),
+                  (AMBAR, f'{v(limiar - 0.15)} $\\leq$ score $<$ {v(limiar)}'),
+                  (VERMELHO, f'score $<$ {v(limiar - 0.15)}')]
+
+    ax.set_xlim(-0.35, (len(termos) - 1) * folga + largura + 0.35)
+    ax.set_xticks([i * folga + largura / 2 for i in range(len(termos))])
+    ax.set_xticklabels([t if len(t) <= 22 else t[:20] + '…' for t in termos], fontsize=9)
+    ax.set_ylabel(rot_y, fontsize=10)
+    ax.invert_yaxis()
+    ax.set_yticks(range(1, n + 1))
+    ax.set_ylim(n + 0.6, 0.4)
+    ax.grid(axis='y', alpha=0.25, linestyle=':')
+    ax.set_axisbelow(True)
+    for lado in ('top', 'right'):
+        ax.spines[lado].set_visible(False)
+    ax.set_title(titulo, fontsize=10, pad=20)
+
+    marcas = [plt.Line2D([], [], color=c, linewidth=2.4, label=r) for c, r in faixas]
+    fig.legend(handles=marcas, loc='lower center', ncol=3, fontsize=8.5,
+               frameon=False)
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
+
+    FIGURAS_DIR.mkdir(parents=True, exist_ok=True)
+    nome_arquivo = 'fig12-ordem.png' if idioma == 'en' else 'fig12-ordem-pt.png'
+    caminho = FIGURAS_DIR / nome_arquivo
     fig.savefig(caminho, dpi=300, bbox_inches='tight')
     plt.close(fig)
     return caminho
@@ -237,8 +330,10 @@ def main():
     parser.add_argument('--idioma', choices=['pt', 'en'], default='pt')
     parser.add_argument('--fracao-toxica', default='0.20',
                         help='Chave da fração de conteúdo tóxico simulada (padrão 0.20)')
-    parser.add_argument('--duas-colunas', action='store_true',
-                        help='Emite table* em vez de table, para o template do JIS')
+    parser.add_argument('--uma-coluna', dest='duas_colunas', action='store_false',
+                        help='Emite table (uma coluna) em vez de table*')
+    parser.add_argument('--duas-colunas', dest='duas_colunas', action='store_true', default=True,
+                        help='Emite table* em vez de table, para o template do JBCS/JIS')
     args = parser.parse_args()
 
     DUAS_COLUNAS = args.duas_colunas
@@ -258,6 +353,7 @@ def main():
         print(f'  {destino}')
 
     print(f'  {figura_estratos(estratos, args.idioma)}')
+    print(f'  {figura_ordem(estratos, args.idioma)}')
 
 
 if __name__ == '__main__':

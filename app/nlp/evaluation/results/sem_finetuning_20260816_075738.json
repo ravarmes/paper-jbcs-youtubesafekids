@@ -1,0 +1,187 @@
+{
+  "timestamp": "2026-08-16T07:57:26.890563",
+  "n_treino": 1204,
+  "n_teste": 302,
+  "resultados": [
+    {
+      "modelo": "Sonda linear (BERTimbau congelado)",
+      "f1_macro": 0.8930490279322484,
+      "accuracy": 0.8973509933774835,
+      "f1_per_class": [
+        0.9185185185185185,
+        0.8771929824561403,
+        0.8834355828220859
+      ],
+      "confusion_matrix": [
+        [
+          124,
+          10,
+          6
+        ],
+        [
+          2,
+          75,
+          4
+        ],
+        [
+          4,
+          5,
+          72
+        ]
+      ],
+      "cv_f1_mean": 0.8670324169138326,
+      "cv_f1_std": 0.03247573500871844
+    },
+    {
+      "modelo": "Zero-shot máscara: \"{frase} Isso é uma fala [MASK].\"",
+      "f1_macro": 0.5527867385408888,
+      "accuracy": 0.6125827814569537,
+      "f1_per_class": [
+        0.7260273972602739,
+        0.3130434782608696,
+        0.6192893401015229
+      ],
+      "confusion_matrix": [
+        [
+          106,
+          11,
+          23
+        ],
+        [
+          31,
+          18,
+          32
+        ],
+        [
+          15,
+          5,
+          61
+        ]
+      ],
+      "molde": "{frase} Isso é uma fala [MASK]."
+    },
+    {
+      "modelo": "Zero-shot máscara: \"{frase} Essa frase é [MASK].\"",
+      "f1_macro": 0.45634432534801544,
+      "accuracy": 0.5960264900662252,
+      "f1_per_class": [
+        0.7896678966789668,
+        0.0,
+        0.5793650793650794
+      ],
+      "confusion_matrix": [
+        [
+          107,
+          0,
+          33
+        ],
+        [
+          16,
+          0,
+          65
+        ],
+        [
+          8,
+          0,
+          73
+        ]
+      ],
+      "molde": "{frase} Essa frase é [MASK]."
+    },
+    {
+      "modelo": "Zero-shot máscara: \"Comentário: {frase} Classificação: [MASK].\"",
+      "f1_macro": 0.2933961463373228,
+      "accuracy": 0.3841059602649007,
+      "f1_per_class": [
+        0.42780748663101603,
+        0.4523809523809524,
+        0.0
+      ],
+      "confusion_matrix": [
+        [
+          40,
+          100,
+          0
+        ],
+        [
+          5,
+          76,
+          0
+        ],
+        [
+          2,
+          79,
+          0
+        ]
+      ],
+      "molde": "Comentário: {frase} Classificação: [MASK]."
+    },
+    {
+      "modelo": "Modelos prontos compostos (HateBR + alvo)",
+      "f1_macro": 0.5430043698484317,
+      "accuracy": 0.5960264900662252,
+      "f1_per_class": [
+        0.6988847583643123,
+        0.26984126984126977,
+        0.6602870813397129
+      ],
+      "confusion_matrix": [
+        [
+          94,
+          23,
+          23
+        ],
+        [
+          28,
+          17,
+          36
+        ],
+        [
+          7,
+          5,
+          69
+        ]
+      ]
+    },
+    {
+      "modelo": "HateBR isolado (tóxico vs. não-tóxico)",
+      "f1_macro": 0.7285468567940965,
+      "accuracy": 0.7317880794701986,
+      "f1_per_class": [
+        0.6988847583643123,
+        0.7582089552238805
+      ],
+      "confusion_matrix": [
+        [
+          94,
+          46
+        ],
+        [
+          35,
+          127
+        ]
+      ],
+      "tarefa": "binária: tóxico vs. não-tóxico"
+    },
+    {
+      "modelo": "Classificador de alvo isolado (Leve vs. Severa)",
+      "f1_macro": 0.7142857142857144,
+      "accuracy": 0.7222222222222222,
+      "f1_per_class": [
+        0.6666666666666667,
+        0.761904761904762
+      ],
+      "confusion_matrix": [
+        [
+          45,
+          36
+        ],
+        [
+          9,
+          72
+        ]
+      ],
+      "tarefa": "binária, só nas tóxicas: Leve vs. Severa"
+    }
+  ]
+}

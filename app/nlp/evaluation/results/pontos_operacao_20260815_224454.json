@@ -1,0 +1,90 @@
+{
+  "modelo": "TOX_TOX_BEST_MODEL_20260815_210732_20260815_210732",
+  "n_teste": 302,
+  "curva_limiar": [
+    {
+      "tau": 0.5,
+      "recall_severa": 0.8888888888888888,
+      "severas_nao_sinalizadas": 8,
+      "falso_alarme_nenhuma": 0.045112781954887216
+    },
+    {
+      "tau": 0.2,
+      "recall_severa": 0.9027777777777778,
+      "severas_nao_sinalizadas": 7,
+      "falso_alarme_nenhuma": 0.05263157894736842
+    },
+    {
+      "tau": 0.15,
+      "recall_severa": 0.9027777777777778,
+      "severas_nao_sinalizadas": 7,
+      "falso_alarme_nenhuma": 0.05263157894736842
+    },
+    {
+      "tau": 0.1,
+      "recall_severa": 0.9305555555555556,
+      "severas_nao_sinalizadas": 5,
+      "falso_alarme_nenhuma": 0.06015037593984962
+    }
+  ],
+  "pontos_operacao": [
+    {
+      "modelo": "BERTimbau (argmax)",
+      "recall_severa": 0.8888888888888888,
+      "severas_perdidas": 8,
+      "apropriado_sinalizado": 0.09774436090225563
+    },
+    {
+      "modelo": "BERTimbau (tau = 0.1)",
+      "recall_severa": 0.9305555555555556,
+      "severas_perdidas": 5,
+      "apropriado_sinalizado": 0.06015037593984962
+    },
+    {
+      "modelo": "llama3.1:8b",
+      "recall_severa": 0.9861111111111112,
+      "severas_perdidas": 1,
+      "apropriado_sinalizado": 0.2857142857142857,
+      "segundos_por_frase": 2.6
+    }
+  ],
+  "severas_perdidas": {
+    "n": 2,
+    "frases": [
+      {
+        "texto": "diabo Eu nunca disse Mas você tatua na sua bunda",
+        "score": 0.869584308937192,
+        "p_severa": 0.12465706467628479
+      },
+      {
+        "texto": "Este é o criolo negro samurai.",
+        "score": 0.9927593675674871,
+        "p_severa": 0.00573010602965951
+      }
+    ],
+    "score_mediano_perdidas": 0.9311718382523395,
+    "score_mediano_nenhuma_corretas": 0.9956799681531265
+  },
+  "llm": {
+    "nome": "llama3.1:8b",
+    "confusion_matrix": [
+      [
+        95,
+        18,
+        20
+      ],
+      [
+        4,
+        61,
+        32
+      ],
+      [
+        0,
+        1,
+        71
+      ]
+    ],
+    "segundos_por_frase": 2.6,
+    "fonte": "llm_baselines_toxicity_20260815_212545.json"
+  }
+}

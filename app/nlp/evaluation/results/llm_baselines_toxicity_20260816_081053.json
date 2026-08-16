@@ -1,0 +1,54 @@
+{
+  "timestamp": "20260816_081053",
+  "backend": "ollama",
+  "ollama_host": "http://localhost:11434",
+  "models": [
+    "llama3.1:8b"
+  ],
+  "methodology": {
+    "mode": "few-shot",
+    "fewshot_per_class": 2,
+    "test_size": 0.2,
+    "random_state": 42,
+    "limit": null
+  },
+  "results": {
+    "llama3.1:8b": {
+      "f1": 0.778513447798601,
+      "accuracy": 0.7748344370860927,
+      "precision": 0.7965130023640663,
+      "recall": 0.8103468547912992,
+      "confusion_matrix": [
+        [
+          88,
+          43,
+          9
+        ],
+        [
+          0,
+          71,
+          10
+        ],
+        [
+          0,
+          6,
+          75
+        ]
+      ],
+      "classification_report": "              precision    recall  f1-score   support\n\n     Nenhuma       1.00      0.63      0.77       140\n        Leve       0.59      0.88      0.71        81\n      Severa       0.80      0.93      0.86        81\n\n    accuracy                           0.77       302\n   macro avg       0.80      0.81      0.78       302\nweighted avg       0.84      0.77      0.78       302\n",
+      "n_amostras": 302,
+      "segundos": 785.7,
+      "por_similaridade": {
+        "sem_analogo": {
+          "n": 282,
+          "f1": 0.7699295934590052,
+          "accuracy": 0.7659574468085106
+        }
+      }
+    }
+  },
+  "bertimbau_reference": {
+    "test_f1": 0.9100562508552867,
+    "test_accuracy": 0.9172185430463576
+  }
+}

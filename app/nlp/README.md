@@ -428,12 +428,12 @@ pip install transformers torch pandas numpy scikit-learn datasets opencv-python 
 
 1. Clone o repositório:
 ```bash
-git clone https://github.com/ravarmes/paper-jisa-youtubesafekids.git
+git clone https://github.com/ravarmes/paper-jbcs-youtubesafekids.git
 ```
 
 2. Acesse o diretório do projeto:
 ```bash
-cd paper-jisa-youtubesafekids
+cd paper-jbcs-youtubesafekids
 ```
 
 3. Instale as dependências:

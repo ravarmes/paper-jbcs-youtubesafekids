@@ -265,7 +265,7 @@ def main():
         json.dump(stats, f, indent=2, ensure_ascii=False)
 
     figura_distribuicao(
-        distribuicao, os.path.join(output_dir, 'fig-tox-distribuicao-corpus.png')
+        distribuicao, os.path.join(output_dir, 'fig02-distribuicao-corpus.png')
     )
 
     print(json.dumps(stats, indent=2, ensure_ascii=False))

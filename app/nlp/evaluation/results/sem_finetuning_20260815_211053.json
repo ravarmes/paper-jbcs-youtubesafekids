@@ -1,0 +1,120 @@
+{
+  "timestamp": "2026-08-15T21:10:43.829748",
+  "n_treino": 1204,
+  "n_teste": 302,
+  "resultados": [
+    {
+      "modelo": "Sonda linear (BERTimbau congelado)",
+      "f1_macro": 0.8652824105558974,
+      "accuracy": 0.8774834437086093,
+      "f1_per_class": [
+        0.9259259259259258,
+        0.8617021276595744,
+        0.8082191780821918
+      ],
+      "confusion_matrix": [
+        [
+          125,
+          2,
+          6
+        ],
+        [
+          7,
+          81,
+          9
+        ],
+        [
+          5,
+          8,
+          59
+        ]
+      ],
+      "cv_f1_mean": 0.8661319431236647,
+      "cv_f1_std": 0.016222388811179815
+    },
+    {
+      "modelo": "Zero-shot máscara: \"{frase} Isso é uma fala [MASK].\"",
+      "f1_macro": 0.5397572066530405,
+      "accuracy": 0.5993377483443708,
+      "f1_per_class": [
+        0.7197231833910035,
+        0.2809917355371901,
+        0.6185567010309279
+      ],
+      "confusion_matrix": [
+        [
+          104,
+          4,
+          25
+        ],
+        [
+          43,
+          17,
+          37
+        ],
+        [
+          9,
+          3,
+          60
+        ]
+      ],
+      "molde": "{frase} Isso é uma fala [MASK]."
+    },
+    {
+      "modelo": "Zero-shot máscara: \"{frase} Essa frase é [MASK].\"",
+      "f1_macro": 0.4271847690387016,
+      "accuracy": 0.543046357615894,
+      "f1_per_class": [
+        0.7565543071161048,
+        0.0,
+        0.525
+      ],
+      "confusion_matrix": [
+        [
+          101,
+          0,
+          32
+        ],
+        [
+          24,
+          0,
+          73
+        ],
+        [
+          9,
+          0,
+          63
+        ]
+      ],
+      "molde": "{frase} Essa frase é [MASK]."
+    },
+    {
+      "modelo": "Zero-shot máscara: \"Comentário: {frase} Classificação: [MASK].\"",
+      "f1_macro": 0.34996903764812065,
+      "accuracy": 0.46688741721854304,
+      "f1_per_class": [
+        0.5054945054945055,
+        0.5444126074498566,
+        0.0
+      ],
+      "confusion_matrix": [
+        [
+          46,
+          86,
+          1
+        ],
+        [
+          2,
+          95,
+          0
+        ],
+        [
+          1,
+          71,
+          0
+        ]
+      ],
+      "molde": "Comentário: {frase} Classificação: [MASK]."
+    }
+  ]
+}

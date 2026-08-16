@@ -1,0 +1,589 @@
+{
+  "timestamp": "2026-08-16T08:11:50.437084",
+  "origem": "data/reordenacao_buscas.csv",
+  "n_buscas": 4,
+  "n_videos": 40,
+  "estrato_A_responsavel": {
+    "n": 20,
+    "media": 0.9148553372981647,
+    "min": 0.7535381369913617,
+    "max": 0.9721987899392843,
+    "amplitude": 0.21866065294792258
+  },
+  "estrato_B_apelo_infantil": {
+    "n": 20,
+    "media": 0.6851181942115848,
+    "min": 0.39706606417894363,
+    "max": 0.9654136734704176,
+    "amplitude": 0.568347609291474
+  },
+  "por_termo": {
+    "desenho animado infantil": {
+      "estrato": "A_responsavel",
+      "n": 10,
+      "media": 0.8992111084051431,
+      "min": 0.7535381369913617,
+      "max": 0.9712681012849013,
+      "amplitude": 0.21772996429353952
+    },
+    "vídeo educativo para crianças": {
+      "estrato": "A_responsavel",
+      "n": 10,
+      "media": 0.9304995661911866,
+      "min": 0.8054310729106268,
+      "max": 0.9721987899392843,
+      "amplitude": 0.16676771702865756
+    },
+    "south park português dublado": {
+      "estrato": "B_apelo_infantil",
+      "n": 10,
+      "media": 0.6575130848834913,
+      "min": 0.39706606417894363,
+      "max": 0.9654136734704176,
+      "amplitude": 0.568347609291474
+    },
+    "rick and morty engraçado": {
+      "estrato": "B_apelo_infantil",
+      "n": 10,
+      "media": 0.7127233035396785,
+      "min": 0.4732598445067803,
+      "max": 0.9457745136072239,
+      "amplitude": 0.47251466910044354
+    }
+  },
+  "separacao_media": {
+    "mannwhitney_u": 355.0,
+    "p": 1.4624324663684467e-05,
+    "auc": 0.8875000000000001,
+    "auc_ic95": [
+      0.7674940856777493,
+      0.9774450187969925
+    ],
+    "diferenca_medias": 0.2297371430865799
+  },
+  "separacao_minimo": {
+    "mannwhitney_u": 343.0,
+    "p": 5.795057073386002e-05,
+    "auc": 0.8575,
+    "auc_ic95": [
+      0.7272727272727273,
+      0.959079283887468
+    ]
+  },
+  "deteccao_por_limiar": [
+    {
+      "limiar": 0.9,
+      "detectados_b": 17,
+      "total_b": 20,
+      "falsos_a": 7,
+      "total_a": 20
+    },
+    {
+      "limiar": 0.85,
+      "detectados_b": 16,
+      "total_b": 20,
+      "falsos_a": 3,
+      "total_a": 20
+    },
+    {
+      "limiar": 0.8,
+      "detectados_b": 15,
+      "total_b": 20,
+      "falsos_a": 1,
+      "total_a": 20
+    },
+    {
+      "limiar": 0.7,
+      "detectados_b": 10,
+      "total_b": 20,
+      "falsos_a": 0,
+      "total_a": 20
+    },
+    {
+      "limiar": 0.5,
+      "detectados_b": 3,
+      "total_b": 20,
+      "falsos_a": 0,
+      "total_a": 20
+    }
+  ],
+  "falhas_estrato_b": {
+    "limiar": 0.85,
+    "nao_detectados": 4,
+    "total": 20,
+    "falha_amostragem": 4,
+    "falha_modelo": 0,
+    "detalhe": [
+      {
+        "titulo": "patinetes - parte 1 - SOUTH PARK (completo)",
+        "termo": "south park português dublado",
+        "score": 0.9654136734704176,
+        "tipo": "amostragem",
+        "frases": [
+          "Outubro sempre foi meu mês predileto",
+          "Tem um código para escanear. Para baixar o app.",
+          "É tudo bem. Agente dá um jeito. Agente sempre dá."
+        ],
+        "classes": [
+          "Nenhuma",
+          "Nenhuma",
+          "Nenhuma"
+        ]
+      },
+      {
+        "titulo": "SOUTH PARK - EPISÓDIO - CARTMAN ENCONTRA O AMOR - PARTE 1",
+        "termo": "south park português dublado",
+        "score": 0.9587322728087505,
+        "tipo": "amostragem",
+        "frases": [
+          "Tem uma nova garota que entrou na escola hoje e está liderando a equipe de torcida",
+          "Sério, ficarão fofos juntos. É o que vou dizer pra ela.",
+          "Ele só está um pouco doente. Ele está com tesão."
+        ],
+        "classes": [
+          "Nenhuma",
+          "Nenhuma",
+          "Nenhuma"
+        ]
+      },
+      {
+        "titulo": "A experiência amorosa | Rick & Morty | Adult Swim Brasil",
+        "termo": "rick and morty engraçado",
+        "score": 0.8976888234416643,
+        "tipo": "amostragem",
+        "frases": [
+          "Não liga para isso, você é um bom garoto.",
+          "Tava pensando sabe. Você consegue fazer um tipo de química na cabeça da Jéssica.",
+          "Esse papo tá meio entediante."
+        ],
+        "classes": [
+          "Nenhuma",
+          "Nenhuma",
+          "Nenhuma"
+        ]
+      },
+      {
+        "titulo": "Os melhores momentos de suspense da 1ª temporada | Rick and Morty | Adult Swim",
+        "termo": "rick and morty engraçado",
+        "score": 0.9457745136072239,
+        "tipo": "amostragem",
+        "frases": [
+          "Ela está mastigando as portas",
+          "Nossa eu tenho que admitir. Você tirou um coelho da cartola.",
+          "Parece que o destino te presenteou com a oportunidade de se livrar do Rick para sempre"
+        ],
+        "classes": [
+          "Nenhuma",
+          "Nenhuma",
+          "Nenhuma"
+        ]
+      }
+    ]
+  },
+  "falsos_alarme_a": [
+    {
+      "titulo": "As 5 melhores músicas infantis! Cante com Léo, o caminhão curioso! Desenho animado para crianças",
+      "score": 0.7535381369913617,
+      "frases": [
+        "Um gatinho está contente e sorrindo a viajar",
+        "No tronco estão sentadinhos comendo mosquito sem parar",
+        "E a aranha azul continua a subir"
+      ],
+      "classes": [
+        "Nenhuma",
+        "Severa",
+        "Nenhuma"
+      ]
+    },
+    {
+      "titulo": "🌧️ Chuva, Chuva, Vá Embora | Desenho Infantil | Lalafun em Português",
+      "score": 0.8174338104824225,
+      "frases": [
+        "A vaca lola é espanhola",
+        "Alegre alegre alegre vamos todos cantar",
+        "A vaca gosta de comer comer maçãs e bananas"
+      ],
+      "classes": [
+        "Nenhuma",
+        "Nenhuma",
+        "Nenhuma"
+      ]
+    },
+    {
+      "titulo": "De Onde Vem a Onda?",
+      "score": 0.8054310729106268,
+      "frases": [
+        "Vamos até a superfície que eu explico essa onde",
+        "Arrebentação é o nome que a galera dá para o local onde as ondas quebram",
+        "De onde vem tanta malandragem"
+      ],
+      "classes": [
+        "Nenhuma",
+        "Nenhuma",
+        "Leve"
+      ]
+    }
+  ],
+  "deslocamentos": [
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "titulo": "Desenho Infantil | 22 Minutos de Histórias do José Totoy | Em Português Completo",
+      "de": 5,
+      "para": 1,
+      "delta": -4,
+      "score": 0.9712681012849013
+    },
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "titulo": "Bento e Totó - Funk do Patinho (Desenho Infantil)",
+      "de": 4,
+      "para": 2,
+      "delta": -2,
+      "score": 0.9656912948315343
+    },
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "titulo": "🔴 AO VIVO 🔴 Detetive Labrador 👮‍♂ Regras de Segurança no Elevador⚠️ Desenhos Infantis",
+      "de": 7,
+      "para": 3,
+      "delta": -4,
+      "score": 0.9629975364853939
+    },
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "titulo": "Brincar com Slime é Legal | Músicas Infantis | Sim! Neo | BabyBus Português",
+      "de": 6,
+      "para": 4,
+      "delta": -2,
+      "score": 0.9529590119297305
+    },
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "titulo": "Bento e Totó - O Patinho Colorido (Desenho Infantil)",
+      "de": 2,
+      "para": 5,
+      "delta": 3,
+      "score": 0.9191502584144473
+    },
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "titulo": "Brincando com Hophop, a coruja, e o pinguinzinho! Desenho animado infantil em português",
+      "de": 8,
+      "para": 6,
+      "delta": -2,
+      "score": 0.9062189823016524
+    },
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "titulo": "O Teste da Amizade 🔍✅ Coleção de desenhos animados",
+      "de": 10,
+      "para": 7,
+      "delta": -3,
+      "score": 0.8918684711679816
+    },
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "titulo": "Mundo de Papelão | Detetive Labrador | Desenhos Animados | Desenhos Infantis | BabyBus Português",
+      "de": 9,
+      "para": 8,
+      "delta": -1,
+      "score": 0.8509854801620046
+    },
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "titulo": "🌧️ Chuva, Chuva, Vá Embora | Desenho Infantil | Lalafun em Português",
+      "de": 3,
+      "para": 9,
+      "delta": 6,
+      "score": 0.8174338104824225
+    },
+    {
+      "termo": "desenho animado infantil",
+      "estrato": "A_responsavel",
+      "titulo": "As 5 melhores músicas infantis! Cante com Léo, o caminhão curioso! Desenho animado para crianças",
+      "de": 1,
+      "para": 10,
+      "delta": 9,
+      "score": 0.7535381369913617
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "titulo": "Desenho Infantil Totoy | 53 Minutos de Historinhas do José Totoy!!! Em Português Completo",
+      "de": 9,
+      "para": 1,
+      "delta": -8,
+      "score": 0.9721987899392843
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "titulo": "MARATONA DO MEIO AMBIENTE ♻️ O Show da Luna!",
+      "de": 10,
+      "para": 2,
+      "delta": -8,
+      "score": 0.9718890711665154
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "titulo": "As 5 melhores músicas infantis! Cante com Léo, o caminhão curioso! Desenho animado para crianças",
+      "de": 3,
+      "para": 3,
+      "delta": 0,
+      "score": 0.9716940332824985
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "titulo": "Aeiou - Animaguel | Atividades com as vogais | Vídeo educativo (Música infantil)",
+      "de": 1,
+      "para": 4,
+      "delta": 3,
+      "score": 0.9673446817323565
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "titulo": "Aprenda ADIÇÃO e SUBTRAÇÃO | Episódios Completos | Numberblocks em português Brasil",
+      "de": 5,
+      "para": 5,
+      "delta": 0,
+      "score": 0.9661002258459727
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "titulo": "Blippi Português Afunda ou Flutua | Vídeos de ciência para crianças | Vídeos Educativos",
+      "de": 8,
+      "para": 6,
+      "delta": -2,
+      "score": 0.9508676764865717
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "titulo": "Jac Jacaré | Escova, escova [Clipe Infantil]",
+      "de": 4,
+      "para": 7,
+      "delta": 3,
+      "score": 0.9332649481172363
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "titulo": "Admita Seu Erro e Não Minta | Nossos Sentimentos | Vídeo Educativo | BabyBus Português",
+      "de": 7,
+      "para": 8,
+      "delta": 1,
+      "score": 0.8935287753120065
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "titulo": "AO VIVO🔴: Episódios Completos | Bluey",
+      "de": 6,
+      "para": 9,
+      "delta": 3,
+      "score": 0.8726763871187965
+    },
+    {
+      "termo": "vídeo educativo para crianças",
+      "estrato": "A_responsavel",
+      "titulo": "De Onde Vem a Onda?",
+      "de": 2,
+      "para": 10,
+      "delta": 8,
+      "score": 0.8054310729106268
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "patinetes - parte 1 - SOUTH PARK (completo)",
+      "de": 3,
+      "para": 1,
+      "delta": -2,
+      "score": 0.9654136734704176
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "SOUTH PARK - EPISÓDIO - CARTMAN ENCONTRA O AMOR - PARTE 1",
+      "de": 5,
+      "para": 2,
+      "delta": -3,
+      "score": 0.9587322728087505
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "South Park: A Fenda que Abunda a Força - O Filme (Dublado)",
+      "de": 9,
+      "para": 3,
+      "delta": -6,
+      "score": 0.7898990344256163
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "30 Minutos de South Park | Pluto TV",
+      "de": 8,
+      "para": 4,
+      "delta": -4,
+      "score": 0.7271312049900492
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "30 Minutos de Risadas com a Galerinha de South Park | Pluto TV",
+      "de": 1,
+      "para": 5,
+      "delta": 4,
+      "score": 0.642700287202994
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "Os Melhores Episódios de South Park | Pluto TV",
+      "de": 4,
+      "para": 6,
+      "delta": 2,
+      "score": 0.597692507940034
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "DESENHO PARA ASSISTIR CHAPADO - ASSISTA CHAPADO - SOUTH PARK",
+      "de": 7,
+      "para": 7,
+      "delta": 0,
+      "score": 0.5173140885308385
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "30 MINUTOS das MAIORES MALDADES do Cartman | South Park | Pluto TV",
+      "de": 10,
+      "para": 8,
+      "delta": -2,
+      "score": 0.5089475627367696
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "Cartman machista opressor - SOUTH PARK",
+      "de": 6,
+      "para": 9,
+      "delta": 3,
+      "score": 0.47023415255049866
+    },
+    {
+      "termo": "south park português dublado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "Scott Tenorman deve morrer",
+      "de": 2,
+      "para": 10,
+      "delta": 8,
+      "score": 0.39706606417894363
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "Os melhores momentos de suspense da 1ª temporada | Rick and Morty | Adult Swim",
+      "de": 8,
+      "para": 1,
+      "delta": -7,
+      "score": 0.9457745136072239
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "A experiência amorosa | Rick & Morty | Adult Swim Brasil",
+      "de": 2,
+      "para": 2,
+      "delta": 0,
+      "score": 0.8976888234416643
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "Rick And Morty Dublado - Completo",
+      "de": 4,
+      "para": 3,
+      "delta": -1,
+      "score": 0.8015594693521658
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "O problema com os problemas | Rick & Morty | Adult Swim Brasil",
+      "de": 5,
+      "para": 4,
+      "delta": -1,
+      "score": 0.7546934845546881
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "🔴 Rick and Morty Brasil: Clipes das Temps. 1-3 | Melhores Momentos | Ao Vivo",
+      "de": 10,
+      "para": 5,
+      "delta": -5,
+      "score": 0.7523542176932096
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "Rick e Morty: tudo por uma selfie | Rick & Morty | Adult Swim Brasil",
+      "de": 3,
+      "para": 6,
+      "delta": 3,
+      "score": 0.7110939628134171
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "Parasitas invasores | Rick & Morty | Adult Swim Brasil",
+      "de": 9,
+      "para": 7,
+      "delta": -2,
+      "score": 0.6700416455666224
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "Rick Chapa Com Dragão Rick And Morty Dublado",
+      "de": 7,
+      "para": 8,
+      "delta": 1,
+      "score": 0.5660201702266932
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "Sobrevivendo aos Piores Predadores do Universo | Rick and Morty Brasil | adult swim",
+      "de": 1,
+      "para": 9,
+      "delta": 8,
+      "score": 0.5547469036343197
+    },
+    {
+      "termo": "rick and morty engraçado",
+      "estrato": "B_apelo_infantil",
+      "titulo": "Vô fazê sá porra!!!",
+      "de": 6,
+      "para": 10,
+      "delta": 4,
+      "score": 0.4732598445067803
+    }
+  ]
+}

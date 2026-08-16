@@ -1,0 +1,74 @@
+{
+  "timestamp": "2026-08-15T21:12:14.965478",
+  "n_treino": 1204,
+  "n_teste": 302,
+  "resultados": [
+    {
+      "modelo": "Modelos prontos compostos (HateBR + alvo)",
+      "f1_macro": 0.5263478525738653,
+      "accuracy": 0.5695364238410596,
+      "f1_per_class": [
+        0.7014925373134329,
+        0.2857142857142857,
+        0.5918367346938775
+      ],
+      "confusion_matrix": [
+        [
+          94,
+          15,
+          24
+        ],
+        [
+          35,
+          20,
+          42
+        ],
+        [
+          6,
+          8,
+          58
+        ]
+      ]
+    },
+    {
+      "modelo": "HateBR isolado (tóxico vs. não-tóxico)",
+      "f1_macro": 0.7316986496090974,
+      "accuracy": 0.7350993377483444,
+      "f1_per_class": [
+        0.7014925373134329,
+        0.7619047619047619
+      ],
+      "confusion_matrix": [
+        [
+          94,
+          39
+        ],
+        [
+          41,
+          128
+        ]
+      ],
+      "tarefa": "binária: tóxico vs. não-tóxico"
+    },
+    {
+      "modelo": "Classificador de alvo isolado (Leve vs. Severa)",
+      "f1_macro": 0.6741454864154252,
+      "accuracy": 0.6745562130177515,
+      "f1_per_class": [
+        0.6625766871165645,
+        0.6857142857142858
+      ],
+      "confusion_matrix": [
+        [
+          54,
+          43
+        ],
+        [
+          12,
+          60
+        ]
+      ],
+      "tarefa": "binária, só nas tóxicas: Leve vs. Severa"
+    }
+  ]
+}

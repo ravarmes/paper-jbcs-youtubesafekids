@@ -9,7 +9,7 @@ abstract: >-
   interpretable safety score.
 type: dataset
 license: MIT
-repository-code: "https://github.com/ravarmes/paper-jisa-youtubesafekids"
+repository-code: "https://github.com/ravarmes/paper-jbcs-youtubesafekids"
 authors:
   - family-names: "Vargas Mesquita Santos"
     given-names: "Rafael"
@@ -43,9 +43,9 @@ keywords:
 preferred-citation:
   type: article
   title: >-
-    A Toxicity-Aware Reranking Service for Children's Video Search: Brazilian
-    Portuguese Classification with an Interpretable Safety Score
-  journal: "Journal of Internet Services and Applications"
+    Toxicity Detection in Brazilian Portuguese Children's Video Transcripts: An
+    Annotated Corpus, a Three-Level Classifier and an Interpretable Safety Score
+  journal: "Journal of the Brazilian Computer Society"
   year: 2026
   notes: >-
     Manuscript under review. The journal reference and the DOI will be filled

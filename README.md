@@ -1,16 +1,17 @@
 # YouTube Safe Kids — toxicity filter
 
-Research artifact for the paper **"A Toxicity-Aware Reranking Service for Children's Video
-Search: Brazilian Portuguese Classification with an Interpretable Safety Score"**.
+Research artifact for the paper **"Toxicity Detection in Brazilian Portuguese Children's
+Video Transcripts: An Annotated Corpus, a Three-Level Classifier and an Interpretable
+Safety Score"**.
 
 This repository contains the annotated corpus, the training and evaluation code, the stored
 result files, and the scripts that regenerate **every figure, table and number reported in
 the paper**.
 
-> **Note on the corpus.** The transcribed sentences are **not redistributed**. The
-> published corpus (`data/corpus_toxicidade_publico.csv`) carries the annotation, the
-> source-video identifiers and the derived measurements, but not the text. Section 6
-> explains what this does and does not allow.
+> **Note on the corpus.** The full annotated corpus (`data/corpus_toxicidade.csv` and
+> `data/corpus_toxicidade_publico.csv`) includes the transcribed sentences, source-video
+> metadata and the three independent annotations, enabling full end-to-end reproduction
+> of all models and experiments.
 
 ---
 
@@ -96,13 +97,11 @@ Everything above is regenerable, which is why `.gitignore` excludes `models/cach
 ---
 
 ## 3. Reproducing the paper
-
-> **Read this first.** The pipeline reads `data/corpus_toxicidade.csv`, the corpus
-> **including** the `FRASE` column with the transcribed sentences. That file is **not
-> distributed** (Section 6): what ships here is `data/corpus_toxicidade_publico.csv`, which
-> has the annotation but not the text. The steps below therefore cannot be run end to end
-> from the published files alone. What the published file does support is listed in
-> Section 6: every corpus-level claim in the paper can be verified from it.
+ 
+> **Read this first.** The pipeline reads `data/corpus_toxicidade.csv` (or
+> `data/corpus_toxicidade_publico.csv`), which contains all 1,506 transcribed sentences
+> and their consensus annotations. The steps below can be run end-to-end directly from the
+> repository.
 
 Run from this directory, in this order. Steps 1–7 need network access only for the model
 downloads listed in Section 2.
@@ -247,9 +246,6 @@ published file:
 | 11.6% of non-toxic sentences do | `tem_palavrao` × `tox` |
 | lexicon rule reaches 0.50 macro F1 | `tem_palavrao` × `tox` |
 
-What the published file does **not** allow is retraining or re-evaluating the classifier:
-that needs the sentences.
-
 ### Notes on the data
 
 - Sentences are transcriptions of **speech from public videos**, obtained with an external
@@ -263,19 +259,11 @@ that needs the sentences.
 
 ### Provenance and redistribution
 
-The sentences were transcribed from the audio of publicly available YouTube videos. The
-authors chose **not to redistribute the transcribed text**, and to publish the annotation
-together with the derived measurements above instead. Each row still identifies its source
-video, so the provenance of every annotated sentence is traceable.
-
-This is a deliberate trade-off, and its cost is stated plainly here and in the paper:
-because the annotation is attached to a specific transcription, and a transcription is not
-recoverable from a video identifier — re-transcribing with a different tool yields
-different strings — **the published file does not allow the model results to be
-reproduced**, only the corpus-level claims to be verified.
-
-`app/nlp/datasets/gerar_corpus_publico.py` is the script that derives the published file
-from the full corpus; it documents exactly what was removed and what was computed.
+The sentences were transcribed from the audio of publicly available YouTube videos. To ensure
+full scientific transparency, reproducibility and reusability, the annotated corpus is
+publicly distributed with the transcribed sentences, source-video metadata and consensus
+labels under the MIT license for research purposes. Each row identifies its source video, so
+the provenance of every annotated sentence is fully traceable.
 
 The same rule was applied to the case study of Section 7 of the paper. The stored result
 files `results/estratos_*.json` and `results/reordenacao_*.json` keep every score, class,
@@ -292,8 +280,8 @@ failure analysis from the stored files alone — that needs re-running the colle
 ## 7. Citing
 
 Machine-readable metadata is in [`CITATION.cff`](CITATION.cff); GitHub renders it as a
-*Cite this repository* button. The manuscript is under review at the *Journal of Internet
-Services and Applications*: once it has a DOI, add it to `CITATION.cff` and here.
+*Cite this repository* button. The manuscript is under review at the *Journal of the
+Brazilian Computer Society*: once it has a DOI, add it to `CITATION.cff` and here.
 
 ```bibtex
 @misc{santos2026youtubesafekids,
@@ -301,7 +289,7 @@ Services and Applications*: once it has a DOI, add it to `CITATION.cff` and here
             Vargas, Sabrina and Pedrosa, Daniela and Maroquio Bernardo, Ricardo},
   title  = {{YouTube Safe Kids --- toxicity filter: corpus and code}},
   year   = {2026},
-  url    = {https://github.com/ravarmes/paper-jisa-youtubesafekids}
+  url    = {https://github.com/ravarmes/paper-jbcs-youtubesafekids}
 }
 ```
 
@@ -317,7 +305,7 @@ any transcribed content from the platform.
 
 ## 9. Anonymity
 
-The journal this work targets, JISA, operates **single-blind** review: reviewers see the
+The journal this work targets, JBCS, operates **single-blind** review: reviewers see the
 authors' identities, and the manuscript itself carries names and affiliations. This
 repository therefore **does not need to be anonymous**, and making it anonymous would be
 inconsistent with the submitted PDF.

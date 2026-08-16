@@ -353,7 +353,10 @@ def print_comparison_table(cv_results, test_results, bertimbau_ref=None):
     print("-" * 80)
     if bertimbau_ref:
         ref_str = f"{bertimbau_ref['cv_f1_mean']:.4f} ±{bertimbau_ref['cv_f1_std']:.4f}"
-        acc_str = f"{bertimbau_ref['cv_accuracy_mean']:.4f}"
+        # A busca nem sempre registra a acurácia média de CV: quando não registra,
+        # a coluna fica vazia em vez de derrubar a tabela inteira.
+        acc = bertimbau_ref.get('cv_accuracy_mean')
+        acc_str = f"{acc:.4f}" if acc is not None else "—"
         print(f"{'BERTimbau (ref.)':<25} {ref_str:<18} {acc_str:<18}")
     else:
         print(f"{'BERTimbau (ref.)':<25} (nenhum grid search salvo — rode train_toxicity_gridsearch)")

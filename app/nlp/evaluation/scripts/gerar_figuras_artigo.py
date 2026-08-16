@@ -46,9 +46,54 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 sys.path.insert(0, project_root)
 
 CLASSES = ['Nenhuma', 'Leve', 'Severa']
-CORES = ['#2ecc71', '#f39c12', '#e74c3c']
-COR_BERT = '#2980b9'
-COR_BASE = '#95a5a6'
+
+# --- paleta -----------------------------------------------------------------
+# SEMAFORO, por decisao do autor: as figuras tem de casar com o indicador que o
+# YouTube Safe Kids mostra na interface (verde / amarelo / vermelho). Coerencia
+# entre o que o artigo imprime e o que o leitor ve nas capturas de tela vale
+# mais que a conveniencia de uma rampa de matiz unico.
+#
+# O custo do semaforo e conhecido: verde<->vermelho e o pior par possivel para
+# deuteranopia e protanopia. Aqui ele foi PAGO em vez de ignorado, escalonando a
+# LUMINOSIDADE junto com a severidade -- verde claro, ambar medio, vermelho
+# escuro. Quando o matiz colapsa, a luminancia continua separando as classes, e
+# a figura tambem sobrevive a impressao em preto e branco.
+#
+# Medido com validate_palette.js (superficie #ffffff, --pairs all):
+#   verde<->vermelho:  DeltaE 36,4 deutan  (era 4,1 no semaforo de matiz plano)
+#   pior par do trio:  DeltaE 10,5 deutan  (alvo >= 8)
+#   normal:            DeltaE 16,3         (piso 15)
+# Verde e ambar ficam abaixo de 3:1 contra o papel; as duas figuras que os usam
+# trazem rotulo direto em cada marca, que e a compensacao prevista.
+CORES = ['#6fc48f', '#e0a127', '#7a1616']
+
+# Comparacao de modelos: o proposto em azul cheio.
+COR_BERT = '#2a78d6'
+COR_BASE = '#a8a7a1'
+
+# Categorica, para series distintas no mesmo eixo (identidade, nao magnitude).
+# Ordem fixa, nunca ciclada. As quatro validam em todos os pares.
+CORES_SERIE = ['#2a78d6', '#eb6834', '#1baf7a', '#4a3aa7']
+
+# Referencias e baselines: um cinza unico para todas deixava-as indistinguiveis
+# entre si. Cada uma e um tipo diferente de referencia, entao recebem matizes
+# proprios -- e o azul do modelo proposto continua liderando pela posicao e pelo
+# destaque tipografico, nao por ser o unico colorido.
+CORES_REF = ['#eb6834', '#1baf7a', '#4a3aa7']
+
+# As tres avaliacoes (validacao cruzada -> teste retido -> teste sem analogo
+# proximo) formam uma escala de RIGOR CRESCENTE, nao tres categorias soltas.
+# Por isso levam uma rampa sequencial de um matiz, e nao a paleta categorica:
+# se usassem os mesmos tres matizes de CORES_REF, azul significaria "modelo
+# proposto" na Figura 6 e "validacao cruzada" na Figura 3 -- a mesma cor com
+# dois sentidos em figuras vizinhas.
+RAMPA_AVALIACAO = ['#86b6ef', '#2a78d6', '#184f95']
+
+# Tinta e cromo, do mesmo sistema: eixo e grade recuam, o dado avanca.
+INK = '#0b0b0b'
+INK_SUAVE = '#52514e'
+GRADE = '#e1e0d9'
+EIXO = '#c3c2b7'
 
 # --- idioma de saida -------------------------------------------------------
 # CLASSES continua em portugues porque e chave de dicionario nos JSON de
@@ -103,9 +148,9 @@ def _sem_latex(texto):
     return re.sub(r'\\emph\{([^}]*)\}', r'\1', texto)
 
 
-# O template do JIS e de duas colunas e estas tabelas nao cabem na largura de
-# uma coluna: com --duas-colunas elas saem como table*, que ocupa a pagina.
-DUAS_COLUNAS = False
+# O template do JIS/JBCS e de duas colunas e estas tabelas saem como table*,
+# ocupando a largura total da pagina.
+DUAS_COLUNAS = True
 
 
 def _abre_tabela():
@@ -146,15 +191,62 @@ def _virgula(valor, casas=3):
     return texto if IDIOMA == 'en' else texto.replace('.', ',')
 
 
+def aplicar_estilo():
+    """
+    Estilo comum a todas as figuras do artigo.
+
+    Tres principios, e cada um responde a um defeito comum em figura de artigo:
+    o dado e a unica coisa saturada da imagem; grade e eixo sao fio de cabelo e
+    ficam atras do dado; nada de moldura branca em torno das barras -- a
+    separacao vem do vao entre elas, nao de um contorno.
+    """
+    plt.rcParams.update({
+        'figure.dpi': 300,
+        'savefig.dpi': 300,
+        'savefig.bbox': 'tight',
+        'font.size': 9.5,
+        'axes.titlesize': 10,
+        'axes.labelsize': 10,
+        'xtick.labelsize': 9,
+        'ytick.labelsize': 9,
+        'legend.fontsize': 9,
+        'axes.edgecolor': EIXO,
+        'axes.linewidth': 0.8,
+        'axes.labelcolor': INK_SUAVE,
+        'axes.grid': False,
+        'grid.color': GRADE,
+        'grid.linewidth': 0.6,
+        'grid.linestyle': '-',      # grade tracejada e ruido visual
+        'text.color': INK,
+        'xtick.color': INK_SUAVE,
+        'ytick.color': INK_SUAVE,
+        'xtick.major.size': 0,      # tick mark nao acrescenta informacao
+        'ytick.major.size': 0,
+        'xtick.major.pad': 5,
+        'ytick.major.pad': 4,
+        'legend.frameon': False,    # a moldura da legenda so adiciona traco
+        'figure.facecolor': 'white',
+        'axes.facecolor': 'white',
+    })
+
+
+def _nome_fig(nome):
+    if IDIOMA == 'pt':
+        return nome.replace('.png', '-pt.png')
+    return nome
+
+
 def _finalizar(fig, ax_list, nome):
     for ax in np.atleast_1d(ax_list).ravel():
         ax.spines[['top', 'right']].set_visible(False)
+        ax.spines[['left', 'bottom']].set_color(EIXO)
         ax.set_axisbelow(True)
-    caminho = os.path.join(OUTPUT_DIR, nome)
+    nome_final = _nome_fig(nome)
+    caminho = os.path.join(OUTPUT_DIR, nome_final)
     fig.tight_layout()
     fig.savefig(caminho, dpi=300, bbox_inches='tight')
     plt.close(fig)
-    print(f"  {nome}")
+    print(f"  {nome_final}")
     return caminho
 
 
@@ -166,19 +258,23 @@ def fig_distribuicao_corpus(corpus):
     distribuicao = [corpus['distribuicao'][c] for c in CLASSES]
     total = sum(distribuicao)
 
-    fig, ax = plt.subplots(figsize=(6.2, 3.8))
-    barras = ax.bar(_classes_exibicao(), distribuicao, color=CORES,
-                    edgecolor='white', linewidth=1.2)
+    fig, ax = plt.subplots(figsize=(6.2, 3.4))
+    # width=0.62: o vao entre as barras separa as classes. Contorno branco em
+    # torno da barra e traco a mais fazendo o trabalho que o espaco ja faz.
+    barras = ax.bar(_classes_exibicao(), distribuicao, width=0.62, color=CORES)
     for barra, valor in zip(barras, distribuicao):
-        ax.annotate(f'{valor}\n({_virgula(valor / total * 100, 1)}%)',
+        ax.annotate(f'{valor}\n{_virgula(valor / total * 100, 1)}%',
                     xy=(barra.get_x() + barra.get_width() / 2, valor),
-                    xytext=(0, 4), textcoords='offset points',
-                    ha='center', va='bottom', fontsize=10)
-    ax.set_ylabel(_t('Sentenças anotadas'), fontsize=11)
-    ax.set_xlabel(_t('Grau de toxicidade'), fontsize=11)
-    ax.set_ylim(0, max(distribuicao) * 1.20)
-    ax.grid(axis='y', alpha=0.25)
-    return _finalizar(fig, ax, 'fig-tox-distribuicao-corpus.png')
+                    xytext=(0, 5), textcoords='offset points',
+                    ha='center', va='bottom', fontsize=9, color=INK)
+    ax.set_ylabel(_t('Sentenças anotadas'))
+    ax.set_xlabel(_t('Grau de toxicidade'))
+    ax.set_ylim(0, max(distribuicao) * 1.22)
+    ax.grid(axis='y')
+    # Com o rotulo direto em cada barra, a escala do eixo y vira redundancia.
+    ax.set_yticks([])
+    ax.spines['left'].set_visible(False)
+    return _finalizar(fig, ax, 'fig02-distribuicao-corpus.png')
 
 
 def fig_comparativo_f1(modelos):
@@ -187,12 +283,19 @@ def fig_comparativo_f1(modelos):
     teste contado por texto distinto — BERTimbau contra as baselines.
     """
     nomes = list(modelos.keys())
+    # A cor codifica UMA coisa: qual avaliacao. Antes ela codificava duas ao
+    # mesmo tempo -- matiz para "proposto vs. baseline" e alfa/hachura para a
+    # avaliacao --, e a legenda, que so pode mostrar uma delas, mentia sobre as
+    # barras cinzas. O modelo proposto passa a ser destacado por fora da cor:
+    # faixa de fundo e rotulo em negrito.
     series = [
         (_t('Validação cruzada'), [modelos[n]['cv_f1'] for n in nomes],
-         [modelos[n]['cv_f1_std'] for n in nomes], 1.00, None),
-        (_t('Teste retido'), [modelos[n]['test_f1'] for n in nomes], None, 0.72, None),
+         [modelos[n]['cv_f1_std'] for n in nomes], RAMPA_AVALIACAO[0]),
+        (_t('Teste retido'), [modelos[n]['test_f1'] for n in nomes], None,
+         RAMPA_AVALIACAO[1]),
         (_t('Teste, sem análogo próximo'),
-         [modelos[n]['test_f1_sem_analogo'] for n in nomes], None, 0.45, '//'),
+         [modelos[n]['test_f1_sem_analogo'] for n in nomes], None,
+         RAMPA_AVALIACAO[2]),
     ]
 
     x = np.arange(len(nomes))
@@ -200,82 +303,104 @@ def fig_comparativo_f1(modelos):
 
     # Achatada de propósito: os valores ficam todos acima de 0,8 e o eixo começa
     # em zero (sem truncar), então altura menor evita uma faixa vazia no PDF.
-    fig, ax = plt.subplots(figsize=(8.4, 3.5))
-    for k, (rotulo, valores, erros, alfa, hachura) in enumerate(series):
-        cores = [COR_BERT if n == 'BERTimbau' else COR_BASE for n in nomes]
-        barras = ax.bar(x + (k - 1) * largura, valores, largura,
-                        yerr=erros, capsize=3, label=rotulo,
-                        color=cores, alpha=alfa, edgecolor='white', hatch=hachura)
+    fig, ax = plt.subplots(figsize=(8.4, 3.4))
+
+    # Faixa de fundo atras do grupo do modelo proposto: destaca sem gastar cor.
+    for i, nome in enumerate(nomes):
+        if nome == 'BERTimbau':
+            ax.axvspan(i - 0.46, i + 0.46, color='#f2f1ec', zorder=0)
+
+    for k, (rotulo, valores, erros, cor) in enumerate(series):
+        barras = ax.bar(x + (k - 1) * largura, valores, largura * 0.88,
+                        yerr=erros, capsize=2.5, label=rotulo, color=cor,
+                        error_kw=dict(ecolor=INK_SUAVE, elinewidth=0.8))
         for barra, valor in zip(barras, valores):
             ax.annotate(_virgula(valor),
                         xy=(barra.get_x() + barra.get_width() / 2, valor),
                         xytext=(0, 3), textcoords='offset points',
-                        ha='center', va='bottom', fontsize=7.5)
+                        ha='center', va='bottom', fontsize=7, color=INK_SUAVE)
 
-    todos = [v for _, valores, _, _, _ in series for v in valores]
-    ax.set_ylabel(_t('F1 (macro)'), fontsize=11)
+    todos = [v for _, valores, _, _ in series for v in valores]
+    ax.set_ylabel(_t('F1 (macro)'))
     ax.set_xticks(x)
-    ax.set_xticklabels(nomes, fontsize=9.5)
-    ax.set_ylim(0, max(todos) * 1.22)
-    ax.set_yticklabels([_virgula(t, 1) for t in ax.get_yticks()])
-    ax.legend(fontsize=8.5, ncol=3, loc='upper center', framealpha=0.9)
-    ax.grid(axis='y', alpha=0.25)
-    return _finalizar(fig, ax, 'fig-tox-comparativo-f1.png')
+    ax.set_xticklabels(nomes)
+    for rotulo, nome in zip(ax.get_xticklabels(), nomes):
+        if nome == 'BERTimbau':
+            rotulo.set_fontweight('bold')
+            rotulo.set_color(INK)
+    ax.set_ylim(0, max(todos) * 1.24)
+    ax.set_yticks(np.arange(0, 1.01, 0.2))
+    ax.set_yticklabels([_virgula(t, 1) for t in np.arange(0, 1.01, 0.2)])
+    ax.legend(ncol=3, loc='upper center', fontsize=8.5)
+    ax.grid(axis='y')
+    return _finalizar(fig, ax, 'fig03-comparativo-f1.png')
 
 
 def fig_matriz_confusao(cm):
     cm = np.array(cm)
-    fig, ax = plt.subplots(figsize=(5.0, 4.2))
-    im = ax.imshow(cm, cmap='Blues')
+    # A cor codifica o percentual DA LINHA, nao a contagem absoluta -- que e o
+    # mesmo numero que a celula imprime. Com suportes desiguais (140/81/81) a
+    # contagem mente: a classe Nenhuma, com 129 acertos em 140 (92,1%), ficava
+    # mais escura que a Severa, com 77 em 81 (95,1%), sugerindo ao olho o
+    # inverso do que o texto da celula diz.
+    linhas = cm.sum(axis=1, keepdims=True)
+    cm_pct = np.divide(cm, linhas, out=np.zeros(cm.shape, dtype=float),
+                       where=linhas != 0)
 
-    limite = cm.max() / 2
+    fig, ax = plt.subplots(figsize=(4.6, 3.9))
+    # Sequencial de matiz unico: a magnitude e a luminosidade. Nada de rampa
+    # multi-matiz aqui -- o leitor tem de ordenar celulas, nao identifica-las.
+    # vmax=1 fixa a escala em 0-100%, para que duas figuras sejam comparaveis.
+    im = ax.imshow(cm_pct, cmap='Blues', vmin=0, vmax=1)
+
+    # O texto muda para branco so onde o fundo escureceu o bastante.
     for i in range(cm.shape[0]):
         for j in range(cm.shape[1]):
-            pct = cm[i, j] / cm[i].sum() * 100 if cm[i].sum() else 0
+            pct = cm_pct[i, j] * 100
             ax.text(j, i, f'{cm[i, j]}\n{_virgula(pct, 1)}%', ha='center', va='center',
-                    fontsize=10, color='white' if cm[i, j] > limite else '#2c3e50')
+                    fontsize=9.5, color='white' if cm_pct[i, j] > 0.55 else INK)
 
-    ax.set_xticks(range(len(CLASSES)), _classes_exibicao())
-    ax.set_yticks(range(len(CLASSES)), _classes_exibicao())
-    ax.set_xlabel(_t('Classe predita'), fontsize=11)
-    ax.set_ylabel(_t('Classe real'), fontsize=11)
-    ax.spines[['top', 'right']].set_visible(True)
-    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-
-    caminho = os.path.join(OUTPUT_DIR, 'fig-tox-matriz-confusao.png')
-    fig.tight_layout()
-    fig.savefig(caminho, dpi=300, bbox_inches='tight')
-    plt.close(fig)
-    print('  fig-tox-matriz-confusao.png')
-    return caminho
+    ax.set_xticks(range(len(CLASSES)))
+    ax.set_xticklabels(_classes_exibicao())
+    ax.set_yticks(range(len(CLASSES)))
+    ax.set_yticklabels(_classes_exibicao())
+    ax.set_xlabel(_t('Classe predita'))
+    ax.set_ylabel(_t('Classe real'))
+    # Sem moldura e sem barra de cor: cada celula ja traz o numero e o
+    # percentual, entao a escala continua seria decoracao redundante.
+    ax.spines[['top', 'right', 'left', 'bottom']].set_visible(False)
+    ax.tick_params(length=0)
+    return _finalizar(fig, ax, 'fig05-matriz-confusao.png')
 
 
 def fig_metricas_classe(precisao, recall, f1):
     x = np.arange(len(CLASSES))
     largura = 0.26
 
-    fig, ax = plt.subplots(figsize=(6.8, 3.9))
-    series = [(_t('Precisão'), precisao, '#3498db'),
-              (_t('Recall'), recall, '#9b59b6'),
-              (_t('F1'), f1, '#16a085')]
+    fig, ax = plt.subplots(figsize=(6.4, 3.4))
+    # Precisao/Recall/F1 sao series de IDENTIDADE, nao magnitude: paleta
+    # categorica em ordem fixa, os tres primeiros passos (validados em todos
+    # os pares).
+    series = list(zip((_t('Precisão'), _t('Recall'), _t('F1')),
+                      (precisao, recall, f1), CORES_SERIE))
     for k, (rotulo, valores, cor) in enumerate(series):
-        barras = ax.bar(x + (k - 1) * largura, valores, largura,
-                        label=rotulo, color=cor, edgecolor='white')
+        barras = ax.bar(x + (k - 1) * largura, valores, largura * 0.88,
+                        label=rotulo, color=cor)
         for barra, valor in zip(barras, valores):
             ax.annotate(_virgula(valor * 100, 1),
                         xy=(barra.get_x() + barra.get_width() / 2, valor),
                         xytext=(0, 3), textcoords='offset points',
-                        ha='center', va='bottom', fontsize=8)
+                        ha='center', va='bottom', fontsize=7.5, color=INK_SUAVE)
 
     ax.set_xticks(x)
-    ax.set_xticklabels(_classes_exibicao(), fontsize=10)
-    ax.set_ylabel(_t('Score'), fontsize=11)
-    ax.set_ylim(0, 1.13)
+    ax.set_xticklabels(_classes_exibicao())
+    ax.set_ylabel(_t('Score'))
+    ax.set_ylim(0, 1.15)
     ax.set_yticks(np.arange(0, 1.01, 0.2))
     ax.set_yticklabels([_virgula(t, 1) for t in np.arange(0, 1.01, 0.2)])
-    ax.legend(fontsize=9, ncol=3, loc='upper center', framealpha=0.9)
-    ax.grid(axis='y', alpha=0.25)
-    return _finalizar(fig, ax, 'fig-tox-metricas-classe.png')
+    ax.legend(ncol=3, loc='upper center')
+    ax.grid(axis='y')
+    return _finalizar(fig, ax, 'fig17-metricas-classe.png')
 
 
 def fig_f1_por_classe_comparativo(f1_por_modelo):
@@ -284,29 +409,36 @@ def fig_f1_por_classe_comparativo(f1_por_modelo):
     x = np.arange(len(CLASSES))
     largura = 0.8 / len(nomes)
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.0))
+    fig, ax = plt.subplots(figsize=(6.8, 3.6))
+    # Cor pela identidade da baseline (ordem alfabetica das chaves), nao pela
+    # posicao no grafico -- ver a nota equivalente em fig_sem_finetuning.
+    bases = sorted(n for n in nomes if n != 'BERTimbau')
+    mapa_base = {n: CORES_REF[i % len(CORES_REF)] for i, n in enumerate(bases)}
     for k, nome in enumerate(nomes):
         valores = f1_por_modelo[nome]
         deslocamento = (k - (len(nomes) - 1) / 2) * largura
-        cor = COR_BERT if nome == 'BERTimbau' else CORES[k % len(CORES)]
-        barras = ax.bar(x + deslocamento, valores, largura, label=nome,
-                        color=cor, edgecolor='white',
-                        alpha=1.0 if nome == 'BERTimbau' else 0.75)
+        # Cada baseline com o seu matiz. Antes todas saiam do mesmo cinza com
+        # alfas proximos, e ficavam indistinguiveis entre si -- a figura existe
+        # para mostrar ONDE o ganho se concentra, e isso exige distinguir contra
+        # QUEM se ganha.
+        cor = COR_BERT if nome == 'BERTimbau' else mapa_base[nome]
+        barras = ax.bar(x + deslocamento, valores, largura * 0.88, label=nome,
+                        color=cor)
         for barra, valor in zip(barras, valores):
             ax.annotate(_virgula(valor * 100, 1),
                         xy=(barra.get_x() + barra.get_width() / 2, valor),
                         xytext=(0, 3), textcoords='offset points',
-                        ha='center', va='bottom', fontsize=8)
+                        ha='center', va='bottom', fontsize=7.5, color=INK_SUAVE)
 
     ax.set_xticks(x)
-    ax.set_xticklabels(_classes_exibicao(), fontsize=10)
-    ax.set_ylabel(_t('F1 por classe'), fontsize=11)
-    ax.set_ylim(0, 1.13)
+    ax.set_xticklabels(_classes_exibicao())
+    ax.set_ylabel(_t('F1 por classe'))
+    ax.set_ylim(0, 1.15)
     ax.set_yticks(np.arange(0, 1.01, 0.2))
     ax.set_yticklabels([_virgula(t, 1) for t in np.arange(0, 1.01, 0.2)])
-    ax.legend(fontsize=9, ncol=len(nomes), loc='upper center', framealpha=0.9)
-    ax.grid(axis='y', alpha=0.25)
-    return _finalizar(fig, ax, 'fig-tox-f1-por-classe-comparativo.png')
+    ax.legend(ncol=len(nomes), loc='upper center')
+    ax.grid(axis='y')
+    return _finalizar(fig, ax, 'fig06-f1-por-classe.png')
 
 
 # Marcas e canais que aparecem no título mas não identificam o vídeo
@@ -324,37 +456,46 @@ def fig_score_por_classe(distribuicao):
     """
     dados = [distribuicao[c]['scores'] for c in CLASSES]
 
-    fig, ax = plt.subplots(figsize=(6.8, 3.6))
-    partes = ax.violinplot(dados, positions=range(len(CLASSES)), widths=0.75,
+    fig, ax = plt.subplots(figsize=(6.4, 3.4))
+    # Alfa alto o bastante para o matiz se manter: com 0,28 o vermelho de
+    # "Severa" lia como rosa e a figura deixava de casar com a Figura 2, que e
+    # justamente o que se quer -- as duas mostram as mesmas classes nas mesmas
+    # cores do indicador da ferramenta.
+    partes = ax.violinplot(dados, positions=range(len(CLASSES)), widths=0.72,
                            showextrema=False, showmedians=False)
     for corpo, cor in zip(partes['bodies'], CORES):
         corpo.set_facecolor(cor)
-        corpo.set_alpha(0.35)
-        corpo.set_edgecolor('white')
+        corpo.set_alpha(0.85)
+        corpo.set_edgecolor('none')
 
-    caixa = ax.boxplot(dados, positions=range(len(CLASSES)), widths=0.16,
+    # Caixa em branco com fio escuro: contra os tres preenchimentos -- verde
+    # claro, ambar e vermelho escuro -- o branco e a unica escolha que aparece
+    # nos tres sem precisar mudar de cor por classe.
+    caixa = ax.boxplot(dados, positions=range(len(CLASSES)), widths=0.13,
                        patch_artist=True, showfliers=False,
-                       medianprops=dict(color='#2c3e50', linewidth=1.6))
-    for patch, cor in zip(caixa['boxes'], CORES):
-        patch.set_facecolor(cor)
-        patch.set_alpha(0.9)
-        patch.set_edgecolor('white')
+                       whiskerprops=dict(color=INK_SUAVE, linewidth=0.9),
+                       capprops=dict(color=INK_SUAVE, linewidth=0.9),
+                       medianprops=dict(color=INK, linewidth=1.5))
+    for patch in caixa['boxes']:
+        patch.set_facecolor('white')
+        patch.set_edgecolor(INK_SUAVE)
+        patch.set_linewidth(0.8)
 
     for i, classe in enumerate(CLASSES):
         d = distribuicao[classe]
         ax.annotate(f"{_t('mediana')} {_virgula(d['mediana'], 2)}\n(n={d['n']})",
-                    xy=(i, 1.03), ha='center', va='bottom', fontsize=8.5,
-                    color='#2c3e50')
+                    xy=(i, 1.04), ha='center', va='bottom', fontsize=8,
+                    color=INK_SUAVE)
 
     ax.set_xticks(range(len(CLASSES)))
-    ax.set_xticklabels(_classes_exibicao(), fontsize=10)
-    ax.set_xlabel(_t('Classe anotada'), fontsize=11)
-    ax.set_ylabel(_t('Score de segurança'), fontsize=11)
-    ax.set_ylim(-0.03, 1.16)
+    ax.set_xticklabels(_classes_exibicao())
+    ax.set_xlabel(_t('Classe anotada'))
+    ax.set_ylabel(_t('Score de segurança'))
+    ax.set_ylim(-0.03, 1.18)
     ax.set_yticks(np.arange(0, 1.01, 0.2))
     ax.set_yticklabels([_virgula(t, 1) for t in np.arange(0, 1.01, 0.2)])
-    ax.grid(axis='y', alpha=0.25)
-    return _finalizar(fig, ax, 'fig-tox-score-por-classe.png')
+    ax.grid(axis='y')
+    return _finalizar(fig, ax, 'fig10-score-por-classe.png')
 
 
 def fig_sem_finetuning(referencias):
@@ -366,22 +507,37 @@ def fig_sem_finetuning(referencias):
     # A chave interna e sempre em portugues; o rotulo exibido segue o idioma e
     # perde a marcacao LaTeX, que o matplotlib imprimiria literalmente.
     nomes = [_sem_latex(_t(n)) for n in chaves]
-    cores = [COR_BERT if 'ajuste fino' in n else COR_BASE for n in chaves]
+    # Cada referencia com o seu matiz: sao tres coisas diferentes (modelo
+    # generativo, zero-shot por mascara, modelos prontos compostos), e o cinza
+    # unico as tornava indistinguiveis entre si.
+    #
+    # A cor segue a IDENTIDADE da referencia, nao a posicao dela no ranking: o
+    # mapa e construido sobre as chaves em ordem alfabetica, que nao depende dos
+    # valores. Se um resultado mudar e a ordem das barras mudar junto, cada
+    # referencia leva a sua cor consigo -- em vez de as cores ficarem paradas e
+    # trocarem de dono, que e o defeito classico de colorir por posto.
+    refs = sorted(n for n in chaves if 'ajuste fino' not in n)
+    mapa_ref = {n: CORES_REF[i % len(CORES_REF)] for i, n in enumerate(refs)}
+    cores = [COR_BERT if 'ajuste fino' in n else mapa_ref[n] for n in chaves]
 
-    fig, ax = plt.subplots(figsize=(7.8, 3.6))
-    barras = ax.barh(range(len(nomes)), valores, 0.62, color=cores, edgecolor='white')
+    fig, ax = plt.subplots(figsize=(7.4, 3.2))
+    barras = ax.barh(range(len(nomes)), valores, 0.58, color=cores)
     for barra, valor in zip(barras, valores):
         ax.annotate(_virgula(valor), xy=(valor, barra.get_y() + barra.get_height() / 2),
-                    xytext=(4, 0), textcoords='offset points', va='center', fontsize=9)
+                    xytext=(5, 0), textcoords='offset points', va='center',
+                    fontsize=8.5, color=INK)
 
     ax.set_yticks(range(len(nomes)))
-    ax.set_yticklabels(nomes, fontsize=9)
-    ax.set_xlabel(_t('F1 macro no teste retido'), fontsize=11)
+    ax.set_yticklabels(nomes)
+    ax.set_xlabel(_t('F1 macro no teste retido'))
     ax.set_xlim(0, 1.06)
     ax.set_xticks(np.arange(0, 1.01, 0.2))
     ax.set_xticklabels([_virgula(t, 1) for t in np.arange(0, 1.01, 0.2)])
-    ax.grid(axis='x', alpha=0.25)
-    return _finalizar(fig, ax, 'fig-tox-sem-finetuning.png')
+    ax.grid(axis='x')
+    # Barra horizontal ja tem a linha de base a esquerda pelos rotulos; a
+    # espinha inferior duplicaria a grade.
+    ax.spines['bottom'].set_visible(False)
+    return _finalizar(fig, ax, 'fig04-sem-finetuning.png')
 
 
 # ----------------------------------------------------------------------------
@@ -429,12 +585,12 @@ def escrever_tex(numeros, destino_dir):
             'treino do \\emph{fold} foi balanceado por \\emph{oversampling}.}')
     add('\\label{tab:halving}')
     add('\\begin{tabular}{ccccccc}')
-    add('\\hline')
+    add('\\toprule')
     if IDIOMA == 'en':
         add('Epochs & Batch & Learn.\\ rate & LLRD & Loss & \\emph{Over}. & F1 (macro) \\\\')
     else:
         add('Épocas & Lote & Taxa Aprend. & LLRD & Perda & \\emph{Over}. & F1 (macro) \\\\')
-    add('\\hline')
+    add('\\midrule')
     for i, cfg in enumerate(stage2):
         celulas = [
             str(cfg['epochs']), str(cfg['batch_size']),
@@ -448,7 +604,7 @@ def escrever_tex(numeros, destino_dir):
         if i == 0:
             celulas = [f'\\textbf{{{c}}}' for c in celulas]
         add(' & '.join(celulas) + ' \\\\')
-    add('\\hline')
+    add('\\bottomrule')
     add('\\end{tabular}')
     add(_fecha_tabela())
     _salvar_tex(linhas, os.path.join(destino_dir, 'tab-halving.tex'))
@@ -472,7 +628,7 @@ def escrever_tex(numeros, destino_dir):
             f'caracteres acima de {limiar}): {n_com} e {n_sem} frases, respectivamente.}}')
     add('\\label{tab:baselines}')
     add('\\begin{tabular}{lcccc}')
-    add('\\hline')
+    add('\\toprule')
     if IDIOMA == 'en':
         add(' & & & \\multicolumn{2}{c}{Test F1, by proximity} \\\\')
         add('\\cline{4-5}')
@@ -481,7 +637,7 @@ def escrever_tex(numeros, destino_dir):
         add(' & & & \\multicolumn{2}{c}{F1 no teste, por proximidade} \\\\')
         add('\\cline{4-5}')
         add('Modelo & F1 (val.\\ cruzada) & F1 (teste) & com análogo & sem análogo \\\\')
-    add('\\hline')
+    add('\\midrule')
     for nome, dados in numeros['modelos'].items():
         celulas = [
             nome,
@@ -493,7 +649,7 @@ def escrever_tex(numeros, destino_dir):
         if nome == 'BERTimbau':
             celulas = [f'\\textbf{{{c}}}' for c in celulas]
         add(' & '.join(celulas) + ' \\\\')
-    add('\\hline')
+    add('\\bottomrule')
     add('\\end{tabular}')
     add(_fecha_tabela())
     _salvar_tex(linhas, os.path.join(destino_dir, 'tab-baselines.tex'))
@@ -519,21 +675,21 @@ def escrever_tex(numeros, destino_dir):
                 'compostos no esquema de três classes deste trabalho.}')
         add('\\label{tab:sem-finetuning}')
         add('\\begin{tabular}{lc}')
-        add('\\hline')
+        add('\\toprule')
         add(('Reference & F1 (macro) \\\\' if IDIOMA == 'en'
              else 'Referência & F1 (macro) \\\\'))
-        add('\\hline')
+        add('\\midrule')
         for nome, valor in numeros['sem_finetuning']:
             celulas = [_t(nome), _num(valor)]
             if 'ajuste fino' in nome:
                 celulas = [f'\\textbf{{{c}}}' for c in celulas]
             add(' & '.join(celulas) + ' \\\\')
         for nome, valor in numeros.get('sem_finetuning_binarias', {}).items():
-            add(f'\\hline')
+            add(f'\\midrule')
             break
         for nome, valor in numeros.get('sem_finetuning_binarias', {}).items():
             add(f'\\emph{{{_t(nome)}}} & {_num(valor)} \\\\')
-        add('\\hline')
+        add('\\bottomrule')
         add('\\end{tabular}')
         add(_fecha_tabela())
         _salvar_tex(linhas, os.path.join(destino_dir, 'tab-sem-finetuning.tex'))
@@ -546,15 +702,15 @@ def escrever_tex(numeros, destino_dir):
                            else 'Métricas por classe de toxicidade (conjunto de teste retido).'))
     add('\\label{tab:classes}')
     add('\\begin{tabular}{lrrrr}')
-    add('\\hline')
+    add('\\toprule')
     add(('Class & Precision & Recall & F1 & Support \\\\' if IDIOMA == 'en'
          else 'Classe & Precisão & \\emph{Recall} & F1 & Suporte \\\\'))
-    add('\\hline')
+    add('\\midrule')
     for i, classe in enumerate(CLASSES):
         pct = lambda chave: _num(numeros['bert_teste'][chave][i] * 100, 1) + '\\%'
         add(f"{_t(classe)} & {pct('precision_per_class')} & {pct('recall_per_class')} "
             f"& {pct('f1_per_class')} & {numeros['bert_teste']['support_per_class'][i]} \\\\")
-    add('\\hline')
+    add('\\bottomrule')
     add('\\end{tabular}')
     add(_fecha_tabela())
     _salvar_tex(linhas, os.path.join(destino_dir, 'tab-classes.tex'))
@@ -570,14 +726,18 @@ def main():
                         help='Diretório de figuras do LaTeX para receber os PNGs')
     parser.add_argument('--idioma', choices=['pt', 'en'], default='pt',
                         help='Idioma dos rótulos, legendas e tabelas (padrão: pt)')
-    parser.add_argument('--duas-colunas', action='store_true',
-                        help='Emite table* (largura da página) em vez de table, '
-                             'para templates de duas colunas como o do JIS')
+    parser.add_argument('--uma-coluna', dest='duas_colunas', action='store_false',
+                        help='Emite table (uma coluna) em vez de table*')
+    parser.add_argument('--duas-colunas', dest='duas_colunas', action='store_true', default=True,
+                        help='Emite table* (largura total da página) em vez de table, '
+                             'para templates de duas colunas como o do JBCS/JIS')
     args = parser.parse_args()
 
     IDIOMA = args.idioma
     DUAS_COLUNAS = args.duas_colunas
     print(f"Idioma de saída: {IDIOMA} | duas colunas: {DUAS_COLUNAS}\n")
+
+    aplicar_estilo()
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 

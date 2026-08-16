@@ -33,9 +33,10 @@ project_root = os.path.abspath(
 )
 FIGURAS_DIR = Path(project_root).parent / 'latex' / 'figuras'
 
-COR_TITULO = '#2c3e50'
-COR_BORDA = '#7f8c8d'
+COR_TITULO = '#1e293b'
+COR_BORDA = '#94a3b8'
 CORES_ETAPA = ['#2980b9', '#16a085', '#8e44ad', '#c0392b', '#d35400']
+PAD_BOX = 0.010
 
 
 def _num(valor, casas=4, idioma='en'):
@@ -49,19 +50,31 @@ def _mil(n, idioma='en'):
 
 def _caixa(ax, x, y, w, h, titulo, linhas, cor):
     """Desenha uma caixa com faixa de titulo e linhas de corpo."""
+    # Sombra sutil
     ax.add_patch(FancyBboxPatch(
-        (x, y), w, h, boxstyle='round,pad=0.012,rounding_size=0.02',
-        linewidth=1.1, edgecolor=COR_BORDA, facecolor='#f7f9fa', zorder=2))
-    faixa_h = 0.115
+        (x + 0.002, y - 0.003), w, h, boxstyle=f'round,pad={PAD_BOX},rounding_size=0.02',
+        linewidth=0, facecolor='#000000', alpha=0.06, zorder=1))
+    # Caixa principal
     ax.add_patch(FancyBboxPatch(
-        (x + 0.012, y + h - faixa_h - 0.012), w - 0.024, faixa_h,
-        boxstyle='round,pad=0.006,rounding_size=0.014',
+        (x, y), w, h, boxstyle=f'round,pad={PAD_BOX},rounding_size=0.02',
+        linewidth=1.2, edgecolor=COR_BORDA, facecolor='#f8fafc', zorder=2))
+    # Faixa de titulo
+    faixa_h = 0.092
+    faixa_margem = 0.008
+    ax.add_patch(FancyBboxPatch(
+        (x + faixa_margem, y + h - faixa_h - faixa_margem),
+        w - 2 * faixa_margem, faixa_h,
+        boxstyle='round,pad=0.004,rounding_size=0.012',
         linewidth=0, facecolor=cor, zorder=3))
-    ax.text(x + w / 2, y + h - faixa_h / 2 - 0.012, titulo, ha='center',
+    ax.text(x + w / 2, y + h - faixa_margem - faixa_h / 2, titulo, ha='center',
             va='center', fontsize=9.5, fontweight='bold', color='white', zorder=4)
+    # Linhas de texto
+    n_linhas = len(linhas)
+    topo_texto = y + h - faixa_h - faixa_margem - 0.038
+    espacamento = 0.048
     for i, linha in enumerate(linhas):
-        ax.text(x + w / 2, y + h - faixa_h - 0.062 - i * 0.055, linha,
-                ha='center', va='top', fontsize=8.0, color=COR_TITULO, zorder=4)
+        ax.text(x + w / 2, topo_texto - i * espacamento, linha,
+                ha='center', va='top', fontsize=8.2, color=COR_TITULO, zorder=4)
 
 
 def _seta(ax, p0, p1):
@@ -151,43 +164,51 @@ def gerar(numeros, idioma='en'):
         rodape = ('Pergunta de pesquisa: um sinal de toxicidade aprendido nativamente em português '
                   'pode reordenar buscas de vídeo infantil por um score auditável pelo responsável?')
 
-    fig, ax = plt.subplots(figsize=(11.0, 5.0))
+    fig, ax = plt.subplots(figsize=(11.0, 5.2))
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.axis('off')
 
-    larg, alt = 0.295, 0.40
-    y_topo, y_base = 0.545, 0.075
-    xs_topo = [0.015, 0.3525, 0.690]
+    larg, alt = 0.280, 0.365
+    y_topo, y_base = 0.560, 0.080
+    xs_topo = [0.030, 0.360, 0.690]
 
     for i in range(3):
         _caixa(ax, xs_topo[i], y_topo, larg, alt, etapas[i][0], etapas[i][1],
                CORES_ETAPA[i])
 
     for i in range(2):
-        _seta(ax, (xs_topo[i] + larg, y_topo + alt / 2),
-              (xs_topo[i + 1], y_topo + alt / 2))
+        _seta(ax, (xs_topo[i] + larg + PAD_BOX, y_topo + alt / 2),
+              (xs_topo[i + 1] - PAD_BOX, y_topo + alt / 2))
 
-    xs_base = [0.18, 0.525]
+    xs_base = [0.185, 0.535]
     for k, i in enumerate((3, 4)):
         _caixa(ax, xs_base[k], y_base, larg, alt, etapas[i][0], etapas[i][1],
                CORES_ETAPA[i])
 
-    # Da caixa 3 descem duas setas, uma para cada saida.
+    # Da caixa 3 descem duas setas, uma para cada saida (4a e 4b)
     x_saida = xs_topo[2] + larg / 2
-    y_junta = y_base + alt + 0.055
-    ax.plot([x_saida, x_saida], [y_topo, y_junta], color=COR_TITULO,
-            linewidth=1.4, zorder=5)
-    for x in (xs_base[0] + larg / 2, xs_base[1] + larg / 2):
-        ax.plot([x, x_saida], [y_junta, y_junta], color=COR_TITULO,
-                linewidth=1.4, zorder=5)
-        _seta(ax, (x, y_junta), (x, y_base + alt))
+    y_junta = 0.505
+    y_topo_bottom = y_topo - PAD_BOX
+    y_base_top = y_base + alt + PAD_BOX
 
-    ax.text(0.5, 0.012, rodape, ha='center', va='bottom', fontsize=8.5,
+    # Linha vertical saindo da base da caixa 3
+    ax.plot([x_saida, x_saida], [y_topo_bottom, y_junta], color=COR_TITULO,
+            linewidth=1.4, zorder=5)
+    # Linha horizontal conectando o ramo ate a caixa 4a
+    ax.plot([xs_base[0] + larg / 2, x_saida], [y_junta, y_junta], color=COR_TITULO,
+            linewidth=1.4, zorder=5)
+
+    # Setas verticais descendo para 4a e 4b
+    for x in (xs_base[0] + larg / 2, xs_base[1] + larg / 2):
+        _seta(ax, (x, y_junta), (x, y_base_top))
+
+    ax.text(0.5, 0.020, rodape, ha='center', va='bottom', fontsize=8.5,
             style='italic', color=COR_TITULO, wrap=True)
 
     FIGURAS_DIR.mkdir(parents=True, exist_ok=True)
-    caminho = FIGURAS_DIR / 'fig-tox-pipeline.png'
+    nome_arquivo = 'fig01-pipeline.png' if idioma == 'en' else 'fig01-pipeline-pt.png'
+    caminho = FIGURAS_DIR / nome_arquivo
     fig.savefig(caminho, dpi=300, bbox_inches='tight', facecolor='white')
     plt.close(fig)
     return caminho

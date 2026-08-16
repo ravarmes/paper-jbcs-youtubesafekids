@@ -313,7 +313,8 @@ def gerar_figura(buscas, limiar):
     for lado in ('top', 'right'):
         ax.spines[lado].set_visible(False)
 
-    caminho = Path(project_root).parent / 'latex' / 'figuras' / 'fig-tox-estratos.png'
+    nome_arquivo = 'fig11-estratos.png' if IDIOMA == 'en' else 'fig11-estratos-pt.png'
+    caminho = Path(project_root).parent / 'latex' / 'figuras' / nome_arquivo
     fig.savefig(caminho, dpi=300, bbox_inches='tight')
     plt.close(fig)
     print(f'Figura: {caminho}')

@@ -75,8 +75,9 @@ data/.venv*/
 .env.*
 !.env.example
 
-# O corpus COM o texto das sentencas nao e redistribuido (ver README, secao 6).
-# Só a versao derivada, sem a coluna FRASE, vai para o repositorio publico.
+# O corpus publicado (data/corpus_toxicidade_publico.csv) traz as frases e vai ao ar.
+# O que fica de fora sao as copias de trabalho: o corpus mestre e os intermediarios,
+# que duplicariam o mesmo conteudo com outro nome e outra ordem de colunas.
 data/corpus_toxicidade.csv
 data/corpus_toxicidade_completo.csv
 data/*_completo.csv

@@ -5,16 +5,16 @@
 \caption{References that do not use the labels of this corpus for training, on the held-out test set. The LLM operates few-shot, with two examples per class drawn from the training split; the zero-shot row queries BERTimbau by masked-token filling, without supervision; the off-the-shelf models are public Portuguese toxicity classifiers, composed into the three-class scheme of this work.}
 \label{tab:sem-finetuning}
 \begin{tabular}{lc}
-\hline
+\toprule
 Reference & F1 (macro) \\
-\hline
-\textbf{BERTimbau (fine-tuned)} & \textbf{0.8778} \\
-llama3.1:8b (\emph{few-shot}) & 0.6930 \\
-Masked zero-shot (best template) & 0.5244 \\
-Off-the-shelf models composed (HateBR + target) & 0.5058 \\
-\hline
-\emph{HateBR alone (toxic vs. non-toxic)} & 0.6347 \\
-\emph{Target classifier alone (Mild vs. Severe)} & 0.7738 \\
-\hline
+\midrule
+\textbf{BERTimbau (fine-tuned)} & \textbf{0.9101} \\
+llama3.1:8b (\emph{few-shot}) & 0.7785 \\
+Masked zero-shot (best template) & 0.5528 \\
+Off-the-shelf models composed (HateBR + target) & 0.5430 \\
+\midrule
+\emph{HateBR alone (toxic vs. non-toxic)} & 0.7285 \\
+\emph{Target classifier alone (Mild vs. Severe)} & 0.7143 \\
+\bottomrule
 \end{tabular}
 \end{table*}

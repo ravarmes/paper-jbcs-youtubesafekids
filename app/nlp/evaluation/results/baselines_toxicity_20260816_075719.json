@@ -1,0 +1,302 @@
+{
+  "timestamp": "20260816_075719",
+  "methodology": {
+    "features": "TF-IDF (unigrams + bigrams, max_features=10000, sublinear_tf=True)",
+    "cv_folds": 5,
+    "cv_scheme": "StratifiedGroupKFold (grupo = texto normalizado)",
+    "random_state": 42,
+    "corpus_total": 1506,
+    "train_size": 1204,
+    "test_size": 302
+  },
+  "cross_validation_results": {
+    "SVM (LinearSVC)": {
+      "f1_mean": 0.8417800256663783,
+      "f1_std": 0.02321065633453143,
+      "accuracy_mean": 0.8496576763485477,
+      "accuracy_std": 0.021619103447094303,
+      "precision_mean": 0.8445449069294917,
+      "precision_std": 0.022965275600952177,
+      "recall_mean": 0.8414377289377291,
+      "recall_std": 0.023069882394836205
+    },
+    "Logistic Regression": {
+      "f1_mean": 0.8354705387122989,
+      "f1_std": 0.03018525406146672,
+      "accuracy_mean": 0.8430221300138312,
+      "accuracy_std": 0.02868077820436616,
+      "precision_mean": 0.8411228847017774,
+      "precision_std": 0.030396031394126357,
+      "recall_mean": 0.8336630036630037,
+      "recall_std": 0.029004000076223665
+    },
+    "Random Forest": {
+      "f1_mean": 0.8263257457141424,
+      "f1_std": 0.02342460582368024,
+      "accuracy_mean": 0.8338831258644538,
+      "accuracy_std": 0.021024287721408186,
+      "precision_mean": 0.8394195774940855,
+      "precision_std": 0.024773665749571502,
+      "recall_mean": 0.8181066849816852,
+      "recall_std": 0.023314087393904392
+    },
+    "Naive Bayes": {
+      "f1_mean": 0.8202104012284115,
+      "f1_std": 0.022223306457914857,
+      "accuracy_mean": 0.8355567081604427,
+      "accuracy_std": 0.019142743034337478,
+      "precision_mean": 0.8615689701884561,
+      "precision_std": 0.02080437169573625,
+      "recall_mean": 0.8047275641025642,
+      "recall_std": 0.02155700923755842
+    }
+  },
+  "test_results": {
+    "SVM (LinearSVC)": {
+      "f1": 0.8320104383136916,
+      "accuracy": 0.8377483443708609,
+      "precision": 0.8326968272620446,
+      "recall": 0.8347736625514403,
+      "f1_per_class": [
+        0.8623188405797101,
+        0.8129032258064517,
+        0.8208092485549133
+      ],
+      "precision_per_class": [
+        0.875,
+        0.8513513513513513,
+        0.7717391304347826
+      ],
+      "recall_per_class": [
+        0.85,
+        0.7777777777777778,
+        0.8765432098765432
+      ],
+      "confusion_matrix": [
+        [
+          119,
+          8,
+          13
+        ],
+        [
+          10,
+          63,
+          8
+        ],
+        [
+          7,
+          3,
+          71
+        ]
+      ],
+      "classification_report": "              precision    recall  f1-score   support\n\n     Nenhuma       0.88      0.85      0.86       140\n        Leve       0.85      0.78      0.81        81\n      Severa       0.77      0.88      0.82        81\n\n    accuracy                           0.84       302\n   macro avg       0.83      0.83      0.83       302\nweighted avg       0.84      0.84      0.84       302\n",
+      "por_sentenca_distinta": {
+        "n_textos_distintos": 302,
+        "f1": 0.8320104383136916,
+        "accuracy": 0.8377483443708609
+      },
+      "por_similaridade": {
+        "limiar": 0.8,
+        "com_analogo": {
+          "n": 20,
+          "f1": 1.0,
+          "accuracy": 1.0
+        },
+        "sem_analogo": {
+          "n": 282,
+          "f1": 0.8176369806596159,
+          "accuracy": 0.8262411347517731
+        }
+      }
+    },
+    "Logistic Regression": {
+      "f1": 0.8250413453404929,
+      "accuracy": 0.8278145695364238,
+      "precision": 0.8231991888708307,
+      "recall": 0.8293650793650794,
+      "f1_per_class": [
+        0.8394160583941606,
+        0.810126582278481,
+        0.8255813953488372
+      ],
+      "precision_per_class": [
+        0.8582089552238806,
+        0.8311688311688312,
+        0.7802197802197802
+      ],
+      "recall_per_class": [
+        0.8214285714285714,
+        0.7901234567901234,
+        0.8765432098765432
+      ],
+      "confusion_matrix": [
+        [
+          115,
+          12,
+          13
+        ],
+        [
+          10,
+          64,
+          7
+        ],
+        [
+          9,
+          1,
+          71
+        ]
+      ],
+      "classification_report": "              precision    recall  f1-score   support\n\n     Nenhuma       0.86      0.82      0.84       140\n        Leve       0.83      0.79      0.81        81\n      Severa       0.78      0.88      0.83        81\n\n    accuracy                           0.83       302\n   macro avg       0.82      0.83      0.83       302\nweighted avg       0.83      0.83      0.83       302\n",
+      "por_sentenca_distinta": {
+        "n_textos_distintos": 302,
+        "f1": 0.8250413453404929,
+        "accuracy": 0.8278145695364238
+      },
+      "por_similaridade": {
+        "limiar": 0.8,
+        "com_analogo": {
+          "n": 20,
+          "f1": 1.0,
+          "accuracy": 1.0
+        },
+        "sem_analogo": {
+          "n": 282,
+          "f1": 0.810627921154237,
+          "accuracy": 0.8156028368794326
+        }
+      }
+    },
+    "Random Forest": {
+      "f1": 0.8167724343138957,
+      "accuracy": 0.8278145695364238,
+      "precision": 0.8226921253237043,
+      "recall": 0.8120223398001176,
+      "f1_per_class": [
+        0.8680555555555556,
+        0.7924528301886792,
+        0.7898089171974522
+      ],
+      "precision_per_class": [
+        0.8445945945945946,
+        0.8076923076923077,
+        0.8157894736842105
+      ],
+      "recall_per_class": [
+        0.8928571428571429,
+        0.7777777777777778,
+        0.7654320987654321
+      ],
+      "confusion_matrix": [
+        [
+          125,
+          9,
+          6
+        ],
+        [
+          10,
+          63,
+          8
+        ],
+        [
+          13,
+          6,
+          62
+        ]
+      ],
+      "classification_report": "              precision    recall  f1-score   support\n\n     Nenhuma       0.84      0.89      0.87       140\n        Leve       0.81      0.78      0.79        81\n      Severa       0.82      0.77      0.79        81\n\n    accuracy                           0.83       302\n   macro avg       0.82      0.81      0.82       302\nweighted avg       0.83      0.83      0.83       302\n",
+      "por_sentenca_distinta": {
+        "n_textos_distintos": 302,
+        "f1": 0.8167724343138957,
+        "accuracy": 0.8278145695364238
+      },
+      "por_similaridade": {
+        "limiar": 0.8,
+        "com_analogo": {
+          "n": 20,
+          "f1": 1.0,
+          "accuracy": 1.0
+        },
+        "sem_analogo": {
+          "n": 282,
+          "f1": 0.7994549199247185,
+          "accuracy": 0.8156028368794326
+        }
+      }
+    },
+    "Naive Bayes": {
+      "f1": 0.7899445343903024,
+      "accuracy": 0.8079470198675497,
+      "precision": 0.8338648684085171,
+      "recall": 0.7769253380364493,
+      "f1_per_class": [
+        0.8478964401294498,
+        0.7121212121212122,
+        0.8098159509202455
+      ],
+      "precision_per_class": [
+        0.7751479289940828,
+        0.9215686274509803,
+        0.8048780487804879
+      ],
+      "recall_per_class": [
+        0.9357142857142857,
+        0.5802469135802469,
+        0.8148148148148148
+      ],
+      "confusion_matrix": [
+        [
+          131,
+          3,
+          6
+        ],
+        [
+          24,
+          47,
+          10
+        ],
+        [
+          14,
+          1,
+          66
+        ]
+      ],
+      "classification_report": "              precision    recall  f1-score   support\n\n     Nenhuma       0.78      0.94      0.85       140\n        Leve       0.92      0.58      0.71        81\n      Severa       0.80      0.81      0.81        81\n\n    accuracy                           0.81       302\n   macro avg       0.83      0.78      0.79       302\nweighted avg       0.82      0.81      0.80       302\n",
+      "por_sentenca_distinta": {
+        "n_textos_distintos": 302,
+        "f1": 0.7899445343903024,
+        "accuracy": 0.8079470198675497
+      },
+      "por_similaridade": {
+        "limiar": 0.8,
+        "com_analogo": {
+          "n": 20,
+          "f1": 0.947089947089947,
+          "accuracy": 0.95
+        },
+        "sem_analogo": {
+          "n": 282,
+          "f1": 0.7746412170655993,
+          "accuracy": 0.7978723404255319
+        }
+      }
+    }
+  },
+  "bertimbau_reference": {
+    "source_file": "gridsearch_optimized_search_20260816_001229.json",
+    "config": {
+      "epochs": 5,
+      "batch_size": 8,
+      "learning_rate": 2e-05,
+      "max_length": 128,
+      "warmup_ratio": 0.1,
+      "weight_decay": 0.1,
+      "llrd": 0.95,
+      "loss_type": "focal",
+      "label_smoothing": 0.0,
+      "oversample": false
+    },
+    "cv_f1_mean": 0.8946334179104416,
+    "cv_f1_std": 0.0024961978142415643,
+    "cv_accuracy_mean": null
+  }
+}

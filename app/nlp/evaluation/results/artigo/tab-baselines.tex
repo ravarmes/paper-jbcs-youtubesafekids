@@ -2,19 +2,19 @@
 % NAO EDITAR A MAO: reexecute o script apos retreinar.
 \begin{table*}[!t]
 \centering
-\caption{Macro F1 comparison: TF-IDF baselines vs.\ BERTimbau. The last two columns split the held-out test set into the sentences that do and do not have a near analogue in the training data (character $n$-gram cosine above 0.8): 27 and 275 sentences, respectively.}
+\caption{Macro F1 comparison: TF-IDF baselines vs.\ BERTimbau. The last two columns split the held-out test set into the sentences that do and do not have a near analogue in the training data (character $n$-gram cosine above 0.8): 20 and 282 sentences, respectively.}
 \label{tab:baselines}
 \begin{tabular}{lcccc}
-\hline
+\toprule
  & & & \multicolumn{2}{c}{Test F1, by proximity} \\
 \cline{4-5}
 Model & F1 (cross-val.) & F1 (test) & with analogue & without analogue \\
-\hline
-\textbf{BERTimbau} & \textbf{0.9220 $\pm$ 0.009} & \textbf{0.8778} & \textbf{0.9423} & \textbf{0.8604} \\
-SVM (LinearSVC) & 0.8602 $\pm$ 0.018 & 0.8548 & 1.0000 & 0.8330 \\
-Logistic Regression & 0.8446 $\pm$ 0.014 & 0.8317 & 0.9267 & 0.8120 \\
-Random Forest & 0.8317 $\pm$ 0.019 & 0.8428 & 1.0000 & 0.8203 \\
-Naive Bayes & 0.8245 $\pm$ 0.012 & 0.8211 & 0.8611 & 0.8042 \\
-\hline
+\midrule
+\textbf{BERTimbau} & \textbf{0.8946 $\pm$ 0.002} & \textbf{0.9101} & \textbf{1.0000} & \textbf{0.9016} \\
+SVM (LinearSVC) & 0.8418 $\pm$ 0.023 & 0.8320 & 1.0000 & 0.8176 \\
+Logistic Regression & 0.8355 $\pm$ 0.030 & 0.8250 & 1.0000 & 0.8106 \\
+Random Forest & 0.8263 $\pm$ 0.023 & 0.8168 & 1.0000 & 0.7995 \\
+Naive Bayes & 0.8202 $\pm$ 0.022 & 0.7899 & 0.9471 & 0.7746 \\
+\bottomrule
 \end{tabular}
 \end{table*}
