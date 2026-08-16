@@ -4,9 +4,19 @@ Configurado conforme metodologia:
 - 80% Treino (Usado para Cross-Validation)
 - 20% Teste (Reservado para avaliação final)
 
-Formato do corpus: data/corpus_toxicidade.csv (separador ';', UTF-8 com BOM)
-Colunas: ID, TITULO, FRASE, PARTE, LINK, TOX, P1, P2, A1
-  - TOX: rótulo consolidado (moda das três anotações, desempate por P1)
+Formato do corpus: separador ';', UTF-8 com BOM, em duas variantes aceitas.
+  - data/corpus_toxicidade_publico.csv -- o arquivo PUBLICADO, e o unico que
+    acompanha o repositorio. Colunas: id_sentenca, video_id, titulo, parte, link,
+    frase, n_palavras, tem_palavrao, tox, p1, p2, a1.
+  - data/corpus_toxicidade.csv -- a copia de trabalho dos autores, fora do
+    controle de versao (.gitignore). Colunas: ID, TITULO, FRASE, PARTE, LINK,
+    TOX, P1, P2, A1.
+Os rotulos e as anotacoes individuais sao identicos nas duas; o arquivo publicado
+tambem ja vem sem as aspas soltas que a planilha de anotacao deixou em tres
+frases. load_toxicity_corpus() usa a copia de trabalho quando ela existe e o
+arquivo publicado caso contrario, de modo que um clone limpo reproduz o pipeline
+inteiro sem nenhum dado a mais.
+  - TOX/tox: rótulo consolidado (moda das três anotações, desempate por P1)
   - P1, P2, A1: anotações individuais
 Classes: 0=Nenhuma, 1=Leve, 2=Severa
 
@@ -44,6 +54,8 @@ LABEL_MAPPING = {
 TEXT_COLUMNS = ('FRASE', 'Frase', 'frase', 'TEXTO', 'Texto')
 LABEL_COLUMNS = ('TOX', 'Tox', 'tox')
 ANNOTATOR_COLUMNS = ('P1', 'P2', 'A1')
+# O arquivo publicado usa video_id onde a copia de trabalho usa ID.
+EXTRA_COLUMNS = {'ID': ('ID', 'video_id'), 'PARTE': ('PARTE', 'parte')}
 
 RANDOM_STATE = 42
 
@@ -56,6 +68,27 @@ def _pick_column(df: pd.DataFrame, candidates) -> str:
     raise KeyError(
         f"Nenhuma das colunas {candidates} encontrada no corpus. "
         f"Colunas disponíveis: {list(df.columns)}"
+    )
+
+
+def _resolve_corpus_path() -> str:
+    """
+    Escolhe entre a cópia de trabalho e o arquivo publicado.
+
+    A cópia de trabalho está no .gitignore, então num clone limpo do repositório
+    público só existe o segundo. Sem este fallback o pipeline inteiro falha ao
+    abrir um arquivo que nunca foi distribuído -- o que tornava falsa a promessa
+    de reprodução ponta a ponta feita no README e no artigo.
+    """
+    mestre = PATHS['corpus_toxicidade']
+    if os.path.exists(mestre):
+        return mestre
+    publico = os.path.join(os.path.dirname(mestre), 'corpus_toxicidade_publico.csv')
+    if os.path.exists(publico):
+        logger.info("Cópia de trabalho ausente; usando o corpus publicado.")
+        return publico
+    raise FileNotFoundError(
+        f"Nenhum corpus encontrado. Procurado em:\n  {mestre}\n  {publico}"
     )
 
 
@@ -95,7 +128,7 @@ def load_toxicity_corpus() -> pd.DataFrame:
         DataFrame com as colunas 'texto' (frase normalizada), 'label' (0/1/2) e
         as anotações individuais convertidas ('P1', 'P2', 'A1'), quando existirem.
     """
-    corpus_path = PATHS['corpus_toxicidade']
+    corpus_path = _resolve_corpus_path()
     logger.info(f"Carregando corpus de toxicidade de: {corpus_path}")
 
     # sep=None + engine='python' detecta ';' ou ',' automaticamente
@@ -111,12 +144,14 @@ def load_toxicity_corpus() -> pd.DataFrame:
     })
 
     for col in ANNOTATOR_COLUMNS:
-        if col in df.columns:
-            out[col] = df[col].map(_to_label)
+        origem = next((c for c in (col, col.lower()) if c in df.columns), None)
+        if origem is not None:
+            out[col] = df[origem].map(_to_label)
 
-    for extra in ('ID', 'PARTE'):
-        if extra in df.columns:
-            out[extra] = df[extra]
+    for destino, candidatos in EXTRA_COLUMNS.items():
+        origem = next((c for c in candidatos if c in df.columns), None)
+        if origem is not None:
+            out[destino] = df[origem]
 
     antes = len(out)
     out = out[out['texto'].str.len() > 0]

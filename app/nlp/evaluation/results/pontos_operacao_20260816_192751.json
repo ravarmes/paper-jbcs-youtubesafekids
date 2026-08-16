@@ -1,0 +1,94 @@
+{
+  "modelo": "TOX_TOX_BEST_MODEL_20260816_030955_20260816_030955",
+  "n_teste": 302,
+  "curva_limiar": [
+    {
+      "tau": 0.5,
+      "recall_severa": 0.9506172839506173,
+      "severas_nao_sinalizadas": 4,
+      "falso_alarme_nenhuma": 0.04285714285714286
+    },
+    {
+      "tau": 0.2,
+      "recall_severa": 0.9629629629629629,
+      "severas_nao_sinalizadas": 3,
+      "falso_alarme_nenhuma": 0.06428571428571428
+    },
+    {
+      "tau": 0.15,
+      "recall_severa": 0.9753086419753086,
+      "severas_nao_sinalizadas": 2,
+      "falso_alarme_nenhuma": 0.07142857142857142
+    },
+    {
+      "tau": 0.1,
+      "recall_severa": 0.9753086419753086,
+      "severas_nao_sinalizadas": 2,
+      "falso_alarme_nenhuma": 0.07142857142857142
+    }
+  ],
+  "pontos_operacao": [
+    {
+      "modelo": "BERTimbau (argmax)",
+      "recall_severa": 0.9506172839506173,
+      "severas_perdidas": 4,
+      "fa_severa": 0.04285714285714286,
+      "fa_toxico": 0.07857142857142857
+    },
+    {
+      "modelo": "BERTimbau (tau = 0.1)",
+      "recall_severa": 0.9753086419753086,
+      "severas_perdidas": 2,
+      "fa_severa": 0.07142857142857142,
+      "fa_toxico": 0.1
+    },
+    {
+      "modelo": "llama3.1:8b",
+      "recall_severa": 0.9259259259259259,
+      "severas_perdidas": 6,
+      "fa_severa": 0.06428571428571428,
+      "fa_toxico": 0.37142857142857144,
+      "segundos_por_frase": 2.6
+    }
+  ],
+  "argmax_coincide_tau_050": true,
+  "severas_perdidas": {
+    "n": 2,
+    "frases": [
+      {
+        "texto": "o lixo da nós tem absorventes lá por favor não tenha seu espírito Natalino",
+        "score": 0.8336526714265347,
+        "p_severa": 0.03786547854542732
+      },
+      {
+        "texto": "o neguinho",
+        "score": 0.9752871990203857,
+        "p_severa": 0.014613469131290913
+      }
+    ],
+    "score_mediano_perdidas": 0.9044699352234602,
+    "score_mediano_nenhuma_corretas": 0.966033742763102
+  },
+  "llm": {
+    "nome": "llama3.1:8b",
+    "confusion_matrix": [
+      [
+        88,
+        43,
+        9
+      ],
+      [
+        0,
+        71,
+        10
+      ],
+      [
+        0,
+        6,
+        75
+      ]
+    ],
+    "segundos_por_frase": 2.6,
+    "fonte": "llm_baselines_toxicity_20260816_081053.json"
+  }
+}

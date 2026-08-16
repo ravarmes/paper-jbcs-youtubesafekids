@@ -20,3 +20,30 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+SCOPE OF THIS LICENSE
+
+The MIT grant above covers the CODE and the stored result files only. Two other
+components of this repository carry different terms.
+
+1. The ANNOTATION -- the three independent labels, the final label and the
+   measurements derived from the text (`n_palavras`, `tem_palavrao`) in
+   `data/corpus_toxicidade_publico.csv` -- is the authors' own work and is
+   released under the Creative Commons Attribution 4.0 International license
+   (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/.
+
+2. The TRANSCRIBED SENTENCES in `data/corpus_toxicidade_publico.csv`, and the
+   video titles, descriptions and transcript excerpts in
+   `data/reordenacao_buscas.csv` and in the stored result files, are
+   transcribed or copied from public YouTube videos owned by third parties.
+   They are reproduced as quotation, only to the extent needed to verify the
+   results reported in the paper. Neither the MIT grant nor the CC BY grant
+   extends to that material: the rights remain with the respective owners, and
+   the source link accompanies every row so provenance can be checked. No
+   video, audio or subtitle file is redistributed.
+
+The model weights under `data/models/` are third-party artefacts distributed
+under their own licenses by their respective publishers on the Hugging Face
+Hub; only configuration and tokenizer files are versioned here.

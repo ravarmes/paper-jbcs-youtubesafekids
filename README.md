@@ -8,10 +8,9 @@ This repository contains the annotated corpus, the training and evaluation code,
 result files, and the scripts that regenerate **every figure, table and number reported in
 the paper**.
 
-> **Note on the corpus.** The transcribed sentences are **not redistributed**. The
-> published corpus (`data/corpus_toxicidade_publico.csv`) carries the annotation, the
-> source-video identifiers and the derived measurements, but not the text. Section 6
-> explains what this does and does not allow.
+> **Note on the corpus.** The published corpus (`data/corpus_toxicidade_publico.csv`)
+> carries the transcribed sentences, source-video metadata and the three independent
+> annotations, enabling full end-to-end reproduction of all models and experiments.
 
 ---
 
@@ -19,15 +18,16 @@ the paper**.
 
 | Claim in the paper | Where it comes from |
 |---|---|
-| 1,506 sentences, 251 videos, Fleiss' $\kappa$ = 0.7795 | `analisar_corpus.py` → `results/corpus/corpus_stats.json`; also checkable directly from the published corpus file (Section 6) |
-| 77.4% of toxic sentences carry no profanity; lexicon rule = 0.50 macro F1 | same script, section `decidibilidade_lexical` |
-| BERTimbau 0.9220 macro F1 (cross-validation) | `train_toxicity_gridsearch.py --mode optimized` |
-| BERTimbau 0.8778 macro F1 (held-out test) | `evaluate_toxicity.py` |
-| TF-IDF baselines, same folds | `train_toxicity_baselines.py` |
-| Llama 3.1 8B few-shot = 0.6930 | `train_toxicity_llm_baselines.py` |
-| Masked zero-shot and off-the-shelf classifiers | `train_toxicity_sem_finetuning.py` |
+| 1,506 sentences, 237 videos, Fleiss' $\kappa$ = 0.7693 | `analisar_corpus.py` → `results/corpus/corpus_stats.json`; also checkable directly from the published corpus file (Section 6) |
+| 74.8% of toxic sentences carry no profanity; lexicon rule = 0.52 macro F1 | same script, section `decidibilidade_lexical` |
+| BERTimbau 0.8946 macro F1 (cross-validation) | `train_toxicity_gridsearch.py --mode optimized` |
+| BERTimbau 0.9101 macro F1 (held-out test) | `evaluate_toxicity.py` |
+| TF-IDF baselines, same folds (best: SVM at 0.8320) | `train_toxicity_baselines.py` |
+| Llama 3.1 8B few-shot = 0.7785 | `train_toxicity_llm_baselines.py` |
+| Masked zero-shot (0.5528) and off-the-shelf classifiers (0.5430) | `train_toxicity_sem_finetuning.py` |
 | McNemar and paired bootstrap | `comparar_modelos.py` |
-| Case study over 40 videos, AUC 0.835 | `analisar_estratos.py` |
+| Operating points under both flagging rules (Tables 6 and 7) | `analisar_pontos_operacao.py` |
+| Case study over 40 videos, AUC 0.888 | `analisar_estratos.py` |
 | Sampling simulation, 30,000 videos per cell | `simular_amostragem.py` |
 
 Everything cited in the manuscript is consolidated in
@@ -88,8 +88,10 @@ host can be overridden with `OLLAMA_HOST` (default `http://localhost:11434`).
 
 **The fine-tuned classifier** is not downloadable: it is the output of step 2, written to
 `app/nlp/models/trained/`. Reproducing it means running the search (159 training runs) or,
-for the winning configuration alone, one training run with 8 epochs, batch 8, learning rate
-5e-5, 6% warmup, layer-wise decay 0.9 and cross-entropy with 0.1 label smoothing.
+for the winning configuration alone, one training run with 5 epochs, batch 8, learning rate
+2e-5, 10% warmup, layer-wise decay 0.95, focal loss without label smoothing and **no**
+oversampling. That configuration is the winner of the stability stage, not the leader of
+stage 2 — the two differ, and Table 2 of the paper reports both.
 
 Everything above is regenerable, which is why `.gitignore` excludes `models/cache/`,
 `models/trained/`, `*.bin` and `*.safetensors`. Do not commit weights.
@@ -97,13 +99,12 @@ Everything above is regenerable, which is why `.gitignore` excludes `models/cach
 ---
 
 ## 3. Reproducing the paper
-
-> **Read this first.** The pipeline reads `data/corpus_toxicidade.csv`, the corpus
-> **including** the `FRASE` column with the transcribed sentences. That file is **not
-> distributed** (Section 6): what ships here is `data/corpus_toxicidade_publico.csv`, which
-> has the annotation but not the text. The steps below therefore cannot be run end to end
-> from the published files alone. What the published file does support is listed in
-> Section 6: every corpus-level claim in the paper can be verified from it.
+ 
+> **Read this first.** The pipeline reads `data/corpus_toxicidade_publico.csv`, the file
+> distributed here, which carries all 1,506 transcribed sentences and their annotations.
+> The steps below run end-to-end from a clean clone, with no data to obtain beyond the
+> model weights of Section 2. This was verified by hiding the authors' working copy and
+> re-running the pipeline: the operating-point tables come out identical.
 
 Run from this directory, in this order. Steps 1–7 need network access only for the model
 downloads listed in Section 2.
@@ -198,18 +199,26 @@ scripts/          standalone utilities (preprocessing, kappa, reordering test)
 
 ## 6. Data
 
-`data/corpus_toxicidade_publico.csv` — 1,506 annotated sentences drawn from 251 public
-YouTube videos, semicolon-separated, UTF-8. **It is the only dataset in this repository.**
+Two datasets are distributed here.
 
-Scripts reference three other data files, all deliberately absent. `corpus_toxicidade.csv`
-is this same corpus *with* the sentences: the steps of Section 3 read it, and it is not
-distributed for the reasons below. `corpus.csv` and `corpus_analise_sentimentos.csv` belong
-to the Sentiment Analysis filter — a separate study that shares this codebase, since the
-service is modular — and nothing in Section 3 touches them.
+`data/corpus_toxicidade_publico.csv` — 1,506 annotated sentences drawn from 237 public
+YouTube videos, semicolon-separated, UTF-8. **It carries the transcribed sentence itself**,
+which is what makes the resource reusable rather than merely auditable: the classifier can
+be retrained, the annotation inspected item by item and the Mild/Severe boundary recomputed
+from the individual labels. A corpus whose sentences were withheld would support none of
+that, since the annotation is attached to one specific transcription and a transcription is
+not recoverable from a video identifier.
 
-**The transcribed sentences themselves are not redistributed.** What is published is the
-annotation and everything needed to audit the corpus claims, minus the text. See
-*Provenance and redistribution* below for what this means in practice.
+`data/reordenacao_buscas.csv` — the 40 videos of the search case study, with the query, the
+position the platform returned them in, the metadata and the three sampled transcript
+excerpts.
+
+Two other files the scripts mention are deliberately absent and are not needed here.
+`corpus_toxicidade.csv` is the authors' working copy of the same corpus; the pipeline falls
+back to the published file when it is missing, which is the normal case in a clone.
+`corpus.csv` and `corpus_analise_sentimentos.csv` belong to the Sentiment Analysis filter —
+a separate study that shares this codebase, since the service is modular — and nothing in
+Section 3 touches them.
 
 | Column | Meaning |
 |---|---|
@@ -229,27 +238,24 @@ at a person or group. The distinction that separates Mild from Severe is the **t
 the offence, not its intensity.
 
 Three annotators labelled every sentence independently; the final label is the mode.
-Agreement: 79.1% unanimous, 86.0% pairwise, Fleiss' $\kappa$ = 0.7795.
+Agreement: 77.7% unanimous, 85.1% pairwise, Fleiss' $\kappa$ = 0.7693. One sentence (0.1%)
+received three distinct labels.
 
 ### What the published columns let you verify
 
-Although the text is withheld, `n_palavras` and `tem_palavrao` are computed with exactly
-the definitions used in the paper, so the corpus claims can be checked directly from the
-published file:
+`n_palavras` and `tem_palavrao` are computed with exactly the definitions used in the paper,
+so the corpus claims can be checked from the published file without running the pipeline:
 
 | Claim in the paper | Reproduced from |
 |---|---|
-| 1,506 sentences, 251 videos | row count, distinct `video_id` |
-| mean length 8.8 words, median 7 | `n_palavras` |
-| class balance 50/25/25 | `tox` |
-| 79.1% unanimity, 86.0% pairwise, Fleiss' $\kappa$ = 0.7795 | `p1`, `p2`, `a1` |
-| 17.1% of sentences contain profanity | `tem_palavrao` |
-| 77.4% of toxic sentences carry none | `tem_palavrao` × `tox` |
-| 11.6% of non-toxic sentences do | `tem_palavrao` × `tox` |
-| lexicon rule reaches 0.50 macro F1 | `tem_palavrao` × `tox` |
-
-What the published file does **not** allow is retraining or re-evaluating the classifier:
-that needs the sentences.
+| 1,506 sentences, 237 videos | row count, distinct `video_id` |
+| mean length 9.0 words, median 8 | `n_palavras` |
+| class balance 46.5/26.9/26.6 (700/405/401) | `tox` |
+| 77.7% unanimity, 85.1% pairwise, Fleiss' $\kappa$ = 0.7693 | `p1`, `p2`, `a1` |
+| 17.1% of sentences contain profanity (257) | `tem_palavrao` |
+| 74.8% of toxic sentences carry none (603) | `tem_palavrao` × `tox` |
+| 7.7% of non-toxic sentences do (54) | `tem_palavrao` × `tox` |
+| lexicon rule reaches 0.52 macro F1 | `tem_palavrao` × `tox` |
 
 ### Notes on the data
 
@@ -264,29 +270,20 @@ that needs the sentences.
 
 ### Provenance and redistribution
 
-The sentences were transcribed from the audio of publicly available YouTube videos. The
-authors chose **not to redistribute the transcribed text**, and to publish the annotation
-together with the derived measurements above instead. Each row still identifies its source
-video, so the provenance of every annotated sentence is traceable.
+The sentences were transcribed from the audio of publicly available YouTube videos. Each row
+identifies its source video and carries the link, so the provenance of every annotated
+sentence is traceable. No video, audio or subtitle file is redistributed: what is published
+are short excerpts of speech, reproduced as quotation for research purposes.
 
-This is a deliberate trade-off, and its cost is stated plainly here and in the paper:
-because the annotation is attached to a specific transcription, and a transcription is not
-recoverable from a video identifier — re-transcribing with a different tool yields
-different strings — **the published file does not allow the model results to be
-reproduced**, only the corpus-level claims to be verified.
+The same holds for the case study of Section 7 of the paper. `data/reordenacao_buscas.csv`
+and the stored result files `results/estratos_*.json` and `results/reordenacao_*.json` keep
+every score, class, ranking and statistic **and** the 120 sampled excerpts, so
+`regerar_tabelas_estudo_caso.py` rebuilds the tables and figures and
+`analisar_estratos.py` reproduces the qualitative failure analysis, both from the stored
+files alone.
 
-`app/nlp/datasets/gerar_corpus_publico.py` is the script that derives the published file
-from the full corpus; it documents exactly what was removed and what was computed.
-
-The same rule was applied to the case study of Section 7 of the paper. The stored result
-files `results/estratos_*.json` and `results/reordenacao_*.json` keep every score, class,
-ranking and statistic, but their `frases` fields are **blank**: the 120 sampled excerpts
-are transcriptions of third-party video audio, exactly like the corpus sentences, and are
-withheld for the same reason. The excerpts quoted in the paper are quoted there because
-they are needed to substantiate specific claims. One consequence is worth stating:
-`regerar_tabelas_estudo_caso.py` rebuilds the case-study tables and figures from these
-files unchanged, but `analisar_estratos.py` can no longer reproduce the qualitative
-failure analysis from the stored files alone — that needs re-running the collection.
+This publishing decision has a licensing consequence, set out in Section 8: the transcribed
+text is not the authors' to license, so the MIT grant does not cover it.
 
 ---
 
@@ -310,9 +307,17 @@ Brazilian Computer Society*: once it has a DOI, add it to `CITATION.cff` and her
 
 ## 8. License
 
-**MIT** — see [`LICENSE`](LICENSE). This covers the code and the published corpus file in
-`data/`, which contains the authors' own annotation and derived measurements rather than
-any transcribed content from the platform.
+Three components, three terms — see [`LICENSE`](LICENSE) for the binding text.
+
+| Component | Terms |
+|---|---|
+| Code, scripts and stored result files | MIT |
+| Annotation: the three independent labels, the final label, `n_palavras`, `tem_palavrao` | CC BY 4.0 |
+| Transcribed sentences, video titles and descriptions | third-party material, quoted for research; **no licence granted** |
+
+The split is not a formality. The annotation is the authors' own work and can be licensed;
+the transcribed speech belongs to the video owners, is reproduced only to the extent needed
+to verify the results, and could not be placed under MIT even if that were convenient.
 
 ---
 

@@ -2,12 +2,16 @@ cff-version: 1.2.0
 message: "If you use this corpus or code, please cite the paper below."
 title: "YouTube Safe Kids — toxicity filter: corpus and code"
 abstract: >-
-  Annotated corpus of 1,506 Brazilian Portuguese sentences transcribed from 251
+  Annotated corpus of 1,506 Brazilian Portuguese sentences transcribed from 237
   public YouTube videos, labelled by three raters into three toxicity levels,
   together with the training and evaluation code of a BERTimbau classifier and
   the web service that reranks children's video search results by an
   interpretable safety score.
 type: dataset
+# Terms differ by component -- see LICENSE. MIT covers the code; the annotation
+# is CC BY 4.0; the transcribed sentences are third-party material quoted for
+# research, over which no licence is granted. CFF admits a single value, so the
+# one naming the code is given here and LICENSE is authoritative.
 license: MIT
 repository-code: "https://github.com/ravarmes/paper-jbcs-youtubesafekids"
 authors:
