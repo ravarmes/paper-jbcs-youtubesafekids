@@ -1,0 +1,99 @@
+{
+  "modelo": "TOX_TOX_BEST_MODEL_seed42_20261116_132557_20261116_132557",
+  "n_teste": 306,
+  "curva_limiar": [
+    {
+      "tau": 0.5,
+      "recall_severa": 0.9195402298850575,
+      "severas_nao_sinalizadas": 7,
+      "falso_alarme_nenhuma": 0.021897810218978103
+    },
+    {
+      "tau": 0.2,
+      "recall_severa": 0.9425287356321839,
+      "severas_nao_sinalizadas": 5,
+      "falso_alarme_nenhuma": 0.043795620437956206
+    },
+    {
+      "tau": 0.15,
+      "recall_severa": 0.9540229885057471,
+      "severas_nao_sinalizadas": 4,
+      "falso_alarme_nenhuma": 0.043795620437956206
+    },
+    {
+      "tau": 0.1,
+      "recall_severa": 0.9540229885057471,
+      "severas_nao_sinalizadas": 4,
+      "falso_alarme_nenhuma": 0.051094890510948905
+    }
+  ],
+  "pontos_operacao": [
+    {
+      "modelo": "BERTimbau (argmax)",
+      "recall_severa": 0.9195402298850575,
+      "severas_perdidas": 7,
+      "fa_severa": 0.021897810218978103,
+      "fa_toxico": 0.0948905109489051
+    },
+    {
+      "modelo": "BERTimbau (tau = 0.1)",
+      "recall_severa": 0.9540229885057471,
+      "severas_perdidas": 4,
+      "fa_severa": 0.051094890510948905,
+      "fa_toxico": 0.10218978102189781
+    },
+    {
+      "modelo": "llama3.1:8b",
+      "recall_severa": 0.9540229885057471,
+      "severas_perdidas": 4,
+      "fa_severa": 0.13138686131386862,
+      "fa_toxico": 0.40875912408759124,
+      "segundos_por_frase": 2.42
+    }
+  ],
+  "argmax_coincide_tau_050": true,
+  "severas_perdidas": {
+    "n": 3,
+    "frases": [
+      {
+        "texto": "tá eu vou cortar isso agora é claro que você é um idiota e não merece meu tempo",
+        "score": 0.7745084762573242,
+        "p_severa": 0.08026348054409027
+      },
+      {
+        "texto": "aqueles idiotas",
+        "score": 0.8794503249228001,
+        "p_severa": 0.06865791976451874
+      },
+      {
+        "texto": "546. Ah, caramba, chefe. Vamos matar o time azul inteiro e o Jimmy, não é?",
+        "score": 0.8901934213936329,
+        "p_severa": 0.058442141860723495
+      }
+    ],
+    "score_mediano_perdidas": 0.8794503249228001,
+    "score_mediano_nenhuma_corretas": 0.92172522097826
+  },
+  "llm": {
+    "nome": "llama3.1:8b",
+    "confusion_matrix": [
+      [
+        81,
+        38,
+        18
+      ],
+      [
+        1,
+        61,
+        20
+      ],
+      [
+        0,
+        4,
+        83
+      ]
+    ],
+    "segundos_por_frase": 2.42,
+    "fonte": "llm_baselines_toxicity_20261116_141458.json"
+  }
+}

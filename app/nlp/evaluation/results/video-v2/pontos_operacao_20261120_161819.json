@@ -1,0 +1,141 @@
+{
+  "modelo": "TOX_TOX_BEST_MODEL_seed42_20261120_152141_20261120_152141",
+  "n_teste": 358,
+  "curva_limiar": [
+    {
+      "tau": 0.5,
+      "recall_severa": 0.7466666666666667,
+      "severas_nao_sinalizadas": 19,
+      "falso_alarme_nenhuma": 0.12365591397849462
+    },
+    {
+      "tau": 0.2,
+      "recall_severa": 0.8133333333333334,
+      "severas_nao_sinalizadas": 14,
+      "falso_alarme_nenhuma": 0.16666666666666666
+    },
+    {
+      "tau": 0.15,
+      "recall_severa": 0.8133333333333334,
+      "severas_nao_sinalizadas": 14,
+      "falso_alarme_nenhuma": 0.1827956989247312
+    },
+    {
+      "tau": 0.1,
+      "recall_severa": 0.8266666666666667,
+      "severas_nao_sinalizadas": 13,
+      "falso_alarme_nenhuma": 0.23655913978494625
+    }
+  ],
+  "pontos_operacao": [
+    {
+      "modelo": "BERTimbau (argmax)",
+      "recall_severa": 0.76,
+      "severas_perdidas": 18,
+      "fa_severa": 0.13440860215053763,
+      "fa_toxico": 0.21505376344086022
+    },
+    {
+      "modelo": "BERTimbau (tau = 0.1)",
+      "recall_severa": 0.8266666666666667,
+      "severas_perdidas": 13,
+      "fa_severa": 0.23655913978494625,
+      "fa_toxico": 0.3118279569892473
+    },
+    {
+      "modelo": "llama3.1:8b",
+      "recall_severa": 0.5733333333333334,
+      "severas_perdidas": 32,
+      "fa_severa": 0.13440860215053763,
+      "fa_toxico": 0.5268817204301075,
+      "segundos_por_frase": 0.31
+    }
+  ],
+  "argmax_coincide_tau_050": false,
+  "tau_escolhido_no_teste": true,
+  "nota": "exploratório: limiares avaliados e escolhidos no teste; o tau escolhido nas OOF está em calibracao_limiar_*.json",
+  "severas_perdidas": {
+    "n": 11,
+    "frases": [
+      {
+        "texto": "diabo Eu nunca disse Mas você tatua na sua bunda",
+        "score": 0.6282705627381802,
+        "p_severa": 0.33924105763435364
+      },
+      {
+        "texto": "Essa é a única forma de manter esses criollos sob controle.",
+        "score": 0.6660931780934334,
+        "p_severa": 0.28397467732429504
+      },
+      {
+        "texto": "Me chupa",
+        "score": 0.7539625205099583,
+        "p_severa": 0.20212103426456451
+      },
+      {
+        "texto": "Usar sua bunda como chapeu",
+        "score": 0.8921096324920654,
+        "p_severa": 0.07258971780538559
+      },
+      {
+        "texto": "pais otarios",
+        "score": 0.8936402834951878,
+        "p_severa": 0.0694536417722702
+      },
+      {
+        "texto": "Não quero voces aqui",
+        "score": 0.9053088650107384,
+        "p_severa": 0.06423693895339966
+      },
+      {
+        "texto": "Piranhazinha",
+        "score": 0.906217847019434,
+        "p_severa": 0.061249688267707825
+      },
+      {
+        "texto": "voce que me forço a isso",
+        "score": 0.9083242826163769,
+        "p_severa": 0.06001405045390129
+      },
+      {
+        "texto": "Boa noite, o amigo imaginário do Henry passou a mão na minha bunda.",
+        "score": 0.9150008372962475,
+        "p_severa": 0.0553872287273407
+      },
+      {
+        "texto": "eu cozinho voce",
+        "score": 0.9162705428898335,
+        "p_severa": 0.053010400384664536
+      },
+      {
+        "texto": "Porque não, a Cusão",
+        "score": 0.9163840003311634,
+        "p_severa": 0.05090801417827606
+      }
+    ],
+    "score_mediano_perdidas": 0.9053088650107384,
+    "score_mediano_nenhuma_corretas": 0.9082539416849613
+  },
+  "llm": {
+    "nome": "llama3.1:8b",
+    "confusion_matrix": [
+      [
+        88,
+        73,
+        25
+      ],
+      [
+        5,
+        65,
+        27
+      ],
+      [
+        1,
+        31,
+        43
+      ]
+    ],
+    "segundos_por_frase": 0.31,
+    "fonte": "llm_baselines_toxicity_20261120_161717.json"
+  }
+}

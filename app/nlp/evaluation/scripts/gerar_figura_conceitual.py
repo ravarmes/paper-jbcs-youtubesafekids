@@ -18,6 +18,7 @@ Uso:
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -25,13 +26,15 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
-RESULTS_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'results'
-)
+RESULTS_DIR = None  # definido abaixo, depois que project_root entra no sys.path
 project_root = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')
 )
-FIGURAS_DIR = Path(project_root).parent / 'latex' / 'figuras'
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+from app.nlp import experimento  # noqa: E402
+RESULTS_DIR = str(experimento.dir_resultados())
+FIGURAS_DIR = experimento.dir_latex('figuras')
 
 COR_TITULO = '#1e293b'
 COR_BORDA = '#94a3b8'
@@ -85,7 +88,15 @@ def _seta(ax, p0, p1):
 
 def gerar(numeros, idioma='en'):
     c = numeros['corpus']
-    lex = c['decidibilidade_lexical']
+    # Concordância e decidibilidade: das frases dos experimentos quando há quase-duplicatas
+    # postas de lado (rotulagem v2); senão, do corpus inteiro.
+    # A caixa 1 abre com o total publicado (1.811); o kappa e o % sem palavrão vêm logo
+    # abaixo e são das frases dos experimentos, por isso a linha de escopo entre os dois.
+    ex = c.get('experimentos') or {}
+    lex = (ex or c)['decidibilidade_lexical']
+    kappa = (ex or c)['concordancia']['fleiss_kappa']
+    n_qd = ex.get('quase_duplicatas_excluidas', 0)
+    n_ex = ex.get('total_sentencas')
     split = numeros['split']
     cv = numeros['bert_cv']
     teste = numeros['bert_teste']
@@ -95,16 +106,17 @@ def gerar(numeros, idioma='en'):
         etapas = [
             ('1. Corpus construction', [
                 f"{_mil(c['total_sentencas'])} sentences from {c['n_videos']} videos",
-                f"three raters, Fleiss' $\\kappa$ = "
-                f"{_num(c['concordancia']['fleiss_kappa'], 4)}",
+                *([f"{n_qd} near-duplicates set aside",
+                   f"on the {_mil(n_ex)} left for the experiments:"] if n_qd else []),
+                f"three raters, Fleiss' $\\kappa$ = {_num(kappa, 4)}",
                 f"{lex['pct_toxicas_sem_palavrao']}% of toxic sentences",
                 'carry no profanity at all',
             ]),
-            ('2. Stratified split', [
+            ('2. Video-disjoint split', [
                 f"{_mil(split['treino_cv'])} for 5-fold cross-validation",
                 f"{split['teste']} held out, never consulted",
-                f"{prox['sem_analogo_proximo']} test sentences have no",
-                'near analogue in training',
+                'all sentences of a video fall on',
+                'the same side of every split',
             ]),
             ('3. Hyperparameter search', [
                 'BERTimbau, 9 search dimensions',
@@ -114,15 +126,15 @@ def gerar(numeros, idioma='en'):
             ]),
             ('4a. Offline evaluation', [
                 f"macro F1 {_num(cv['f1_macro'])} (cross-val.)",
-                f"macro F1 {_num(teste['f1_macro'])} (held-out test)",
+                f"macro F1 {_num(teste['f1_macro'])} (held-out test, seed 42)",
                 'vs. TF-IDF baselines, a few-shot LLM',
                 'and off-the-shelf classifiers',
             ]),
-            ('4b. Reranking service', [
-                'safety score from the full',
-                'probability distribution',
+            ('4b. Reranking prototype', [
+                'verbal-toxicity score from the',
+                'full probability distribution',
                 'reorders YouTube search results',
-                'operating point set by error cost',
+                'threshold chosen on training data',
             ]),
         ]
         rodape = ('Research question: can a toxicity signal learned natively in Brazilian Portuguese '
@@ -131,16 +143,17 @@ def gerar(numeros, idioma='en'):
         etapas = [
             ('1. Construção do corpus', [
                 f"{_mil(c['total_sentencas'], 'pt')} sentenças de {c['n_videos']} vídeos",
-                'três avaliadores, $\\kappa$ de Fleiss = '
-                f"{_num(c['concordancia']['fleiss_kappa'], 4, 'pt')}",
+                *([f"{n_qd} quase-duplicatas à parte",
+                   f"nas {_mil(n_ex, 'pt')} dos experimentos:"] if n_qd else []),
+                f"três avaliadores, $\\kappa$ de Fleiss = {_num(kappa, 4, 'pt')}",
                 f"{lex['pct_toxicas_sem_palavrao']}% das tóxicas".replace('.', ','),
                 'não contêm palavrão algum',
             ]),
-            ('2. Divisão estratificada', [
+            ('2. Divisão disjunta por vídeo', [
                 f"{_mil(split['treino_cv'], 'pt')} para validação cruzada",
-                f"{split['teste']} retidos, jamais consultados",
-                f"{prox['sem_analogo_proximo']} sentenças de teste sem",
-                'análogo próximo no treino',
+                f"{split['teste']} retidas, jamais consultadas",
+                'as frases de um vídeo ficam sempre',
+                'do mesmo lado de cada divisão',
             ]),
             ('3. Busca de hiperparâmetros', [
                 'BERTimbau, 9 dimensões',
@@ -150,15 +163,15 @@ def gerar(numeros, idioma='en'):
             ]),
             ('4a. Avaliação offline', [
                 f"F1 macro {_num(cv['f1_macro'], 4, 'pt')} (val. cruzada)",
-                f"F1 macro {_num(teste['f1_macro'], 4, 'pt')} (teste retido)",
+                f"F1 macro {_num(teste['f1_macro'], 4, 'pt')} (teste retido, semente 42)",
                 'contra baselines TF-IDF, LLM few-shot',
                 'e classificadores prontos',
             ]),
-            ('4b. Serviço de reordenação', [
-                'score de segurança a partir de toda',
-                'a distribuição de probabilidade',
+            ('4b. Protótipo de reordenação', [
+                'score de toxicidade verbal a partir',
+                'de toda a distribuição de probabilidade',
                 'reordena resultados do YouTube',
-                'ponto de operação pelo custo do erro',
+                'limiar escolhido no treino',
             ]),
         ]
         rodape = ('Pergunta de pesquisa: um sinal de toxicidade aprendido nativamente em português '
@@ -172,14 +185,17 @@ def gerar(numeros, idioma='en'):
     larg, alt = 0.280, 0.365
     y_topo, y_base = 0.560, 0.080
     xs_topo = [0.030, 0.360, 0.690]
+    # A altura base comporta 5 linhas; a fileira de cima cresce para cima se uma caixa
+    # tiver mais (a caixa 1 tem 6 quando há quase-duplicatas postas de lado).
+    alt_topo = alt + 0.048 * max(0, max(len(e[1]) for e in etapas[:3]) - 5)
 
     for i in range(3):
-        _caixa(ax, xs_topo[i], y_topo, larg, alt, etapas[i][0], etapas[i][1],
+        _caixa(ax, xs_topo[i], y_topo, larg, alt_topo, etapas[i][0], etapas[i][1],
                CORES_ETAPA[i])
 
     for i in range(2):
-        _seta(ax, (xs_topo[i] + larg + PAD_BOX, y_topo + alt / 2),
-              (xs_topo[i + 1] - PAD_BOX, y_topo + alt / 2))
+        _seta(ax, (xs_topo[i] + larg + PAD_BOX, y_topo + alt_topo / 2),
+              (xs_topo[i + 1] - PAD_BOX, y_topo + alt_topo / 2))
 
     xs_base = [0.185, 0.535]
     for k, i in enumerate((3, 4)):

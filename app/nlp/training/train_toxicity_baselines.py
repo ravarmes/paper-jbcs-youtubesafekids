@@ -35,6 +35,8 @@ from sklearn.pipeline import Pipeline
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 sys.path.insert(0, project_root)
 
+from app.nlp import experimento  # noqa: E402
+
 from app.nlp.datasets.prepare_data_toxicity import get_data_for_cv_and_test
 from app.nlp.utils.data_utils import get_kfold_split
 from app.nlp.config import PATHS
@@ -160,10 +162,16 @@ def evaluate_with_cv(X_train_cv, y_train_cv, groups=None):
             
             logger.info(f"  Fold {fold}/{K_FOLDS}: F1={f1:.4f} | Acc={acc:.4f}")
         
-        # Média e desvio padrão
+        # Média e desvio padrão. 'f1_std' é o np.std padrão (ddof=0), mantido
+        # por compatibilidade; 'f1_dp_entre_folds' (ddof=1) é o mesmo tipo de
+        # dispersão que a busca do BERTimbau grava (pandas .std()), e é o que se
+        # compara entre modelos (M3a). Os F1 por fold ficam no JSON para as
+        # diferenças pareadas por fold (analisar_dispersao.py).
         results[name] = {
             'f1_mean': np.mean(fold_metrics['f1']),
             'f1_std': np.std(fold_metrics['f1']),
+            'f1_dp_entre_folds': float(np.std(fold_metrics['f1'], ddof=1)),
+            'f1_por_fold': [float(v) for v in fold_metrics['f1']],
             'accuracy_mean': np.mean(fold_metrics['accuracy']),
             'accuracy_std': np.std(fold_metrics['accuracy']),
             'precision_mean': np.mean(fold_metrics['precision']),
@@ -298,10 +306,7 @@ def load_bertimbau_reference():
         Dict com as métricas de CV do BERTimbau, ou None se não houver
         resultado de grid search salvo.
     """
-    gridsearch_dir = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-        'evaluation', 'results', 'toxicity_gridsearch'
-    )
+    gridsearch_dir = str(experimento.dir_resultados('toxicity_gridsearch'))
     if not os.path.isdir(gridsearch_dir):
         return None
 
@@ -320,11 +325,19 @@ def load_bertimbau_reference():
     if not best:
         return None
 
+    # 'cv_f1_std' da busca em 3 estágios é o desvio ENTRE SEMENTES; o desvio
+    # entre folds (o das baselines) é o 'std_f1' de cada semente. Os dois vão
+    # separados para que nenhuma tabela misture os tipos de dispersão (M3a).
+    por_semente = best.get('por_semente') or []
+    dp_folds = [s['std_f1'] for s in por_semente if s.get('std_f1') is not None]
     return {
         'source_file': os.path.basename(mais_recente),
         'config': best.get('config'),
         'cv_f1_mean': best.get('mean_f1'),
         'cv_f1_std': best.get('std_f1'),
+        'cv_f1_std_tipo': 'entre sementes' if por_semente else 'entre folds',
+        'cv_f1_dp_entre_folds_media_sementes': (float(np.mean(dp_folds)) if dp_folds
+                                                else best.get('std_f1')),
         'cv_accuracy_mean': best.get('mean_accuracy')
     }
 
@@ -379,7 +392,7 @@ def print_comparison_table(cv_results, test_results, bertimbau_ref=None):
 
 def save_results(cv_results, test_results, split_sizes, bertimbau_ref=None):
     """Salva resultados em arquivo JSON."""
-    output_dir = PATHS.get('evaluation_dir', os.path.join(project_root, 'results'))
+    output_dir = str(experimento.dir_resultados())
     os.makedirs(output_dir, exist_ok=True)
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -395,7 +408,10 @@ def save_results(cv_results, test_results, split_sizes, bertimbau_ref=None):
         'methodology': {
             'features': 'TF-IDF (unigrams + bigrams, max_features=10000, sublinear_tf=True)',
             'cv_folds': K_FOLDS,
-            'cv_scheme': 'StratifiedGroupKFold (grupo = texto normalizado)',
+            'cv_scheme': ('folds gravados, agrupados por vídeo (data/particoes/particao_video.csv)'
+                          if experimento.particao() == 'video' else
+                          'StratifiedGroupKFold (grupo = texto normalizado)'),
+            'experimento': experimento.descricao(),
             'random_state': RANDOM_STATE,
             **split_sizes
         },

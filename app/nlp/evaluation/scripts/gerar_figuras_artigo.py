@@ -45,6 +45,8 @@ import matplotlib.pyplot as plt
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 
+from app.nlp import experimento  # noqa: E402
+
 CLASSES = ['Nenhuma', 'Leve', 'Severa']
 
 # --- paleta -----------------------------------------------------------------
@@ -79,7 +81,7 @@ CORES_SERIE = ['#2a78d6', '#eb6834', '#1baf7a', '#4a3aa7']
 # entre si. Cada uma e um tipo diferente de referencia, entao recebem matizes
 # proprios -- e o azul do modelo proposto continua liderando pela posicao e pelo
 # destaque tipografico, nao por ser o unico colorido.
-CORES_REF = ['#eb6834', '#1baf7a', '#4a3aa7']
+CORES_REF = ['#eb6834', '#1baf7a', '#4a3aa7', '#b8336a', '#7a6a00']
 
 # As tres avaliacoes (validacao cruzada -> teste retido -> teste sem analogo
 # proximo) formam uma escala de RIGOR CRESCENTE, nao tres categorias soltas.
@@ -120,15 +122,23 @@ TRADUCOES = {
     'Score': 'Score',
     'F1 por classe': 'Per-class F1',
     'Classe anotada': 'Annotated class',
-    'Score de segurança': 'Safety score',
+    'Score de toxicidade verbal': 'Verbal-toxicity score',
     'F1 macro no teste retido': 'Macro F1 on the held-out test set',
     'mediana': 'median',
     # nomes de modelos que vem dos JSON de resultado
     'BERTimbau (ajuste fino)': 'BERTimbau (fine-tuned)',
     'Zero-shot por máscara (melhor molde)': 'Masked zero-shot (best template)',
+    'Zero-shot por máscara (molde escolhido no treino)':
+        'Masked zero-shot (template selected on training data)',
+    'Zero-shot por máscara (melhor molde no teste)': 'Masked zero-shot (best template on test)',
     'Modelos prontos compostos (HateBR + alvo)': 'Off-the-shelf models composed (HateBR + target)',
     'HateBR isolado (tóxico vs. não-tóxico)': 'HateBR alone (toxic vs. non-toxic)',
     'Classificador de alvo isolado (Leve vs. Severa)': 'Target classifier alone (Mild vs. Severe)',
+    'Detoxify (dois limiares, ajustados no treino)': 'Detoxify (two thresholds, fitted on training)',
+    'Detoxify (regressão logística, ajustada no treino)':
+        'Detoxify (logistic regression, fitted on training)',
+    'Detoxify isolado (tóxico vs. não-tóxico)': 'Detoxify alone (toxic vs. non-toxic)',
+    'BERTimbau (ajuste fino), tóxico vs. não-tóxico': 'BERTimbau (fine-tuned), toxic vs. non-toxic',
 }
 
 
@@ -160,9 +170,7 @@ def _abre_tabela():
 def _fecha_tabela():
     return '\\end{table*}' if DUAS_COLUNAS else '\\end{table}'
 
-RESULTS_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'results'
-)
+RESULTS_DIR = str(experimento.dir_resultados())
 OUTPUT_DIR = os.path.join(RESULTS_DIR, 'artigo')
 
 
@@ -490,7 +498,7 @@ def fig_score_por_classe(distribuicao):
     ax.set_xticks(range(len(CLASSES)))
     ax.set_xticklabels(_classes_exibicao())
     ax.set_xlabel(_t('Classe anotada'))
-    ax.set_ylabel(_t('Score de segurança'))
+    ax.set_ylabel(_t('Score de toxicidade verbal'))
     ax.set_ylim(-0.03, 1.18)
     ax.set_yticks(np.arange(0, 1.01, 0.2))
     ax.set_yticklabels([_virgula(t, 1) for t in np.arange(0, 1.01, 0.2)])
@@ -520,7 +528,8 @@ def fig_sem_finetuning(referencias):
     mapa_ref = {n: CORES_REF[i % len(CORES_REF)] for i, n in enumerate(refs)}
     cores = [COR_BERT if 'ajuste fino' in n else mapa_ref[n] for n in chaves]
 
-    fig, ax = plt.subplots(figsize=(7.4, 3.2))
+    # Altura proporcional ao número de barras (o Detoxify acrescentou duas).
+    fig, ax = plt.subplots(figsize=(7.4, max(3.2, 0.48 * len(nomes) + 0.6)))
     barras = ax.barh(range(len(nomes)), valores, 0.58, color=cores)
     for barra, valor in zip(barras, valores):
         ax.annotate(_virgula(valor), xy=(valor, barra.get_y() + barra.get_height() / 2),
@@ -568,6 +577,19 @@ def escrever_tex(numeros, destino_dir):
     e não contenha nenhum número digitado à mão.
     """
     stage2 = numeros['halving_top6']
+    venc = numeros.get('melhor_config') or {}
+
+    def e_vencedora(cfg):
+        # a vencedora sai do estágio 3 (estabilidade entre sementes), não da ordem do
+        # estágio 2; a linha em negrito é a dela
+        return bool(venc) and (
+            cfg['epochs'] == venc.get('epochs')
+            and cfg['batch_size'] == venc.get('batch_size')
+            and abs(cfg['learning_rate'] - float(venc.get('learning_rate', -1))) < 1e-12
+            and abs(cfg['llrd'] - float(venc.get('llrd', 1.0))) < 1e-12
+            and cfg['loss_type'] == venc.get('loss_type', 'focal')
+            and cfg['oversample'] == bool(venc.get('oversample', True)))
+
     linhas = []
     add = linhas.append
 
@@ -575,12 +597,18 @@ def escrever_tex(numeros, destino_dir):
     add('\\centering')
     if IDIOMA == 'en':
         add('\\caption{Stage 2 of the search: configurations promoted from screening, '
-            'evaluated with 5-fold cross-validation. LLRD is the layer-wise learning '
+            'evaluated with 5-fold cross-validation, in decreasing order of mean macro F1. '
+            'The row in bold is the configuration selected in Stage 3, after '
+            're-evaluation with several seeds, which need not be the Stage 2 leader. '
+            'LLRD is the layer-wise learning '
             'rate decay factor; \\emph{Over}.\\ indicates whether the training split of '
             'the fold was balanced by oversampling. CE stands for cross-entropy.}')
     else:
         add('\\caption{Estágio 2 da busca: configurações promovidas da triagem, '
-            'avaliadas com validação cruzada de 5 \\emph{folds}. LLRD é o fator de '
+            'avaliadas com validação cruzada de 5 \\emph{folds}, em ordem decrescente de '
+            'F1 macro médio. A linha em negrito é a configuração escolhida no estágio 3, '
+            'depois da reavaliação com várias sementes, que não precisa ser a líder do '
+            'estágio 2. LLRD é o fator de '
             'decaimento da taxa de aprendizado por camada; \\emph{Over}.\\ indica se o '
             'treino do \\emph{fold} foi balanceado por \\emph{oversampling}.}')
     add('\\label{tab:halving}')
@@ -601,7 +629,7 @@ def escrever_tex(numeros, destino_dir):
             else ('no' if IDIOMA == 'en' else 'não'),
             f"{_num(cfg['mean_f1'])} $\\pm$ {_num(cfg['std_f1'], 3)}",
         ]
-        if i == 0:
+        if e_vencedora(cfg):
             celulas = [f'\\textbf{{{c}}}' for c in celulas]
         add(' & '.join(celulas) + ' \\\\')
     add('\\bottomrule')
@@ -609,70 +637,75 @@ def escrever_tex(numeros, destino_dir):
     add(_fecha_tabela())
     _salvar_tex(linhas, os.path.join(destino_dir, 'tab-halving.tex'))
 
-    linhas = []
-    add = linhas.append
-    n_com = numeros['similaridade']['n_com_analogo']
-    n_sem = numeros['similaridade']['n_sem_analogo']
-    limiar = _num(numeros['similaridade']['limiar'], 1)
-    add(_abre_tabela())
-    add('\\centering')
-    if IDIOMA == 'en':
-        add('\\caption{Macro F1 comparison: TF-IDF baselines vs.\\ BERTimbau. The last '
-            'two columns split the held-out test set into the sentences that do and do '
-            'not have a near analogue in the training data (character $n$-gram cosine '
-            f'above {limiar}): {n_com} and {n_sem} sentences, respectively.}}')
+    # Tabela 3 (tab-baselines.tex): passou a ser gerada por analisar_dispersao.py
+    # (M3a/M3b/M3c da revisão do JBCS) -- mesmo tipo de dispersão para todos os
+    # modelos (DP entre os mesmos 5 folds), teste do BERTimbau como média ± DP
+    # entre sementes e as baselines ajustadas por CV aninhada. A versão antiga
+    # misturava DP entre sementes (BERTimbau) com DP entre folds (baselines) e
+    # não é mais gerada. A tabela vai para experimento.dir_latex('tabelas').
+    if numeros.get('dispersao') and IDIOMA == 'en':
+        from app.nlp.evaluation.scripts.analisar_dispersao import escrever_tab_baselines
+        caminho = escrever_tab_baselines(numeros['dispersao'], experimento.dir_latex('tabelas'),
+                                         duas_colunas=DUAS_COLUNAS)
+        print(f"  tab-baselines.tex -> {caminho}")
     else:
-        add('\\caption{Comparação de F1 (macro): \\emph{baselines} TF-IDF vs.\\ BERTimbau. '
-            'As duas últimas colunas separam o conjunto de teste entre as frases que têm '
-            f'e as que não têm um análogo próximo no treino (cosseno de $n$-gramas de '
-            f'caracteres acima de {limiar}): {n_com} e {n_sem} frases, respectivamente.}}')
-    add('\\label{tab:baselines}')
-    add('\\begin{tabular}{lcccc}')
-    add('\\toprule')
-    if IDIOMA == 'en':
-        add(' & & & \\multicolumn{2}{c}{Test F1, by proximity} \\\\')
-        add('\\cline{4-5}')
-        add('Model & F1 (cross-val.) & F1 (test) & with analogue & without analogue \\\\')
-    else:
-        add(' & & & \\multicolumn{2}{c}{F1 no teste, por proximidade} \\\\')
-        add('\\cline{4-5}')
-        add('Modelo & F1 (val.\\ cruzada) & F1 (teste) & com análogo & sem análogo \\\\')
-    add('\\midrule')
-    for nome, dados in numeros['modelos'].items():
-        celulas = [
-            nome,
-            f"{_num(dados['cv_f1'])} $\\pm$ {_num(dados['cv_f1_std'], 3)}",
-            _num(dados['test_f1']),
-            _num(dados['test_f1_com_analogo']),
-            _num(dados['test_f1_sem_analogo']),
-        ]
-        if nome == 'BERTimbau':
-            celulas = [f'\\textbf{{{c}}}' for c in celulas]
-        add(' & '.join(celulas) + ' \\\\')
-    add('\\bottomrule')
-    add('\\end{tabular}')
-    add(_fecha_tabela())
-    _salvar_tex(linhas, os.path.join(destino_dir, 'tab-baselines.tex'))
+        print("  tab-baselines.tex: não gerada aqui (requer --idioma en e os resultados do "
+              "treino final); gere com analisar_dispersao.py")
 
     if numeros.get('sem_finetuning'):
         linhas = []
         add = linhas.append
         add(_abre_tabela())
         add('\\centering')
+        # m5: a legenda diz como o molde do zero-shot foi escolhido.
+        molde_info = numeros.get('zero_shot_molde') or {}
+        if molde_info.get('escolhido_no_treino'):
+            zs_en = (', with the template that scored highest in macro F1 on the training '
+                     'split (the test set plays no part in the choice)')
+            zs_pt = (', com o molde de maior F1 macro no treino (o teste não entra na '
+                     'escolha)')
+        elif molde_info:
+            zs_en = ', with the best of three templates on the test set itself'
+            zs_pt = ', com o melhor de três moldes no próprio teste'
+        else:
+            zs_en = zs_pt = ''
+        tem_detox = any(n.startswith('Detoxify') for n, _ in numeros['sem_finetuning'])
+        tem_bin = bool(numeros.get('sem_finetuning_binarias'))
         if IDIOMA == 'en':
+            detox_en = (' Detoxify (multilingual model) is mapped onto the three classes with '
+                        'every parameter fitted on the training split only: two thresholds on '
+                        'its toxicity probability, or a logistic regression over its seven '
+                        'attribute probabilities.' if tem_detox else '')
+            bin_en = (' Rows in italics are binary tasks, on their own scale; the fine-tuned '
+                      'model is collapsed to toxic (Mild or Severe) \\emph{versus} non-toxic '
+                      'for comparison.' if tem_bin else '')
+            ref_en = (' The fine-tuned rows show the reference model, trained with seed 42 and '
+                      'used in the paired comparisons, not the mean over training seeds.')
             add('\\caption{References that do not use the labels of this corpus for '
                 'training, on the held-out test set. The LLM operates few-shot, with two '
                 'examples per class drawn from the training split; the zero-shot row '
-                'queries BERTimbau by masked-token filling, without supervision; the '
+                f'queries BERTimbau by masked-token filling, without supervision{zs_en}; the '
                 'off-the-shelf models are public Portuguese toxicity classifiers, '
-                'composed into the three-class scheme of this work.}')
+                f'composed into the three-class scheme of this work.{detox_en}{bin_en}'
+                f'{ref_en}}}')
         else:
+            detox_pt = (' O Detoxify (modelo multilíngue) é mapeado nas três classes com todo '
+                        'parâmetro ajustado só no treino: dois limiares sobre a probabilidade '
+                        'de toxicidade, ou uma regressão logística sobre as sete '
+                        'probabilidades de atributo.' if tem_detox else '')
+            bin_pt = (' As linhas em itálico são tarefas binárias, na sua própria escala; o '
+                      'modelo ajustado é reduzido a tóxico (Leve ou Severa) \\emph{versus} '
+                      'não-tóxico para comparação.' if tem_bin else '')
+            ref_pt = (' As linhas do modelo ajustado mostram o modelo de referência, treinado '
+                      'com a semente 42 e usado nas comparações pareadas, e não a média entre '
+                      'sementes.')
             add('\\caption{Referências que não utilizam os rótulos deste corpus para '
                 'treinar, no teste retido. O LLM opera em \\emph{few-shot}, com dois '
                 'exemplos por classe retirados do treino; o zero-shot consulta o '
-                'BERTimbau por preenchimento de máscara, sem supervisão; os modelos '
+                f'BERTimbau por preenchimento de máscara, sem supervisão{zs_pt}; os modelos '
                 'prontos são classificadores públicos de toxicidade em português, '
-                'compostos no esquema de três classes deste trabalho.}')
+                f'compostos no esquema de três classes deste trabalho.{detox_pt}{bin_pt}'
+                f'{ref_pt}}}')
         add('\\label{tab:sem-finetuning}')
         add('\\begin{tabular}{lc}')
         add('\\toprule')
@@ -756,6 +789,17 @@ def main():
         os.path.join(RESULTS_DIR, 'comparacao_pareada_*.json'), obrigatorio=False)
     llm, arq_llm = _carregar(
         os.path.join(RESULTS_DIR, 'llm_baselines_toxicity_*.json'), obrigatorio=False)
+    detox, arq_detox = _carregar(
+        os.path.join(RESULTS_DIR, 'detoxify', 'detoxify_*.json'), obrigatorio=False)
+
+    # Dispersão comparável (M3a): DP entre os mesmos folds para todos os modelos.
+    from app.nlp.evaluation.scripts.analisar_dispersao import resumir as resumir_dispersao
+    try:
+        dispersao = resumir_dispersao(RESULTS_DIR)
+    except (FileNotFoundError, ValueError) as e:
+        dispersao = None
+        print(f"Dispersão comparável indisponível ({e}); barras de erro da CV ficam com o "
+              f"desvio gravado em cada JSON.")
 
     print(f"Fontes:\n  corpus:    {arq_corpus}\n  gridsearch:{arq_grid}\n"
           f"  avaliação: {arq_aval}\n  baselines: {arq_base}\n")
@@ -820,18 +864,42 @@ def main():
             'f1_per_class': baselines['test_results'][nome]['f1_per_class'],
         }
 
+    # Barras de erro da CV com o MESMO tipo de dispersão para todos (M3a): DP
+    # amostral entre os 5 folds. Sem isso o BERTimbau levaria o DP entre
+    # sementes (best_config.std_f1) e as baselines o DP entre folds.
+    if dispersao:
+        modelos['BERTimbau']['cv_f1_std'] = dispersao['bertimbau']['cv']['dp_entre_folds']
+        for nome in modelos:
+            if nome in dispersao['baselines']:
+                modelos[nome]['cv_f1_std'] = dispersao['baselines'][nome]['cv']['dp_entre_folds']
+
     # Referências que não usam os rótulos deste corpus, para a figura e a tabela
     # próprias. A sonda linear fica de fora: ela é treinada nos nossos rótulos e
     # portanto não pertence a este bloco.
     referencias_sem_ft = {'BERTimbau (ajuste fino)': bert_teste['f1_macro']}
+    zero_shot_molde = None
     if sem_ft:
+        # m5 (revisão do JBCS): o zero-shot entra com o molde escolhido no TREINO
+        # (campo escolhido_no_treino, gravado por train_toxicity_sem_finetuning).
+        # JSON anterior a essa mudança só permite o melhor molde no teste, e o
+        # rótulo diz isso -- nunca se apresenta como escolhido no treino.
+        moldes = [r for r in sem_ft['resultados'] if r['modelo'].startswith('Zero-shot máscara')]
+        escolhido = next((r for r in moldes if r.get('escolhido_no_treino')), None)
+        if escolhido is not None:
+            referencias_sem_ft['Zero-shot por máscara (molde escolhido no treino)'] = \
+                escolhido['f1_macro']
+            zero_shot_molde = {'molde': escolhido['molde'], 'escolhido_no_treino': True}
+        elif moldes:
+            melhor_teste = max(moldes, key=lambda r: r['f1_macro'])
+            print('AVISO: sem_finetuning sem escolha de molde no treino (JSON anterior ao '
+                  'm5); o zero-shot sai como "melhor molde no teste".')
+            referencias_sem_ft['Zero-shot por máscara (melhor molde no teste)'] = \
+                melhor_teste['f1_macro']
+            zero_shot_molde = {'molde': melhor_teste['molde'], 'escolhido_no_treino': False}
         for r in sem_ft['resultados']:
             nome = r['modelo']
-            if nome.startswith('Sonda linear'):
+            if nome.startswith('Sonda linear') or nome.startswith('Zero-shot máscara'):
                 continue
-            if nome.startswith('Zero-shot máscara'):
-                nome = 'Zero-shot por máscara (melhor molde)'
-                referencias_sem_ft[nome] = max(referencias_sem_ft.get(nome, 0), r['f1_macro'])
             elif 'isolado' in nome:
                 # Tarefas binárias: reportadas à parte, na sua própria escala
                 referencias_sem_ft.setdefault('_binarias', {})[nome] = r['f1_macro']
@@ -839,6 +907,31 @@ def main():
                 referencias_sem_ft[nome] = r['f1_macro']
 
     binarias = referencias_sem_ft.pop('_binarias', {})
+
+    # Detoxify (revisor D): todo parâmetro do mapeamento foi ajustado só no treino
+    # (avaliar_detoxify.py). As duas variantes de três classes entram no bloco
+    # principal; a binária, no bloco das tarefas binárias, ao lado do BERTimbau
+    # reduzido à mesma tarefa (tóxico = Leve ou Severa), para ter com o que comparar.
+    if detox:
+        r = detox['resultados']
+        if 'tres_limiares' in r:
+            referencias_sem_ft['Detoxify (dois limiares, ajustados no treino)'] = \
+                r['tres_limiares']['teste']['f1_macro']
+        if 'tres_logistica' in r:
+            referencias_sem_ft['Detoxify (regressão logística, ajustada no treino)'] = \
+                r['tres_logistica']['teste']['f1_macro']
+        if 'binaria_treino' in r:
+            binarias['Detoxify isolado (tóxico vs. não-tóxico)'] = \
+                r['binaria_treino']['teste']['f1_macro']
+    if binarias:
+        cm_b = np.array(avaliacao['confusion_matrix'])
+        vn, fp = cm_b[0, 0], cm_b[0, 1] + cm_b[0, 2]
+        fn, vp = cm_b[1, 0] + cm_b[2, 0], cm_b[1:, 1:].sum()
+        f1_bin = (2 * vp / (2 * vp + fp + fn) + 2 * vn / (2 * vn + fn + fp)) / 2
+        # Ordem: o BERTimbau reduzido, as outras tarefas tóxico vs. não-tóxico e,
+        # por último, a tarefa Leve vs. Severa, que é outra tarefa.
+        binarias = dict([('BERTimbau (ajuste fino), tóxico vs. não-tóxico', float(f1_bin))]
+                        + sorted(binarias.items(), key=lambda kv: 'tóxico' not in kv[0]))
 
     # LLMs generativos em few-shot: também não usam os rótulos deste corpus
     # para treinar, então entram no mesmo bloco de referências.
@@ -881,9 +974,12 @@ def main():
         'ganho_sem_analogo_vs_melhor_baseline': ganho_sem_analogo,
         'sem_finetuning': sorted(referencias_sem_ft.items(), key=lambda kv: -kv[1]),
         'sem_finetuning_binarias': binarias,
+        'zero_shot_molde': zero_shot_molde,
+        'zero_shot_selecao': (sem_ft or {}).get('zero_shot_selecao'),
         'llm_sem_analogo': llm_sem_analogo,
         'llm_bruto': llm,
         'comparacao_pareada': pareada,
+        'dispersao': dispersao,
         'similaridade': {
             'limiar': sim_bert['limiar'],
             'n_com_analogo': sim_bert['com_analogo']['n'],

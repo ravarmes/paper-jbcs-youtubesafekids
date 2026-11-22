@@ -1,0 +1,6 @@
+{
+  "variante": "multilingual",
+  "dispositivo": "cuda",
+  "versao_detoxify": "desconhecida",
+  "versao_torch": "2.8.0+cu126"
+}

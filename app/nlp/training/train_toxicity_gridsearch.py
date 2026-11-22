@@ -43,6 +43,7 @@ from app.nlp.datasets.prepare_data_toxicity import get_data_for_cv_and_test
 from app.nlp.utils.data_utils import get_kfold_split
 from app.nlp.utils.preprocessing import preprocess_batch
 from app.nlp.config import PATHS, get_task_config
+from app.nlp import experimento
 
 logging.basicConfig(
     level=logging.INFO,
@@ -190,14 +191,29 @@ def amostrar_configuracoes(espaco, n_amostras, random_state=42):
     return configs
 
 
-def separar_dev_interno(X, y, fracao=DEV_INTERNO, random_state=42):
+def separar_dev_interno(X, y, fracao=DEV_INTERNO, random_state=42, grupos=None):
     """
-    Separa um dev interno do treino do fold, estratificado por classe.
+    Separa um dev interno do treino do fold.
 
     A escolha da melhor época precisa de um conjunto de validação; usar o
     próprio conjunto de validação do fold para isso tornaria a métrica
     reportada otimista, porque o mesmo dado escolheria e avaliaria o modelo.
+
+    Na partição por vídeo (`grupos` = video_id), o dev é formado por vídeos
+    inteiros (GroupShuffleSplit, `fracao` dos vídeos): o early stopping não vê
+    frases de vídeos que estão no treino. A separação não usa os rótulos, de modo
+    que é a mesma nas duas rotulagens. Sem grupos, mantém a divisão estratificada
+    por frase da versão submetida.
     """
+    from app.nlp import experimento
+    if grupos is not None and experimento.particao() == 'video':
+        from sklearn.model_selection import GroupShuffleSplit
+        divisor = GroupShuffleSplit(n_splits=1, test_size=fracao, random_state=random_state)
+        tr, dev = next(divisor.split(X, y, groups=grupos))
+        X, y = list(X), list(y)
+        return ([X[i] for i in tr], [y[i] for i in tr],
+                [X[i] for i in dev], [y[i] for i in dev])
+
     from sklearn.model_selection import train_test_split
     X_tr, X_dev, y_tr, y_dev = train_test_split(
         X, y, test_size=fracao, random_state=random_state, stratify=y
@@ -206,7 +222,8 @@ def separar_dev_interno(X, y, fracao=DEV_INTERNO, random_state=42):
 
 
 def _train_single_fold(config, X_train_cv, y_train_cv, train_idx, val_idx,
-                       config_idx, fold, total_folds, override_epochs=None):
+                       config_idx, fold, total_folds, override_epochs=None,
+                       groups=None):
     """
     Treina um único fold de uma configuração.
     
@@ -244,7 +261,8 @@ def _train_single_fold(config, X_train_cv, y_train_cv, train_idx, val_idx,
     # intocado e é usado só para reportar a métrica.
     if usar_melhor_epoca:
         X_tr, y_tr, X_dev, y_dev = separar_dev_interno(
-            X_fold_train.tolist(), y_fold_train.tolist(), random_state=seed
+            X_fold_train.tolist(), y_fold_train.tolist(), random_state=seed,
+            grupos=None if groups is None else np.asarray(groups)[train_idx]
         )
     else:
         X_tr, y_tr = X_fold_train.tolist(), y_fold_train.tolist()
@@ -314,6 +332,36 @@ def _train_single_fold(config, X_train_cv, y_train_cv, train_idx, val_idx,
             torch.cuda.empty_cache()
         except Exception:
             pass
+
+
+def _treinar_fold_ou_abortar(*args, **kwargs):
+    """
+    Treina um fold; se falhar, tenta mais uma vez e, falhando de novo, aborta.
+
+    Antes, um fold com erro (ex.: falta de memória na GPU) era descartado e a
+    configuração recebia a média dos folds restantes -- uma nota calculada sobre
+    outra amostra, comparada com as das demais configurações como se fosse a
+    mesma coisa. Uma busca assim escolhe errado em silêncio. Agora o erro
+    persistente interrompe a rodada, que deve ser refeita.
+    """
+    import time
+    metrics = _train_single_fold(*args, **kwargs)
+    if 'error' not in metrics:
+        return metrics
+    logger.warning(f"  Fold {metrics.get('fold')} falhou ({metrics['error']}); "
+                   "nova tentativa em 30 s")
+    try:
+        import torch
+        torch.cuda.empty_cache()
+    except Exception:
+        pass
+    time.sleep(30)
+    metrics = _train_single_fold(*args, **kwargs)
+    if 'error' in metrics:
+        raise RuntimeError(f"fold {metrics.get('fold')} falhou duas vezes: "
+                           f"{metrics['error']} -- busca interrompida para não "
+                           "comparar configurações avaliadas em folds diferentes")
+    return metrics
 
 
 def avaliar_no_fold(model, textos, rotulos, batch_size=64):
@@ -390,11 +438,11 @@ def _evaluate_configs(combinations, param_names, X_train_cv, y_train_cv,
         for fold, (train_idx, val_idx) in enumerate(
             get_kfold_split(X_train_cv, y_train_cv, n_splits=n_folds, groups=groups)
         ):
-            metrics = _train_single_fold(
+            metrics = _treinar_fold_ou_abortar(
                 config, X_train_cv, y_train_cv,
                 train_idx, val_idx,
                 config_idx, fold, n_folds,
-                override_epochs=override_epochs
+                override_epochs=override_epochs, groups=groups
             )
             fold_metrics.append(metrics)
         
@@ -444,9 +492,9 @@ def _avaliar_lista_de_configs(configs, X_train_cv, y_train_cv, n_folds,
         for fold, (train_idx, val_idx) in enumerate(
             get_kfold_split(X_train_cv, y_train_cv, n_splits=n_folds, groups=groups)
         ):
-            fold_metrics.append(_train_single_fold(
+            fold_metrics.append(_treinar_fold_ou_abortar(
                 config, X_train_cv, y_train_cv, train_idx, val_idx,
-                idx, fold, n_folds, override_epochs=override_epochs
+                idx, fold, n_folds, override_epochs=override_epochs, groups=groups
             ))
 
         validos = [m for m in fold_metrics if 'error' not in m]
@@ -493,8 +541,7 @@ def run_random_search(preprocess=False, n_amostras=N_AMOSTRAS_BUSCA):
     logger.info(f"Espaço de busca: {ESPACO_BUSCA}")
     logger.info(f"Configurações sorteadas: {len(configs)}")
 
-    output_dir = Path(__file__).parent.parent / 'evaluation' / 'results' / 'toxicity_gridsearch'
-    output_dir.mkdir(parents=True, exist_ok=True)
+    output_dir = experimento.dir_resultados('toxicity_gridsearch')
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     parcial = output_dir / f'busca_parcial_{timestamp}.json'
 
@@ -629,6 +676,7 @@ def run_random_search(preprocess=False, n_amostras=N_AMOSTRAS_BUSCA):
             'stage3': {'folds': K_FOLDS, 'seeds': SEARCH_SEEDS, 'results': stage3},
             'best_config': melhor,
             'test_set_size': len(X_test_final),
+            'experimento': experimento.descricao(),
         }, f, indent=2, default=str, ensure_ascii=False)
 
     logger.info(f"\nResultados salvos em: {results_file}")
@@ -636,11 +684,9 @@ def run_random_search(preprocess=False, n_amostras=N_AMOSTRAS_BUSCA):
     best_model_path = None
     if melhor:
         try:
-            train_final_best_model(melhor, X_train_cv, y_train_cv, X_test_final, y_test_final)
-            models_dir = Path(__file__).parent.parent / 'models' / 'trained'
-            candidatos = [p for p in models_dir.glob('TOX_*') if (p / 'config.json').exists()]
-            if candidatos:
-                best_model_path = str(max(candidatos, key=lambda p: p.stat().st_mtime))
+            best_model_path = train_final_best_model(
+                melhor, X_train_cv, y_train_cv, X_test_final, y_test_final, groups=groups
+            )
         except Exception as e:
             logger.error(f"Erro ao treinar e localizar modelo final: {e}")
 
@@ -758,7 +804,7 @@ def run_grid_search_optimized(preprocess=False):
     _print_final_report(stage1_results, stage2_results, best_config)
     
     # Salva resultados
-    output_dir = Path(__file__).parent.parent / 'evaluation' / 'results' / 'toxicity_gridsearch'
+    output_dir = experimento.dir_resultados('toxicity_gridsearch')
     output_dir.mkdir(parents=True, exist_ok=True)
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -794,7 +840,7 @@ def run_grid_search_optimized(preprocess=False):
     if best_config:
         try:
             train_final_best_model(best_config, X_train_cv, y_train_cv, X_test_final, y_test_final)
-            models_dir = Path(__file__).parent.parent / 'models' / 'trained'
+            models_dir = experimento.dir_modelos()
             # Ignora as pastas de fold, que contêm apenas logs
             candidates = [p for p in models_dir.glob('TOX_*') if (p / 'config.json').exists()]
             if candidates:
@@ -948,7 +994,7 @@ def run_grid_search(mode='fast', preprocess=False):
         print(f"Accuracy Média: {best_config['mean_accuracy']:.4f}")
     
     # Salva resultados
-    output_dir = Path(__file__).parent.parent / 'evaluation' / 'results' / 'toxicity_gridsearch'
+    output_dir = experimento.dir_resultados('toxicity_gridsearch')
     output_dir.mkdir(parents=True, exist_ok=True)
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -978,7 +1024,7 @@ def run_grid_search(mode='fast', preprocess=False):
     if best_config:
         try:
             train_final_best_model(best_config, X_train_cv, y_train_cv, X_test_final, y_test_final)
-            models_dir = Path(__file__).parent.parent / 'models' / 'trained'
+            models_dir = experimento.dir_modelos()
             # Ignora as pastas de fold, que contêm apenas logs
             candidates = [p for p in models_dir.glob('TOX_*') if (p / 'config.json').exists()]
             if candidates:
@@ -988,14 +1034,25 @@ def run_grid_search(mode='fast', preprocess=False):
     return all_results, best_config, best_model_path
 
 
-def train_final_best_model(best_config, X_train_full, y_train_full, X_test_final, y_test_final):
+def train_final_best_model(best_config, X_train_full, y_train_full, X_test_final, y_test_final,
+                           groups=None, seed=None, registrar=True):
     """
     Treina o modelo final usando a melhor configuração encontrada no Grid Search.
     Usa TODO o conjunto de desenvolvimento (Treino CV completo) para maximizar o aprendizado.
+
+    Args:
+        groups: video_id de cada frase do desenvolvimento; na partição por vídeo,
+            o dev interno do early stopping é formado por vídeos inteiros.
+        seed: semente do treino; por padrão, a da configuração (42).
+        registrar: marca o modelo como referência da rodada para as análises a
+            jusante (experimento.caminho_modelo_referencia).
+
+    Returns:
+        Caminho do modelo salvo, ou None em caso de erro.
     """
     if not best_config:
         logger.warning("Nenhuma melhor configuração encontrada. Pulando treinamento final.")
-        return
+        return None
 
     logger.info("\n" + "=" * 70)
     logger.info("TREINANDO MODELO FINAL (BEST CONFIG)")
@@ -1017,7 +1074,7 @@ def train_final_best_model(best_config, X_train_full, y_train_full, X_test_final
     train_kwargs.setdefault('loss_type', 'focal')
     train_kwargs.setdefault('label_smoothing', 0.1)
     train_kwargs['focal_gamma'] = float(config.get('focal_gamma', 2.0))
-    train_kwargs['seed'] = int(config.get('seed', 42))
+    train_kwargs['seed'] = int(seed if seed is not None else config.get('seed', 42))
 
     X_full = X_train_full.tolist() if isinstance(X_train_full, np.ndarray) else list(X_train_full)
     y_full = y_train_full.tolist() if isinstance(y_train_full, np.ndarray) else list(y_train_full)
@@ -1027,7 +1084,8 @@ def train_final_best_model(best_config, X_train_full, y_train_full, X_test_final
     usar_melhor_epoca = bool(config.get('usar_melhor_epoca', True))
     if usar_melhor_epoca:
         X_tr, y_tr, X_dev, y_dev = separar_dev_interno(
-            X_full, y_full, random_state=train_kwargs['seed']
+            X_full, y_full, random_state=train_kwargs['seed'],
+            grupos=None if groups is None else np.asarray(groups)
         )
     else:
         X_tr, y_tr = X_full, y_full
@@ -1046,7 +1104,7 @@ def train_final_best_model(best_config, X_train_full, y_train_full, X_test_final
     # Define nome fixo para facilitar carregamento no evaluate
     # O timestamp garante que não sobrescrevemos backups, mas o evaluate busca pelo mais recente
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    experiment_name = f"TOX_BEST_MODEL_{timestamp}"
+    experiment_name = f"TOX_BEST_MODEL_seed{train_kwargs['seed']}_{timestamp}"
 
     # Treina
     try:
@@ -1060,27 +1118,264 @@ def train_final_best_model(best_config, X_train_full, y_train_full, X_test_final
             save_artifacts=True,
             **train_kwargs
         )
-        
+
         output_dir = results['model_path']
         logger.info(f"MODELO FINAL TREINADO E SALVO EM: {output_dir}")
-        logger.info("Agora você pode executar 'evaluate_toxicity.py' para gerar os gráficos finais.")
-        
+        if registrar:
+            experimento.registrar_modelo_referencia(output_dir)
+            logger.info(f"Registrado como modelo de referência da rodada {experimento.tag()}")
+        return output_dir
+
     except Exception as e:
         logger.error(f"Erro ao treinar modelo final: {e}")
+        return None
+    finally:
+        try:
+            import torch
+            del final_model
+            torch.cuda.empty_cache()
+        except Exception:
+            pass
+
+
+# Sementes do treino final. A primeira é a de referência (a mesma da busca):
+# é o modelo que as análises a jusante carregam. As demais medem a variação do
+# desempenho no teste atribuível só à inicialização.
+SEMENTES_FINAIS = [42, 7, 2024, 11, 99]
+
+
+def predizer_probabilidades(model, textos, batch_size=64):
+    """Distribuição softmax sobre as três classes, uma linha por frase."""
+    import torch
+
+    model.model.eval()
+    probs = []
+    with torch.no_grad():
+        for i in range(0, len(textos), batch_size):
+            entradas = model.tokenizer(
+                textos[i:i + batch_size], padding='max_length', truncation=True,
+                max_length=model.max_length, return_tensors='pt'
+            )
+            entradas = {k: v.to(model.device) for k, v in entradas.items()}
+            probs.append(torch.softmax(model.model(**entradas).logits, dim=-1).cpu().numpy())
+    return np.vstack(probs) if probs else np.zeros((0, 3))
+
+
+def _metricas_teste(y_true, probs):
+    """Macro F1, acurácia e métricas por classe a partir das probabilidades."""
+    from sklearn.metrics import classification_report
+    preds = probs.argmax(axis=1)
+    rel = classification_report(y_true, preds, labels=[0, 1, 2],
+                                target_names=['Nenhuma', 'Leve', 'Severa'],
+                                output_dict=True, zero_division=0)
+    return {
+        'f1_macro': float(f1_score(y_true, preds, average='macro', zero_division=0)),
+        'accuracy': float(accuracy_score(y_true, preds)),
+        'por_classe': {c: {k: float(v) for k, v in rel[c].items()}
+                       for c in ('Nenhuma', 'Leve', 'Severa')},
+    }
+
+
+def _melhor_config_salva():
+    """Configuração vencedora da busca mais recente desta rodada."""
+    pasta = experimento.dir_resultados('toxicity_gridsearch')
+    arquivos = sorted(pasta.glob('gridsearch_optimized_search_*.json'))
+    if not arquivos:
+        raise FileNotFoundError(f"Nenhuma busca concluída em {pasta}; rode --mode search antes.")
+    with open(arquivos[-1], encoding='utf-8') as f:
+        dados = json.load(f)
+    if not dados.get('best_config'):
+        raise ValueError(f"{arquivos[-1].name} não tem best_config")
+    return dados['best_config'], arquivos[-1].name
+
+
+def _descartar_pesos(pasta_modelo):
+    """
+    Apaga os pesos de um modelo final, mantendo config, tokenizer e metadados.
+
+    As sementes que não são a de referência só servem para medir a variação do
+    desempenho no teste; suas probabilidades ficam gravadas em CSV, e os pesos
+    (~440 MB cada) não são usados por nenhuma análise a jusante.
+    """
+    pasta_modelo = Path(pasta_modelo)
+    liberados = 0
+    for nome in ('model.safetensors', 'pytorch_model.bin'):
+        arq = pasta_modelo / nome
+        if arq.exists():
+            liberados += arq.stat().st_size
+            arq.unlink()
+    (pasta_modelo / 'PESOS_DESCARTADOS.txt').write_text(
+        'Pesos apagados após a avaliação no teste (semente não usada nas análises a '
+        'jusante). Métricas e probabilidades em results/<tag>/modelo_final/.\n',
+        encoding='utf-8')
+    logger.info(f"  pesos de {pasta_modelo.name} descartados ({liberados / 1e6:.0f} MB)")
+
+
+def run_final(sementes=None, manter_modelos=False):
+    """
+    Treino final com várias sementes e predições out-of-fold da configuração vencedora.
+
+    1. Para cada semente: treina no desenvolvimento inteiro (dev interno agrupado
+       por vídeo para o early stopping) e avalia no teste retido. Reporta média e
+       desvio-padrão entre sementes -- a variação do teste atribuível só à
+       inicialização. A primeira semente é registrada como modelo de referência.
+    2. Predições out-of-fold: a configuração vencedora (semente de referência) é
+       treinada em cada um dos 5 folds e prediz o fold de validação. As
+       probabilidades servem para escolher limiares e calibrar o score sem tocar
+       no teste.
+    """
+    sementes = list(sementes or SEMENTES_FINAIS)
+    melhor, origem = _melhor_config_salva()
+    config = melhor['config']
+    logger.info(f"Rodada {experimento.tag()} | configuração vencedora ({origem}): {config}")
+
+    (X_list, y_list, g_list), (X_test, y_test), (df, train_idx, test_idx) = \
+        get_data_for_cv_and_test(test_size=0.20, return_groups=True, return_frame=True)
+    X_cv, y_cv, g_cv = np.array(X_list), np.array(y_list), np.array(g_list)
+    y_test = np.array(y_test)
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    saida_dir = experimento.dir_resultados('modelo_final')
+
+    # --- 1. sementes ---------------------------------------------------------
+    por_semente, probs_teste = [], {}
+    for i, semente in enumerate(sementes):
+        caminho = train_final_best_model(melhor, X_cv, y_cv, X_test, y_test,
+                                         groups=g_cv, seed=semente, registrar=(i == 0))
+        if not caminho:
+            continue
+        modelo = BertimbauToxicity(model_path=str(caminho))
+        probs = predizer_probabilidades(modelo, list(X_test))
+        del modelo
+        try:
+            import torch
+            torch.cuda.empty_cache()
+        except Exception:
+            pass
+        m = _metricas_teste(y_test, probs)
+        m.update({'seed': semente, 'modelo': Path(caminho).name})
+        por_semente.append(m)
+        probs_teste[semente] = probs
+        logger.info(f"  semente {semente}: macro F1 no teste = {m['f1_macro']:.4f}")
+        if i > 0 and not manter_modelos:
+            _descartar_pesos(caminho)
+
+    # O treino final feito ao fim da busca usa a mesma semente de referência e fica
+    # redundante com o modelo registrado acima: descarta os pesos dele também.
+    if not manter_modelos and por_semente:
+        referencia = experimento.caminho_modelo_referencia()
+        for pasta in experimento.dir_modelos().glob('TOX_BEST_MODEL_*'):
+            if pasta.resolve() != referencia.resolve() and (pasta / 'config.json').exists():
+                _descartar_pesos(pasta)
+
+    f1s = [m['f1_macro'] for m in por_semente]
+    resumo_sementes = {
+        'f1_macro_media': float(np.mean(f1s)) if f1s else None,
+        'f1_macro_dp': float(np.std(f1s, ddof=1)) if len(f1s) > 1 else None,
+        'f1_macro_min': float(np.min(f1s)) if f1s else None,
+        'f1_macro_max': float(np.max(f1s)) if f1s else None,
+    }
+
+    # --- 2. out-of-fold ------------------------------------------------------
+    oof = np.full((len(X_cv), 3), np.nan)
+    fold_de = np.zeros(len(X_cv), dtype=int)
+    for fold, (tr, va) in enumerate(get_kfold_split(X_cv, y_cv, n_splits=K_FOLDS,
+                                                   groups=g_cv), 1):
+        cfg = dict(config, seed=sementes[0])
+        X_tr, y_tr, X_dev, y_dev = separar_dev_interno(
+            X_cv[tr].tolist(), y_cv[tr].tolist(), random_state=sementes[0], grupos=g_cv[tr]
+        )
+        if cfg.get('oversample', True):
+            X_tr, y_tr = apply_oversampling(X_tr, y_tr)
+        kwargs = {GRID_PARAM_MAPPING[k]: v for k, v in cfg.items() if k in GRID_PARAM_MAPPING}
+        if 'batch_size' in cfg:
+            kwargs['per_device_eval_batch_size'] = cfg['batch_size']
+        kwargs.setdefault('loss_type', 'focal')
+        kwargs.setdefault('label_smoothing', 0.1)
+        kwargs['focal_gamma'] = float(cfg.get('focal_gamma', 2.0))
+        kwargs['usar_melhor_epoca'] = True
+        kwargs['seed'] = sementes[0]
+        modelo = BertimbauToxicity()
+        modelo.train_model(train_texts=X_tr, train_labels=y_tr, val_texts=X_dev,
+                           val_labels=y_dev, config_name='default',
+                           experiment_name=f'TOX_oof_fold_{fold}', save_artifacts=False,
+                           **kwargs)
+        oof[va] = predizer_probabilidades(modelo, X_cv[va].tolist())
+        fold_de[va] = fold
+        del modelo
+        try:
+            import torch
+            torch.cuda.empty_cache()
+        except Exception:
+            pass
+        f1 = f1_score(y_cv[va], oof[va].argmax(axis=1), average='macro', zero_division=0)
+        logger.info(f"  OOF fold {fold}: macro F1 = {f1:.4f}")
+
+    # --- persistência --------------------------------------------------------
+    ids_dev = df['id_sentenca'].values[train_idx]
+    ids_teste = df['id_sentenca'].values[test_idx]
+    linhas_oof = pd.DataFrame({
+        'id_sentenca': ids_dev, 'video_id': g_cv, 'fold': fold_de, 'rotulo': y_cv,
+        'p_nenhuma': oof[:, 0], 'p_leve': oof[:, 1], 'p_severa': oof[:, 2],
+    })
+    linhas_oof.to_csv(saida_dir / f'probabilidades_oof_{timestamp}.csv',
+                      sep=';', index=False, encoding='utf-8')
+    linhas_teste = pd.DataFrame({'id_sentenca': ids_teste, 'rotulo': y_test})
+    for semente, probs in probs_teste.items():
+        for j, nome in enumerate(('p_nenhuma', 'p_leve', 'p_severa')):
+            linhas_teste[f'{nome}_s{semente}'] = probs[:, j]
+    linhas_teste.to_csv(saida_dir / f'probabilidades_teste_{timestamp}.csv',
+                        sep=';', index=False, encoding='utf-8')
+
+    validos = ~np.isnan(oof).any(axis=1)
+    resumo = {
+        'timestamp': timestamp,
+        'experimento': experimento.descricao(),
+        'busca_origem': origem,
+        'config': config,
+        'sementes': sementes,
+        'semente_referencia': sementes[0],
+        'teste_por_semente': por_semente,
+        'teste_resumo': resumo_sementes,
+        'oof_f1_macro': float(f1_score(y_cv[validos], oof[validos].argmax(axis=1),
+                                       average='macro', zero_division=0)),
+        'n_dev': int(len(X_cv)), 'n_teste': int(len(X_test)),
+    }
+    with open(saida_dir / f'modelo_final_{timestamp}.json', 'w', encoding='utf-8') as f:
+        json.dump(resumo, f, indent=2, ensure_ascii=False, default=str)
+
+    print(f"\nRodada {experimento.tag()}")
+    if f1s:
+        print(f"Teste (macro F1) em {len(f1s)} sementes: "
+              f"{resumo_sementes['f1_macro_media']:.4f} ± {resumo_sementes['f1_macro_dp'] or 0:.4f}")
+    print(f"OOF (macro F1): {resumo['oof_f1_macro']:.4f}")
+    print(f"Salvo em: {saida_dir}")
+    return resumo
 
 
 def main():
     import argparse
     parser = argparse.ArgumentParser(description='Grid Search para Toxicidade')
-    parser.add_argument('--mode', choices=['fast', 'full', 'optimized', 'search'], default='fast',
+    parser.add_argument('--mode', choices=['fast', 'full', 'optimized', 'search', 'final'],
+                        default='fast',
                         help='Modo de execução: fast (1 config), full (72 configs), '
                              'optimized (successive halving em 2 estágios), '
                              'search (busca aleatória no espaço ampliado + halving '
-                             'em 3 estágios, recomendado)')
+                             'em 3 estágios, recomendado), final (treino final com '
+                             'várias sementes + predições out-of-fold da vencedora)')
     parser.add_argument('--preprocess', action='store_true',
                         help='Aplica pré-processamento (limpeza + lematização) aos textos')
+    parser.add_argument('--sementes', type=int, nargs='+', default=None,
+                        help=f'Sementes do modo final (padrão: {SEMENTES_FINAIS})')
+    parser.add_argument('--manter-modelos', action='store_true',
+                        help='modo final: mantém os pesos de todas as sementes '
+                             '(por padrão só o modelo de referência fica com pesos)')
     args = parser.parse_args()
-    
+
+    logger.info(f"Rodada experimental: {experimento.descricao()}")
+    if args.mode == 'final':
+        run_final(args.sementes, manter_modelos=args.manter_modelos)
+        return
     all_results, best_config, best_model_path = run_grid_search(mode=args.mode, preprocess=args.preprocess)
 
 

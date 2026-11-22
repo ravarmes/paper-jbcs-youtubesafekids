@@ -44,6 +44,8 @@ import numpy as np
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 
+from app.nlp import experimento  # noqa: E402
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logging.getLogger('googleapiclient').setLevel(logging.ERROR)
 logging.getLogger('app.core.youtube').setLevel(logging.WARNING)
@@ -132,15 +134,56 @@ def faixa_de(score):
     return FAIXAS[-1][1]
 
 
-def carregar_modelo():
+def carregar_modelo(caminho=None):
+    """
+    Modelo de referência da rodada (experimento.caminho_modelo_referencia), ou o
+    indicado em `caminho`. Não usa "o TOX_* mais recente": o treino final apaga os
+    pesos das sementes que não são a de referência e deixa só o config.json.
+    """
     from app.nlp.models.bertimbau_toxicity import BertimbauToxicity
-    trained = Path(project_root) / 'app' / 'nlp' / 'models' / 'trained'
-    candidatos = [p for p in trained.glob('TOX_*') if (p / 'config.json').exists()]
-    if not candidatos:
-        raise FileNotFoundError(f'Nenhum modelo TOX_* treinado em {trained}')
-    caminho = max(candidatos, key=lambda p: p.stat().st_mtime)
+    caminho = Path(caminho) if caminho else experimento.caminho_modelo_referencia()
     logger.info(f'Modelo: {caminho.name}')
     return BertimbauToxicity(model_path=str(caminho))
+
+
+def ordenar_com_banda(itens, score, posicao, delta):
+    """
+    Reordenação com banda de tolerância delta (M7c).
+
+    Regra: um vídeo u fica acima de v sempre que S(u) - S(v) > delta; entre os
+    demais pares (|S(u) - S(v)| <= delta) a ordem da plataforma é a preferida.
+    A relação "u supera v por mais de delta" é uma ordem parcial estrita (é
+    transitiva: S(u) > S(v) + delta e S(v) > S(w) + delta implicam S(u) > S(w) +
+    delta), mas a indiferença não é; por isso a regra é implementada como a
+    extensão linear lexicograficamente mínima dessa ordem parcial pela posição na
+    plataforma:
+
+        a cada passo, entre os vídeos ainda não colocados que nenhum outro ainda não
+        colocado supera por mais de delta, coloca-se o de melhor posição na
+        plataforma.
+
+    Garantias:
+      1. se S(u) - S(v) > delta, u termina acima de v (nenhuma preferência estrita
+         é violada);
+      2. um par com |S(u) - S(v)| <= delta só troca a ordem da plataforma quando o
+         vídeo de cima precisa ceder lugar a um terceiro que o supera por mais de
+         delta (a indiferença não é transitiva e às vezes algum par indiferente tem
+         de trocar);
+      3. delta = 0 reproduz a ordenação estável por score decrescente (empates na
+         ordem da plataforma); delta >= amplitude dos scores devolve a ordem da
+         plataforma.
+
+    `score` e `posicao` são funções item -> número; maior score = mais seguro.
+    """
+    restantes = sorted(itens, key=posicao)
+    saida = []
+    while restantes:
+        for i, v in enumerate(restantes):
+            sv = score(v)
+            if not any(score(u) - sv > delta for u in restantes if u is not v):
+                saida.append(restantes.pop(i))
+                break
+    return saida
 
 
 def score_de(modelo, textos):
@@ -225,13 +268,14 @@ async def analisar_termo(api, modelo, termo, top_n, cache):
     return {'termo': termo, 'videos': videos}
 
 
-def comparar_ordens(videos, chave='score_frases'):
+def comparar_ordens(videos, chave='score_frases', delta=None):
     """
     Compara a ordem do YouTube com a ordem induzida pelo score.
 
     Só entram vídeos com score definido; os sem transcrição são contados à
     parte, porque incluí-los exigiria arbitrar um valor e isso enviesaria a
-    comparação.
+    comparação. Com `delta`, a ordem do modelo é a da reordenação com banda de
+    tolerância (ordenar_com_banda); sem ele, a ordenação estável por score.
     """
     from scipy.stats import kendalltau, spearmanr
 
@@ -240,12 +284,16 @@ def comparar_ordens(videos, chave='score_frases'):
         return None
 
     # Posição do YouTube entre os vídeos pontuáveis, renumerada de 1 a N
-    ordem_yt = sorted(com_score, key=lambda v: v['posicao_youtube'])
+    ordem_yt = sorted(com_score, key=lambda v: int(v['posicao_youtube']))
     for i, v in enumerate(ordem_yt, 1):
         v['_rank_yt'] = i
 
     # Ordem do modelo: score decrescente (mais seguro primeiro)
-    ordem_modelo = sorted(com_score, key=lambda v: -v[chave])
+    if delta is None:
+        ordem_modelo = sorted(ordem_yt, key=lambda v: -v[chave])
+    else:
+        ordem_modelo = ordenar_com_banda(ordem_yt, lambda v: v[chave],
+                                         lambda v: v['_rank_yt'], delta)
     for i, v in enumerate(ordem_modelo, 1):
         v['_rank_modelo'] = i
 
@@ -282,13 +330,13 @@ def comparar_ordens(videos, chave='score_frases'):
     }
 
 
-async def main_async(termos, top_n):
+async def main_async(termos, top_n, caminho_modelo=None):
     from app.core.config import get_settings
     from app.core.youtube import YouTubeAPI
 
     settings = get_settings()
     api = YouTubeAPI(settings.YOUTUBE_API_KEY)
-    modelo = carregar_modelo()
+    modelo = carregar_modelo(caminho_modelo)
 
     cache = carregar_cache()
     logger.info(f'Cache de transcrições: {len(cache)} vídeos já conhecidos')
@@ -382,7 +430,7 @@ def carregar_planilha(caminho):
     return buscas
 
 
-def pontuar_buscas(buscas, modelo):
+def pontuar_buscas(buscas, modelo, delta=None):
     """Calcula os dois scores de cada vídeo e as comparações de ordem."""
     for busca in buscas:
         logger.info(f'\n=== "{busca["termo"]}"')
@@ -397,6 +445,9 @@ def pontuar_buscas(buscas, modelo):
                         f"score={'—' if s is None else f'{s:.3f}'}{marca}  {v['titulo'][:56]}")
         busca['comparacao_frases'] = comparar_ordens(busca['videos'], 'score_frases')
         busca['comparacao_completo'] = comparar_ordens(busca['videos'], 'score_completo')
+        if delta is not None:
+            busca['comparacao_frases_banda'] = comparar_ordens(busca['videos'], 'score_frases',
+                                                               delta=delta)
     return buscas
 
 
@@ -406,15 +457,28 @@ def main():
     parser.add_argument('--top-n', type=int, default=10)
     parser.add_argument('--csv', default=None,
                         help='Planilha já preenchida; dispensa a API do YouTube')
+    parser.add_argument('--modelo', default=None,
+                        help='Pasta do modelo (padrão: o de referência da rodada)')
+    parser.add_argument('--delta', type=float, default=None,
+                        help='Banda de tolerância: também compara a ordem com banda '
+                             '(ordenar_com_banda); o valor de referência é '
+                             'banda_tolerancia.delta do simulacao_amostragem_*.json')
+    parser.add_argument('--saida', default=None,
+                        help='Pasta do JSON de saída (padrão: results/<tag>)')
     args = parser.parse_args()
 
     if args.csv:
         print(f'Lendo buscas de {args.csv}\n')
-        buscas = pontuar_buscas(carregar_planilha(args.csv), carregar_modelo())
+        buscas = pontuar_buscas(carregar_planilha(args.csv), carregar_modelo(args.modelo),
+                                delta=args.delta)
     else:
         termos = args.termos or TERMOS_PADRAO
         print(f'Analisando {len(termos)} buscas, Top-{args.top_n} de cada\n')
-        buscas = asyncio.run(main_async(termos, args.top_n))
+        buscas = asyncio.run(main_async(termos, args.top_n, args.modelo))
+        if args.delta is not None:
+            for b in buscas:
+                b['comparacao_frases_banda'] = comparar_ordens(b['videos'], 'score_frases',
+                                                               delta=args.delta)
     if not buscas:
         print('Nenhuma busca retornou resultados.')
         return
@@ -425,10 +489,12 @@ def main():
     # Os estratos medem coisas diferentes e não devem ser fundidos numa média:
     # no A o desejável é reordenar pouco (não atrapalhar quando não há risco);
     # no B, reordenar muito (proteger quando há).
-    por_estrato = {}
+    por_estrato, por_estrato_banda = {}, {}
     for estrato in dict.fromkeys(b.get('estrato', 'unico') for b in buscas):
         subset = [b for b in buscas if b.get('estrato', 'unico') == estrato]
         por_estrato[estrato] = resumo(subset, 'comparacao_frases')
+        if args.delta is not None:
+            por_estrato_banda[estrato] = resumo(subset, 'comparacao_frases_banda')
 
     print('\n' + '=' * 84)
     print('REORDENAÇÃO POR BUSCA (score das três sentenças)')
@@ -467,14 +533,27 @@ def main():
               f"{agregado_completo['spearman_medio']:+.3f} | "
               f"deslocamento: {agregado_completo['deslocamento_medio']:.2f}")
 
-    destino = Path(project_root) / 'app' / 'nlp' / 'evaluation' / 'results' / \
-        f'reordenacao_{datetime.now():%Y%m%d_%H%M%S}.json'
+    if args.delta is not None:
+        print(f'\n  [banda de tolerância delta = {args.delta:.4f}] deslocamento médio por estrato:')
+        for estrato, r in por_estrato_banda.items():
+            if r:
+                print(f"    {estrato:<18} {r['deslocamento_medio']:.2f} "
+                      f"(sem banda: {por_estrato[estrato]['deslocamento_medio']:.2f})")
+
+    pasta = Path(args.saida) if args.saida else experimento.dir_resultados()
+    pasta.mkdir(parents=True, exist_ok=True)
+    destino = pasta / f'reordenacao_{datetime.now():%Y%m%d_%H%M%S}.json'
     with open(destino, 'w', encoding='utf-8') as f:
         json.dump({'timestamp': datetime.now().isoformat(), 'top_n': args.top_n,
                    'origem': args.csv or 'API do YouTube',
                    'termos': [b['termo'] for b in buscas], 'buscas': buscas,
                    'agregado_frases': agregado, 'agregado_completo': agregado_completo,
-                   'agregado_por_estrato': por_estrato},
+                   'agregado_por_estrato': por_estrato,
+                   'banda_tolerancia': ({'delta': args.delta,
+                                         'agregado_por_estrato': por_estrato_banda,
+                                         'agregado_frases': resumo(buscas,
+                                                                   'comparacao_frases_banda')}
+                                        if args.delta is not None else None)},
                   f, indent=2, ensure_ascii=False, default=str)
     print(f'\nSalvo em: {destino}')
 

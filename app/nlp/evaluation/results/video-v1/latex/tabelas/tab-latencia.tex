@@ -1,0 +1,23 @@
+% Gerado por app/nlp/evaluation/scripts/medir_latencia.py
+% NAO EDITAR A MAO: reexecute o script (ou --so-tabela <json>).
+% Fonte: latencia_20261120_095422.json
+\begin{table*}[!t]
+\centering
+\caption{Inference latency per result page of 10 videos with $k$ sentences classified per video, on real sentences from the held-out test set, measured on the same machine (GPU: NVIDIA GeForce RTX 4050 Laptop GPU, 6 GB; CPU: 13th Gen Intel(R) Core(TM) i7-13700H; 16 GB RAM). Wall-clock seconds per page, median and 95th percentile over repeated runs after warm-up (30 runs for BERTimbau, 5 for the generative model); the last column divides the median page time at $k = 12$ by the number of sentences. BERTimbau classifies the whole page in one batch. The generative model (\texttt{llama3.1:8b}, served by Ollama 0.40.16, with 75\% of the model in GPU memory and the rest on the CPU) receives the few-shot prompt of the generative baseline, one request per sentence, sent either sequentially or as $c$ concurrent requests; \emph{free} is the decoding of the baseline, and \emph{constrained} restricts the reply to a JSON schema with the three labels. Model loading and transcript retrieval are not included.}
+\label{tab:latencia}
+\begin{tabular}{llccccc}
+\toprule
+ &  & \multicolumn{2}{c}{$k = 3$ (30 sentences)} & \multicolumn{2}{c}{$k = 12$ (120 sentences)} & Per sentence \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Model & Setting & Median & p95 & Median & p95 & at $k = 12$ \\
+ &  & (s) & (s) & (s) & (s) & (ms) \\
+\midrule
+BERTimbau (fine-tuned) & GPU, one batch & 0.16 & 0.17 & 0.60 & 0.64 & 5.0 \\
+BERTimbau (fine-tuned) & CPU, one batch & 1.87 & 2.07 & 5.78 & 6.33 & 48 \\
+llama3.1:8b & sequential, free & 5.44 & 5.78 & 24.9 & 25.7 & 208 \\
+llama3.1:8b & sequential, constrained & 19.7 & 20.0 & 78.1 & 79.3 & 651 \\
+llama3.1:8b & 4 concurrent, constrained & 18.7 & 18.8 & 75.7 & 75.8 & 631 \\
+llama3.1:8b & 8 concurrent, constrained & 18.7 & 18.7 & 77.0 & 81.8 & 642 \\
+\bottomrule
+\end{tabular}
+\end{table*}

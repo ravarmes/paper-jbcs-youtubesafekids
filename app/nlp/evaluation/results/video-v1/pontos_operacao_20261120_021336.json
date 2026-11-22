@@ -1,0 +1,161 @@
+{
+  "modelo": "TOX_TOX_BEST_MODEL_seed42_20261120_013149_20261120_013149",
+  "n_teste": 417,
+  "curva_limiar": [
+    {
+      "tau": 0.5,
+      "recall_severa": 0.7551020408163265,
+      "severas_nao_sinalizadas": 24,
+      "falso_alarme_nenhuma": 0.12365591397849462
+    },
+    {
+      "tau": 0.2,
+      "recall_severa": 0.8367346938775511,
+      "severas_nao_sinalizadas": 16,
+      "falso_alarme_nenhuma": 0.13440860215053763
+    },
+    {
+      "tau": 0.15,
+      "recall_severa": 0.8469387755102041,
+      "severas_nao_sinalizadas": 15,
+      "falso_alarme_nenhuma": 0.13978494623655913
+    },
+    {
+      "tau": 0.1,
+      "recall_severa": 0.8673469387755102,
+      "severas_nao_sinalizadas": 13,
+      "falso_alarme_nenhuma": 0.17204301075268819
+    }
+  ],
+  "pontos_operacao": [
+    {
+      "modelo": "BERTimbau (argmax)",
+      "recall_severa": 0.7551020408163265,
+      "severas_perdidas": 24,
+      "fa_severa": 0.12365591397849462,
+      "fa_toxico": 0.1989247311827957
+    },
+    {
+      "modelo": "BERTimbau (tau = 0.1)",
+      "recall_severa": 0.8673469387755102,
+      "severas_perdidas": 13,
+      "fa_severa": 0.17204301075268819,
+      "fa_toxico": 0.23118279569892472
+    },
+    {
+      "modelo": "llama3.1:8b",
+      "recall_severa": 0.826530612244898,
+      "severas_perdidas": 17,
+      "fa_severa": 0.1774193548387097,
+      "fa_toxico": 0.4946236559139785,
+      "segundos_por_frase": 2.42
+    }
+  ],
+  "argmax_coincide_tau_050": true,
+  "tau_escolhido_no_teste": true,
+  "nota": "exploratório: limiares avaliados e escolhidos no teste; o tau escolhido nas OOF está em calibracao_limiar_*.json",
+  "severas_perdidas": {
+    "n": 15,
+    "frases": [
+      {
+        "texto": "voce e a maluca",
+        "score": 0.5448192767798901,
+        "p_severa": 0.3961544930934906
+      },
+      {
+        "texto": "sortudo desgraçado.",
+        "score": 0.6066604778170586,
+        "p_severa": 0.37268468737602234
+      },
+      {
+        "texto": "tu ta ferrado",
+        "score": 0.733768729493022,
+        "p_severa": 0.24195754528045654
+      },
+      {
+        "texto": "chupa meu saco",
+        "score": 0.7427042722702026,
+        "p_severa": 0.21606910228729248
+      },
+      {
+        "texto": "Essa é a única forma de manter esses criollos sob controle.",
+        "score": 0.7710955664515495,
+        "p_severa": 0.18652774393558502
+      },
+      {
+        "texto": "diabo Eu nunca disse Mas você tatua na sua bunda",
+        "score": 0.8560694400221109,
+        "p_severa": 0.1175551563501358
+      },
+      {
+        "texto": "Usar sua bunda como chapeu",
+        "score": 0.9154114592820406,
+        "p_severa": 0.06126286834478378
+      },
+      {
+        "texto": "Me chupa",
+        "score": 0.9238537885248661,
+        "p_severa": 0.05323410406708717
+      },
+      {
+        "texto": "voce que me forço a isso",
+        "score": 0.9251208566129208,
+        "p_severa": 0.04936301335692406
+      },
+      {
+        "texto": "Porque não, a Cusão",
+        "score": 0.927771545946598,
+        "p_severa": 0.04712176322937012
+      },
+      {
+        "texto": "Não quero voces aqui",
+        "score": 0.9280458558350801,
+        "p_severa": 0.04906417056918144
+      },
+      {
+        "texto": "eu cozinho voce",
+        "score": 0.9296834766864777,
+        "p_severa": 0.04780159518122673
+      },
+      {
+        "texto": "pais otarios",
+        "score": 0.9312967676669359,
+        "p_severa": 0.041989706456661224
+      },
+      {
+        "texto": "Piranhazinha",
+        "score": 0.9316778760403395,
+        "p_severa": 0.0448218509554863
+      },
+      {
+        "texto": "Boa noite, o amigo imaginário do Henry passou a mão na minha bunda.",
+        "score": 0.9327794462442398,
+        "p_severa": 0.04546190798282623
+      }
+    ],
+    "score_mediano_perdidas": 0.9238537885248661,
+    "score_mediano_nenhuma_corretas": 0.9270218424499035
+  },
+  "llm": {
+    "nome": "llama3.1:8b",
+    "confusion_matrix": [
+      [
+        94,
+        59,
+        33
+      ],
+      [
+        4,
+        88,
+        41
+      ],
+      [
+        2,
+        15,
+        81
+      ]
+    ],
+    "segundos_por_frase": 2.42,
+    "fonte": "llm_baselines_toxicity_20261120_021243.json"
+  }
+}

@@ -1,0 +1,19 @@
+% Gerado por app/nlp/evaluation/scripts/analisar_calibracao_limiar.py
+% NAO EDITAR A MAO: reexecute o script apos retreinar.
+\begin{table*}[!t]
+\centering
+\caption{Operating points on the held-out test set. The expensive error is letting severely toxic content through; the cheap one is flagging appropriate content, which merely demotes it in the ranking. The thresholds were chosen on out-of-fold predictions of the training split, before the test set was consulted: the false-alarm-budget rule takes the smallest $\tau$ whose out-of-fold false alarm stays within 2 percentage points of that of \emph{argmax}, and the $F_2$ rule maximises the out-of-fold $F_2$ of the Severe class. False alarm is reported under both flagging rules, because the rows do not flag alike: \emph{argmax} and the generative model return a class, whereas the threshold is applied to $P(\text{Severe})$; under the any-level rule a thresholded row also counts the sentences that \emph{argmax} assigns to Mild.}
+\label{tab:pontos-operacao}
+\begin{tabular}{lcccc}
+\toprule
+Model & Severe recall & Severe missed & \multicolumn{2}{c}{Appropriate flagged} \\
+\cmidrule(lr){4-5}
+ & & & as Severe & as toxic (any)  \\
+\midrule
+BERTimbau (\emph{argmax}) & 76.0\% & 18 & 13.4\% & 21.5\% \\
+\textbf{BERTimbau ($\tau = 0.34$, chosen on OOF, FA budget)} & \textbf{76.0\%} & \textbf{18} & \textbf{14.5\%} & \textbf{22.0\%} \\
+BERTimbau ($\tau = 0.13$, chosen on OOF, max.\ $F_2$) & 82.7\% & 13 & 20.4\% & 28.0\% \\
+llama3.1:8b & 57.3\% & 32 & 13.4\% & 52.7\% \\
+\bottomrule
+\end{tabular}
+\end{table*}

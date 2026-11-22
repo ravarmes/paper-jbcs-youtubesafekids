@@ -1,0 +1,22 @@
+\begin{table*}[!t]
+\centering
+\caption{Simulated detection (\%) of a video in which each sampled sentence is severely toxic with probability $f = 0.20$, by number $k$ of sampled sentences and aggregation rule. Sentences are drawn independently; the appropriate part of the video is drawn from None sentences only, and Mild sentences are not used (Table~\ref{tab:simulacao-variantes} relaxes both assumptions). Each rule and each $k$ is calibrated to a 5\% false-alarm rate over entirely appropriate synthetic videos of the same population, so that cells are comparable. Brackets: 95\% interval over 200 bootstrap resamples of the sentence population (stratified by class), which carries the uncertainty of having a finite set of sentences; the Monte Carlo error of each point (30,000 simulated videos) is at most $\pm$0.6 points.}
+\label{tab:simulacao}
+\begin{tabular}{lcccc}
+\toprule
+Aggregation & $k=3$ & $k=5$ & $k=8$ & $k=12$ \\
+\midrule
+\multicolumn{5}{l}{\emph{Population: out-of-fold predictions on the training split ($n = 1394$)}} \\
+Mean of the $k$ (current Eq.) & 21.7 [18.7, 24.0] & 29.9 [24.7, 34.1] & 36.8 [33.2, 41.5] & 45.4 [41.0, 51.5] \\
+Minimum of the $k$ & 26.3 [16.8, 35.1] & 27.6 [12.1, 43.2] & 22.6 [9.9, 52.3] & 18.5 [9.9, 62.8] \\
+$0.7\cdot$min $+\ 0.3\cdot$mean & 23.8 [20.3, 32.2] & 32.7 [28.9, 37.8] & 40.6 [35.8, 46.9] & 49.5 [44.0, 58.3] \\
+Mean of the 2 lowest & 22.0 [18.9, 24.0] & 31.4 [29.1, 34.7] & 45.4 [35.7, 49.7] & 52.9 [41.9, 62.3] \\
+\midrule
+\multicolumn{5}{l}{\emph{Population: held-out test set ($n = 417$)}} \\
+Mean of the $k$ (current Eq.) & 17.7 [15.0, 21.6] & 21.3 [17.3, 30.9] & 30.7 [22.9, 36.9] & 37.1 [28.9, 46.1] \\
+Minimum of the $k$ & 16.8 [0.7, 34.0] & 8.1 [0.0, 40.5] & 12.5 [0.0, 54.3] & 2.3 [0.0, 45.9] \\
+$0.7\cdot$min $+\ 0.3\cdot$mean & 18.5 [15.4, 23.6] & 22.3 [17.7, 32.6] & 31.4 [23.3, 38.5] & 37.4 [28.6, 47.3] \\
+Mean of the 2 lowest & 17.9 [14.9, 21.8] & 27.7 [20.7, 32.1] & 34.2 [13.4, 47.6] & 26.6 [9.0, 61.2] \\
+\bottomrule
+\end{tabular}
+\end{table*}

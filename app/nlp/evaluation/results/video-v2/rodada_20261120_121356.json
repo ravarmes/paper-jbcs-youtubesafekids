@@ -1,0 +1,117 @@
+{
+  "tag": "video-v2",
+  "inicio": "2026-11-20T12:13:56.358741",
+  "etapas": [
+    {
+      "etapa": "busca",
+      "status": "ok",
+      "segundos": 11254.0
+    },
+    {
+      "etapa": "final",
+      "status": "ok",
+      "segundos": 1774.9
+    },
+    {
+      "etapa": "avaliacao",
+      "status": "ok",
+      "segundos": 27.4
+    },
+    {
+      "etapa": "baselines",
+      "status": "ok",
+      "segundos": 48.7
+    },
+    {
+      "etapa": "baselines_ajustadas",
+      "status": "ok",
+      "segundos": 1325.7
+    },
+    {
+      "etapa": "dispersao",
+      "status": "ok",
+      "segundos": 1.0
+    },
+    {
+      "etapa": "sem_finetuning",
+      "status": "ok",
+      "segundos": 38.8
+    },
+    {
+      "etapa": "llm",
+      "status": "ok",
+      "segundos": 132.9
+    },
+    {
+      "etapa": "detoxify",
+      "status": "ok",
+      "segundos": 29.1
+    },
+    {
+      "etapa": "comparacao",
+      "status": "ok",
+      "segundos": 17.9
+    },
+    {
+      "etapa": "teste_por_lote",
+      "status": "ok",
+      "segundos": 1.6
+    },
+    {
+      "etapa": "quase_duplicatas",
+      "status": "ok",
+      "segundos": 1.4
+    },
+    {
+      "etapa": "pontos_operacao",
+      "status": "ok",
+      "segundos": 9.9
+    },
+    {
+      "etapa": "simulacao",
+      "status": "ok",
+      "segundos": 36.3
+    },
+    {
+      "etapa": "estratos",
+      "status": "ok",
+      "segundos": 21.2
+    },
+    {
+      "etapa": "scores_exemplo",
+      "status": "ok",
+      "segundos": 11.2
+    },
+    {
+      "etapa": "corpus",
+      "status": "ok",
+      "segundos": 7.0
+    },
+    {
+      "etapa": "anotacao",
+      "status": "ok",
+      "segundos": 1.7
+    },
+    {
+      "etapa": "calibracao_limiar",
+      "status": "ok",
+      "segundos": 2.5
+    },
+    {
+      "etapa": "severas_nenhuma",
+      "status": "ok",
+      "segundos": 0.7
+    },
+    {
+      "etapa": "figura_resultado",
+      "status": "ok",
+      "segundos": 1.2
+    },
+    {
+      "etapa": "latencia",
+      "status": "ok",
+      "segundos": 986.9
+    }
+  ],
+  "fim": "2026-11-20T16:36:08.501166"
+}

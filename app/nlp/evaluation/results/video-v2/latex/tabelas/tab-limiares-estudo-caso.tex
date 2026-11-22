@@ -1,0 +1,20 @@
+\begin{table*}[!t]
+\centering
+\caption{Case-study outcome by threshold $\tau$, under the rule ``video score $< \tau$ $\Rightarrow$ demoted''. Demoted in B: stratum-B videos below $\tau$; false alarms in A: stratum-A videos below $\tau$. The a priori threshold $\tau^{*} = 0.559$ was fixed without using the case-study videos: it is the 5\% false-alarm point of the mean of $k = 3$ sentence scores over synthetic, entirely appropriate videos built from out-of-fold predictions on the training split. Every other threshold was evaluated on these same 40 videos and is exploratory.}
+\label{tab:limiares-estudo-caso}
+\begin{tabular}{lccc}
+\toprule
+$\tau$ & Status & Demoted in B (of 20) & False alarms in A (of 20) \\
+\midrule
+$0.95$ & exploratory & 20 & 20 \\
+$0.90$ & exploratory & 18 & 4 \\
+$0.85$ & exploratory & 16 & 3 \\
+$0.80$ & exploratory & 16 & 2 \\
+$0.75$ & exploratory & 14 & 1 \\
+$0.70$ & exploratory & 12 & 1 \\
+$0.60$ & exploratory & 7 & 0 \\
+\textbf{$0.559$} & \textbf{a priori} & \textbf{5} & \textbf{0} \\
+$0.50$ & exploratory & 5 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table*}

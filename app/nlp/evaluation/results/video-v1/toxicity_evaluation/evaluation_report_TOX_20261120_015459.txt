@@ -1,0 +1,66 @@
+RELATÓRIO DE AVALIAÇÃO - TOX
+==================================================
+
+Data da avaliação: 20/11/2026 01:54:59
+Modelo avaliado: C:\GitHub\artigos\2026--jbcs--youtubesafekids-toxicidade\src\app\nlp\models\trained\video-v1\TOX_TOX_BEST_MODEL_seed42_20261120_013149_20261120_013149
+Tarefa: TOX
+Classes: Nenhuma, Leve, Severa
+
+MÉTRICAS GERAIS
+--------------------
+Acurácia: 0.7626
+F1-Score (Macro): 0.7511
+F1-Score (Weighted): 0.7649
+Precisão (Macro): 0.7516
+Recall (Macro): 0.7568
+
+AUC-ROC
+----------
+AUC-ROC (macro): 0.8753
+AUC-ROC (weighted): 0.8758
+
+MÉTRICAS POR CLASSE
+-------------------------
+Nenhuma:
+  Precisão: 0.8278
+  Recall: 0.8011
+  F1-Score: 0.8142
+  Suporte: 186
+
+Leve:
+  Precisão: 0.8051
+  Recall: 0.7143
+  F1-Score: 0.7570
+  Suporte: 133
+
+Severa:
+  Precisão: 0.6218
+  Recall: 0.7551
+  F1-Score: 0.6820
+  Suporte: 98
+
+MATRIZ DE CONFUSÃO
+--------------------
+Predito →
+Real ↓
+         Nenhuma    Leve  Severa
+ Nenhuma     149      14      23
+    Leve      16      95      22
+  Severa      15       9      74
+
+ANÁLISE DE ERROS (Top 10 Maior Confiança Errada)
+----------------------------------------
+True       | Pred       | Conf    
+-----------------------------------
+Nenhuma    | Severa     | 0.9622
+Nenhuma    | Severa     | 0.9613
+Leve       | Severa     | 0.9578
+Nenhuma    | Severa     | 0.9576
+Leve       | Severa     | 0.9575
+Leve       | Severa     | 0.9563
+Nenhuma    | Severa     | 0.9557
+Nenhuma    | Severa     | 0.9554
+Leve       | Severa     | 0.9553
+Nenhuma    | Severa     | 0.9553
+
+Total de erros: 99 de 417 amostras.

@@ -1,0 +1,23 @@
+% Gerado por app/nlp/evaluation/scripts/analisar_dispersao.py
+% NAO EDITAR A MAO: reexecute o script apos retreinar.
+\begin{table*}[!t]
+\centering
+\caption{Macro F1 of the fine-tuned BERTimbau and of the TF-IDF baselines. Cross-validation (CV) uses the same five video-grouped folds for every model, and its dispersion is always the standard deviation across these folds. BERTimbau's CV score is that of the configuration selected among 32 on these folds, averaged over 3 seeds (fold SD averaged over seeds; the SD across seeds is 0.0045). Tuned baselines were searched over 32 configurations each (word and character $n$-gram TF-IDF) and are reported with nested CV, free of selection optimism. Test: held-out set of 417 sentences; BERTimbau is the mean $\pm$ SD over 5 training seeds (the reference model, seed 42, used in the remaining analyses, reaches 0.7511); each baseline is a single deterministic fit.}
+\label{tab:baselines}
+\begin{tabular}{llcc}
+\toprule
+Model & Selection & CV macro F1 & Test macro F1 \\
+\midrule
+\textbf{BERTimbau (fine-tuned)} & \textbf{best of 32} & \textbf{0.8075 $\pm$ 0.041} & \textbf{0.7502 $\pm$ 0.006} \\
+\midrule
+Logistic Regression, tuned & nested CV, 32 & 0.7637 $\pm$ 0.043 & 0.6990 \\
+SVM (LinearSVC), tuned & nested CV, 32 & 0.7589 $\pm$ 0.038 & 0.7081 \\
+Complement NB, tuned & nested CV, 32 & 0.7453 $\pm$ 0.044 & 0.6810 \\
+\midrule
+SVM (LinearSVC) & fixed & 0.7525 $\pm$ 0.044 & 0.6923 \\
+Logistic Regression & fixed & 0.7364 $\pm$ 0.042 & 0.6654 \\
+Random Forest & fixed & 0.7245 $\pm$ 0.040 & 0.6727 \\
+Naive Bayes & fixed & 0.7144 $\pm$ 0.036 & 0.6842 \\
+\bottomrule
+\end{tabular}
+\end{table*}

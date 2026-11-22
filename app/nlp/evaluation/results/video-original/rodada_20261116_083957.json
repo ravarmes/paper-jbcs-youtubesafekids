@@ -1,0 +1,67 @@
+{
+  "tag": "video-original",
+  "inicio": "2026-11-16T08:39:57.615979",
+  "etapas": [
+    {
+      "etapa": "busca",
+      "status": "ok",
+      "segundos": 14374.9
+    },
+    {
+      "etapa": "final",
+      "status": "ok",
+      "segundos": 1677.9
+    },
+    {
+      "etapa": "avaliacao",
+      "status": "ok",
+      "segundos": 38.8
+    },
+    {
+      "etapa": "baselines",
+      "status": "ok",
+      "segundos": 42.0
+    },
+    {
+      "etapa": "sem_finetuning",
+      "status": "ok",
+      "segundos": 27.1
+    },
+    {
+      "etapa": "llm",
+      "status": "ok",
+      "segundos": 752.2
+    },
+    {
+      "etapa": "comparacao",
+      "status": "ok",
+      "segundos": 147.1
+    },
+    {
+      "etapa": "pontos_operacao",
+      "status": "ok",
+      "segundos": 10.5
+    },
+    {
+      "etapa": "simulacao",
+      "status": "ok",
+      "segundos": 17.5
+    },
+    {
+      "etapa": "estratos",
+      "status": "ok",
+      "segundos": 46.9
+    },
+    {
+      "etapa": "scores_exemplo",
+      "status": "ok",
+      "segundos": 10.3
+    },
+    {
+      "etapa": "corpus",
+      "status": "ok",
+      "segundos": 7.9
+    }
+  ],
+  "fim": "2026-11-16T13:25:50.623437"
+}

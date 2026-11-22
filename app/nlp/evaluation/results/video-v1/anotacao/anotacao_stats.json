@@ -1,0 +1,270 @@
+{
+  "n_frases": 1811,
+  "n_videos": 206,
+  "papeis": {
+    "P1": "professor",
+    "P2": "psychologist",
+    "A1": "student"
+  },
+  "pares": {
+    "P1-P2": {
+      "confusao": [
+        [
+          708,
+          61,
+          0
+        ],
+        [
+          74,
+          435,
+          79
+        ],
+        [
+          3,
+          33,
+          418
+        ]
+      ],
+      "acordo": 0.8619547211485368,
+      "cohen_kappa": 0.7883718821370445
+    },
+    "P1-A1": {
+      "confusao": [
+        [
+          722,
+          47,
+          0
+        ],
+        [
+          94,
+          444,
+          50
+        ],
+        [
+          0,
+          70,
+          384
+        ]
+      ],
+      "acordo": 0.8558807288790723,
+      "cohen_kappa": 0.7775993465433092
+    },
+    "P2-A1": {
+      "confusao": [
+        [
+          724,
+          61,
+          0
+        ],
+        [
+          92,
+          414,
+          23
+        ],
+        [
+          0,
+          86,
+          411
+        ]
+      ],
+      "acordo": 0.8553285477636665,
+      "cohen_kappa": 0.7768922092223893
+    }
+  },
+  "fleiss_por_classe": {
+    "Nenhuma": 0.838341660571046,
+    "Leve": 0.6680302306499558,
+    "Severa": 0.833322155791156
+  },
+  "desacordos": {
+    "n": 385,
+    "por_par_de_classes": {
+      "Nenhuma-Leve": 213,
+      "Leve-Severa": 169,
+      "tres_classes": 3
+    }
+  },
+  "tres_rotulos": [
+    {
+      "id_sentenca": 234,
+      "texto": "Cala a boca, seu imbecil gordo! Você é inútil até para respirar!",
+      "anotacoes": {
+        "P1": "Severa",
+        "P2": "Nenhuma",
+        "A1": "Leve"
+      },
+      "rotulo_final": "Severa"
+    },
+    {
+      "id_sentenca": 1694,
+      "texto": "transam gostoso",
+      "anotacoes": {
+        "P1": "Severa",
+        "P2": "Nenhuma",
+        "A1": "Leve"
+      },
+      "rotulo_final": "Severa"
+    },
+    {
+      "id_sentenca": 1808,
+      "texto": "A multidão enfurecida ameaçou fazer um linxamento público.",
+      "anotacoes": {
+        "P1": "Severa",
+        "P2": "Nenhuma",
+        "A1": "Leve"
+      },
+      "rotulo_final": "Severa"
+    }
+  ],
+  "regra_rotulo_final": "moda das três anotações; sem moda, vale o P1 (professor)",
+  "frases_por_video": {
+    "distribuicao": {
+      "1": 1,
+      "6": 139,
+      "7": 7,
+      "8": 1,
+      "9": 5,
+      "10": 1,
+      "11": 1,
+      "12": 4,
+      "13": 1,
+      "14": 9,
+      "15": 6,
+      "16": 6,
+      "17": 7,
+      "18": 7,
+      "19": 3,
+      "20": 1,
+      "21": 2,
+      "22": 2,
+      "23": 1,
+      "24": 1,
+      "25": 1
+    },
+    "media": 8.79126213592233,
+    "mediana": 6.0,
+    "min": 1,
+    "max": 25
+  },
+  "classes_por_video": {
+    "Nenhuma+Leve+Severa": 135,
+    "Nenhuma+Leve": 45,
+    "Nenhuma+Severa": 16,
+    "Leve+Severa": 9,
+    "Nenhuma": 1
+  },
+  "videos_com_as_tres_classes": 135,
+  "franquias": {
+    "outros": {
+      "videos": 68,
+      "frases": 490
+    },
+    "South Park": {
+      "videos": 20,
+      "frases": 230
+    },
+    "Show da Luna": {
+      "videos": 18,
+      "frases": 109
+    },
+    "Peppa Pig": {
+      "videos": 17,
+      "frases": 111
+    },
+    "Rick and Morty": {
+      "videos": 13,
+      "frases": 173
+    },
+    "Family Guy": {
+      "videos": 11,
+      "frases": 66
+    },
+    "Brickleberry": {
+      "videos": 8,
+      "frases": 122
+    },
+    "Aqua Teen Hunger Force": {
+      "videos": 7,
+      "frases": 127
+    },
+    "The Boondocks": {
+      "videos": 7,
+      "frases": 125
+    },
+    "BoJack Horseman": {
+      "videos": 7,
+      "frases": 42
+    },
+    "The Simpsons": {
+      "videos": 6,
+      "frases": 37
+    },
+    "American Dad": {
+      "videos": 6,
+      "frases": 36
+    },
+    "Os Amiguinhos (fables)": {
+      "videos": 5,
+      "frases": 41
+    },
+    "SpongeBob": {
+      "videos": 4,
+      "frases": 25
+    },
+    "Looney Tunes": {
+      "videos": 3,
+      "frases": 41
+    },
+    "Futurama": {
+      "videos": 3,
+      "frases": 18
+    },
+    "Big Mouth": {
+      "videos": 2,
+      "frases": 12
+    },
+    "Galinha Pintadinha": {
+      "videos": 1,
+      "frases": 6
+    }
+  },
+  "animacao_adulta": {
+    "videos": 90,
+    "frases": 988,
+    "prevalencia_toxica": 0.7186234817813765,
+    "prevalencia_toxica_demais": 0.3511543134872418
+  },
+  "partes": {
+    "Meio": 702,
+    "Início": 582,
+    "Fim": 527
+  },
+  "lotes": {
+    "1": {
+      "frases": 1236,
+      "videos": 205,
+      "videos_fora_do_lote1": 0,
+      "distribuicao": {
+        "Nenhuma": 592,
+        "Leve": 382,
+        "Severa": 262
+      },
+      "prevalencia_toxica": 0.5210355987055016,
+      "fleiss_kappa": 0.800928383761998,
+      "unanimidade": 0.8114886731391586
+    },
+    "2": {
+      "frases": 575,
+      "videos": 66,
+      "videos_fora_do_lote1": 1,
+      "distribuicao": {
+        "Nenhuma": 220,
+        "Leve": 141,
+        "Severa": 214
+      },
+      "prevalencia_toxica": 0.6173913043478261,
+      "fleiss_kappa": 0.730657718696135,
+      "unanimidade": 0.7356521739130435
+    }
+  }
+}

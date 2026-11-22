@@ -1,0 +1,903 @@
+{
+  "experimento": {
+    "particao": "video",
+    "rotulagem": "v2",
+    "tag": "video-v2",
+    "arquivo_particao": "data\\particoes\\particao_video.csv"
+  },
+  "fontes": {
+    "pasta": "C:\\GitHub\\artigos\\2026--jbcs--youtubesafekids-toxicidade\\src\\app\\nlp\\evaluation\\results\\video-v2",
+    "gridsearch": "gridsearch_optimized_search_20261120_121406.json",
+    "modelo_final": "modelo_final_20261120_152140.json",
+    "baselines_fixas": "baselines_toxicity_20261120_155220.json",
+    "baselines_ajustadas": "baselines_ajustados_20261120_161426.json"
+  },
+  "definicoes": {
+    "dp_entre_folds": "desvio-padrão amostral (ddof=1) do F1 macro entre os 5 folds gravados, agrupados por vídeo, os mesmos para todos os modelos",
+    "dp_entre_sementes": "desvio-padrão amostral (ddof=1) entre as médias de CV de cada semente (BERTimbau, estágio 3); grandeza distinta, reportada à parte",
+    "teste_bertimbau": "média ± DP amostral entre as sementes do treino final",
+    "margem_em_dp_folds_bertimbau": "margem de CV dividida pelo DP entre folds do BERTimbau (o cálculo do revisor: 5,3 pontos ~ 1,9x)",
+    "pareado_por_fold": "diferença de F1 fold a fold entre BERTimbau (estágio 2, semente 42) e a baseline; descritivo, sem teste: com 5 folds dependentes, um teste t ingênuo seria anticonservador",
+    "cv_baselines_ajustadas": "CV aninhada (seleção nos folds internos); cv_selecao_mesmos_folds usa a melhor configuração escolhida nos mesmos 5 folds, a regra do BERTimbau"
+  },
+  "bertimbau": {
+    "config": {
+      "epochs": 8,
+      "batch_size": 8,
+      "learning_rate": 5e-05,
+      "max_length": 128,
+      "warmup_ratio": 0.06,
+      "weight_decay": 0.01,
+      "llrd": 0.9,
+      "loss_type": "ce",
+      "label_smoothing": 0.1,
+      "oversample": false
+    },
+    "cv": {
+      "media": 0.757621040598567,
+      "media_tipo": "média entre sementes das médias por fold (estágio 3)",
+      "n_sementes": 3,
+      "sementes": [
+        42,
+        7,
+        2024
+      ],
+      "media_por_semente": [
+        0.7547300130069278,
+        0.7498706754340569,
+        0.7682624333547164
+      ],
+      "dp_entre_folds_por_semente": [
+        0.05025389166960358,
+        0.0321221049134896,
+        0.0416613188807238
+      ],
+      "dp_entre_folds": 0.04134577182127233,
+      "dp_entre_folds_tipo": "média entre sementes do DP amostral (ddof=1) entre os 5 folds",
+      "dp_entre_sementes": 0.0095306201400932,
+      "dp_entre_sementes_ddof0": 0.007781718758507022,
+      "dp_entre_sementes_gravado": 0.007781718758507022
+    },
+    "estagio2_semente42": {
+      "semente": 42,
+      "media": 0.7572152491755185,
+      "dp_entre_folds": 0.04903692712346239,
+      "dp_entre_folds_gravado": 0.04903692712346239,
+      "por_fold": [
+        0.7427375245557063,
+        0.8152412130731412,
+        0.7046768503527812,
+        0.7214538446550565,
+        0.8019668132409071
+      ],
+      "folds": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "n_configuracoes_busca": 32,
+    "metodo_busca": "random_search + successive_halving (3 estágios)",
+    "teste": {
+      "n_sementes": 5,
+      "sementes": [
+        42,
+        7,
+        2024,
+        11,
+        99
+      ],
+      "f1_macro_media": 0.6992984050697204,
+      "f1_macro_dp_entre_sementes": 0.011762192769760968,
+      "f1_macro_min": 0.6826973255055447,
+      "f1_macro_max": 0.7153935397310182,
+      "f1_macro_por_semente": {
+        "42": 0.7153935397310182,
+        "7": 0.7009387671152377,
+        "2024": 0.6959551134859948,
+        "11": 0.6826973255055447,
+        "99": 0.7015072795108069
+      },
+      "accuracy_media": 0.7279329608938548,
+      "accuracy_dp_entre_sementes": 0.010186917613860601,
+      "f1_por_classe_media": {
+        "Nenhuma": 0.8072891503739497,
+        "Leve": 0.6649866997877111,
+        "Severa": 0.6256193650475004
+      },
+      "f1_por_classe_dp_entre_sementes": {
+        "Nenhuma": 0.007542081037305001,
+        "Leve": 0.02197130781805482,
+        "Severa": 0.01658988644248629
+      },
+      "semente_referencia": 42,
+      "modelo_referencia": "TOX_TOX_BEST_MODEL_seed42_20261120_152141_20261120_152141",
+      "f1_macro_semente_referencia": 0.7153935397310182,
+      "accuracy_semente_referencia": 0.7402234636871509,
+      "dados_treino_final": {
+        "descricao": "conjunto de desenvolvimento inteiro (todas as frases fora do teste), com um dev interno agrupado por vídeo separado para o early stopping (escolha da época); mesma configuração e mesmos dados para todas as sementes, que só mudam a inicialização e a ordem dos lotes",
+        "n_dev": 1219,
+        "n_teste": 358,
+        "epocas_maximas": 8,
+        "por_semente_log": [
+          {
+            "semente": 42,
+            "epoca_restaurada": 6,
+            "f1_dev_interno": 0.804,
+            "n_treino": 1069,
+            "n_dev_interno": 150
+          },
+          {
+            "semente": 7,
+            "epoca_restaurada": 5,
+            "f1_dev_interno": 0.7997,
+            "n_treino": 1095,
+            "n_dev_interno": 124
+          },
+          {
+            "semente": 2024,
+            "epoca_restaurada": 6,
+            "f1_dev_interno": 0.7658,
+            "n_treino": 1081,
+            "n_dev_interno": 138
+          },
+          {
+            "semente": 11,
+            "epoca_restaurada": 7,
+            "f1_dev_interno": 0.8001,
+            "n_treino": 1091,
+            "n_dev_interno": 128
+          },
+          {
+            "semente": 99,
+            "epoca_restaurada": 7,
+            "f1_dev_interno": 0.7386,
+            "n_treino": 1050,
+            "n_dev_interno": 169
+          }
+        ]
+      },
+      "oof_f1_macro": 0.7557633115841732
+    }
+  },
+  "baselines": {
+    "SVM (LinearSVC), tuned": {
+      "tipo": "ajustada",
+      "chave": "svm",
+      "selecao": "nested CV, 32 configs",
+      "n_configuracoes": 32,
+      "cv": {
+        "media": 0.6954560280287564,
+        "dp_entre_folds": 0.03914764796502734,
+        "por_fold": [
+          0.649302170562013,
+          0.7205638474295192,
+          0.7047240837263176,
+          0.6612556507974835,
+          0.7414343876284484
+        ],
+        "dp_convertido_de_ddof0": false
+      },
+      "cv_plana_melhor": {
+        "media": 0.6952145112107598,
+        "dp_entre_folds": 0.03936025028818561,
+        "por_fold": [
+          0.6498194887875749,
+          0.7428750945427215,
+          0.7008327415019983,
+          0.6612556507974835,
+          0.721289580424021
+        ],
+        "config": {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": 10000,
+          "sublinear_tf": true,
+          "C": 3.0,
+          "class_weight": null
+        }
+      },
+      "otimismo_selecao": -0.00024151681799655655,
+      "configs_por_fold_externo": [
+        {
+          "features": "word_1_3",
+          "max_features": 10000,
+          "sublinear_tf": true,
+          "C": 3.0,
+          "class_weight": null
+        },
+        {
+          "features": "word_1_2",
+          "max_features": 10000,
+          "sublinear_tf": false,
+          "C": 3.0,
+          "class_weight": "balanced"
+        },
+        {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": null,
+          "sublinear_tf": true,
+          "C": 3.0,
+          "class_weight": null
+        },
+        {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": 10000,
+          "sublinear_tf": true,
+          "C": 3.0,
+          "class_weight": null
+        },
+        {
+          "features": "word_1_2",
+          "max_features": 10000,
+          "sublinear_tf": false,
+          "C": 1.0,
+          "class_weight": "balanced"
+        }
+      ],
+      "teste_f1_macro": 0.6213027753754226,
+      "teste_accuracy": 0.6731843575418994,
+      "teste_f1_por_classe": [
+        0.7797468354430379,
+        0.5341614906832298,
+        0.5499999999999999
+      ],
+      "config_final": {
+        "features": "word_1_2+char_wb_2_5",
+        "max_features": 10000,
+        "sublinear_tf": true,
+        "C": 3.0,
+        "class_weight": null
+      }
+    },
+    "Logistic Regression, tuned": {
+      "tipo": "ajustada",
+      "chave": "lr",
+      "selecao": "nested CV, 32 configs",
+      "n_configuracoes": 32,
+      "cv": {
+        "media": 0.6866933363616045,
+        "dp_entre_folds": 0.05208996716961737,
+        "por_fold": [
+          0.6695090977594854,
+          0.7477983152325258,
+          0.6570490528621006,
+          0.6255011993919362,
+          0.7336090165619741
+        ],
+        "dp_convertido_de_ddof0": false
+      },
+      "cv_plana_melhor": {
+        "media": 0.7015399357264511,
+        "dp_entre_folds": 0.03707573973902227,
+        "por_fold": [
+          0.6695090977594854,
+          0.7477983152325258,
+          0.6891739036605422,
+          0.6676093454177279,
+          0.7336090165619741
+        ],
+        "config": {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": 50000,
+          "sublinear_tf": true,
+          "C": 30.0,
+          "class_weight": "balanced"
+        }
+      },
+      "otimismo_selecao": 0.014846599364846669,
+      "configs_por_fold_externo": [
+        {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": 50000,
+          "sublinear_tf": true,
+          "C": 30.0,
+          "class_weight": "balanced"
+        },
+        {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": 50000,
+          "sublinear_tf": true,
+          "C": 30.0,
+          "class_weight": "balanced"
+        },
+        {
+          "features": "char_wb_2_5",
+          "max_features": 10000,
+          "sublinear_tf": true,
+          "C": 0.3,
+          "class_weight": "balanced"
+        },
+        {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": null,
+          "sublinear_tf": true,
+          "C": 30.0,
+          "class_weight": null
+        },
+        {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": 50000,
+          "sublinear_tf": true,
+          "C": 30.0,
+          "class_weight": "balanced"
+        }
+      ],
+      "teste_f1_macro": 0.6243773968789189,
+      "teste_accuracy": 0.6759776536312849,
+      "teste_f1_por_classe": [
+        0.7837150127226463,
+        0.5249999999999999,
+        0.5644171779141104
+      ],
+      "config_final": {
+        "features": "word_1_2+char_wb_2_5",
+        "max_features": 50000,
+        "sublinear_tf": true,
+        "C": 30.0,
+        "class_weight": "balanced"
+      }
+    },
+    "Complement NB, tuned": {
+      "tipo": "ajustada",
+      "chave": "cnb",
+      "selecao": "nested CV, 32 configs",
+      "n_configuracoes": 32,
+      "cv": {
+        "media": 0.6823226030824657,
+        "dp_entre_folds": 0.014394789806535024,
+        "por_fold": [
+          0.6818766776537274,
+          0.6810315288576158,
+          0.6637652054812507,
+          0.6807082991175589,
+          0.7042313043021761
+        ],
+        "dp_convertido_de_ddof0": false
+      },
+      "cv_plana_melhor": {
+        "media": 0.6812087842399837,
+        "dp_entre_folds": 0.011656027670707312,
+        "por_fold": [
+          0.6818766776537274,
+          0.6831669037421321,
+          0.6637652054812507,
+          0.6807082991175589,
+          0.6965268352052493
+        ],
+        "config": {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": 10000,
+          "sublinear_tf": true,
+          "alpha": 0.03
+        }
+      },
+      "otimismo_selecao": -0.0011138188424820727,
+      "configs_por_fold_externo": [
+        {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": 10000,
+          "sublinear_tf": true,
+          "alpha": 0.03
+        },
+        {
+          "features": "word_1_2",
+          "max_features": 10000,
+          "sublinear_tf": false,
+          "alpha": 1.0
+        },
+        {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": 10000,
+          "sublinear_tf": true,
+          "alpha": 0.03
+        },
+        {
+          "features": "word_1_2+char_wb_2_5",
+          "max_features": 10000,
+          "sublinear_tf": true,
+          "alpha": 0.03
+        },
+        {
+          "features": "word_1_2",
+          "max_features": 50000,
+          "sublinear_tf": true,
+          "alpha": 0.3
+        }
+      ],
+      "teste_f1_macro": 0.5955697528278172,
+      "teste_accuracy": 0.6424581005586593,
+      "teste_f1_por_classe": [
+        0.7634408602150536,
+        0.5119047619047619,
+        0.5113636363636364
+      ],
+      "config_final": {
+        "features": "word_1_2+char_wb_2_5",
+        "max_features": 10000,
+        "sublinear_tf": true,
+        "alpha": 0.03
+      }
+    },
+    "SVM (LinearSVC)": {
+      "tipo": "fixa",
+      "selecao": "fixed",
+      "cv": {
+        "media": 0.6878724255010102,
+        "dp_entre_folds": 0.04800486942770846,
+        "por_fold": [
+          0.6246523462926801,
+          0.7137985651464321,
+          0.7075567423230975,
+          0.6519200861143936,
+          0.7414343876284484
+        ],
+        "dp_convertido_de_ddof0": false
+      },
+      "teste_f1_macro": 0.5987635359872201,
+      "teste_accuracy": 0.6536312849162011,
+      "teste_f1_por_classe": [
+        0.766497461928934,
+        0.48101265822784817,
+        0.5487804878048781
+      ]
+    },
+    "Logistic Regression": {
+      "tipo": "fixa",
+      "selecao": "fixed",
+      "cv": {
+        "media": 0.6846013455735964,
+        "dp_entre_folds": 0.045063943876945234,
+        "por_fold": [
+          0.6399937845583291,
+          0.7110137835077691,
+          0.7153439153439153,
+          0.6313608256151627,
+          0.725294418842806
+        ],
+        "dp_convertido_de_ddof0": false
+      },
+      "teste_f1_macro": 0.5902174480626464,
+      "teste_accuracy": 0.6368715083798883,
+      "teste_f1_por_classe": [
+        0.7409326424870466,
+        0.4907975460122699,
+        0.5389221556886227
+      ]
+    },
+    "Random Forest": {
+      "tipo": "fixa",
+      "selecao": "fixed",
+      "cv": {
+        "media": 0.6481832617294276,
+        "dp_entre_folds": 0.04859435422206196,
+        "por_fold": [
+          0.6317051613053287,
+          0.6631256211818872,
+          0.6182465885762589,
+          0.6024402758703952,
+          0.7253986617132678
+        ],
+        "dp_convertido_de_ddof0": false
+      },
+      "teste_f1_macro": 0.5779958394949726,
+      "teste_accuracy": 0.6452513966480447,
+      "teste_f1_por_classe": [
+        0.7553444180522564,
+        0.45751633986928103,
+        0.5211267605633803
+      ]
+    },
+    "Naive Bayes": {
+      "tipo": "fixa",
+      "selecao": "fixed",
+      "cv": {
+        "media": 0.5307962906402891,
+        "dp_entre_folds": 0.03472248454426841,
+        "por_fold": [
+          0.48479403196384335,
+          0.5125664879604012,
+          0.5664827547180488,
+          0.5264529545806508,
+          0.5636852239785014
+        ],
+        "dp_convertido_de_ddof0": false
+      },
+      "teste_f1_macro": 0.5044831838144103,
+      "teste_accuracy": 0.6368715083798883,
+      "teste_f1_por_classe": [
+        0.7640918580375783,
+        0.26548672566371684,
+        0.48387096774193544
+      ]
+    }
+  },
+  "margens": {
+    "baseline_mais_forte_cv": "SVM (LinearSVC), tuned",
+    "baseline_mais_forte_teste": "Logistic Regression, tuned",
+    "contra_mais_forte_cv": {
+      "cv": {
+        "cv_bertimbau": 0.757621040598567,
+        "cv_baseline": 0.6954560280287564,
+        "margem": 0.06216501256981066,
+        "dp_folds_bertimbau": 0.04134577182127233,
+        "dp_folds_baseline": 0.03914764796502734,
+        "margem_em_dp_folds_bertimbau": 1.503539777623086,
+        "margem_em_dp_folds_baseline": 1.587962899465785,
+        "margem_em_dp_folds_combinado": 1.544023012802288,
+        "pareado_por_fold": {
+          "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+          "diferencas": [
+            0.0934353539936933,
+            0.09467736564362206,
+            -4.723337353640389e-05,
+            0.06019819385757297,
+            0.06053242561245875
+          ],
+          "media": 0.06175922114676213,
+          "dp": 0.038441388122383444,
+          "media_em_dp": 1.6065814520054054,
+          "folds_bertimbau_melhor": 4,
+          "n_folds": 5
+        }
+      },
+      "cv_selecao_mesmos_folds": {
+        "cv_bertimbau": 0.757621040598567,
+        "cv_baseline": 0.6952145112107598,
+        "margem": 0.06240652938780722,
+        "dp_folds_bertimbau": 0.04134577182127233,
+        "dp_folds_baseline": 0.03936025028818561,
+        "margem_em_dp_folds_bertimbau": 1.5093811685890253,
+        "margem_em_dp_folds_baseline": 1.585521660326921,
+        "margem_em_dp_folds_combinado": 1.5460470096362553,
+        "pareado_por_fold": {
+          "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+          "diferencas": [
+            0.0929180357681314,
+            0.07236611853041974,
+            0.0038441088507829013,
+            0.06019819385757297,
+            0.0806772328168861
+          ],
+          "media": 0.06200073796475862,
+          "dp": 0.034632262966971444,
+          "media_em_dp": 1.790259505244815,
+          "folds_bertimbau_melhor": 5,
+          "n_folds": 5
+        }
+      },
+      "teste": {
+        "teste_bertimbau_media_sementes": 0.6992984050697204,
+        "teste_bertimbau_semente_referencia": 0.7153935397310182,
+        "teste_baseline": 0.6213027753754226,
+        "margem_media_sementes": 0.07799562969429785,
+        "margem_semente_referencia": 0.0940907643555956,
+        "margem_em_dp_sementes": 6.631045011846281
+      }
+    },
+    "por_baseline": {
+      "SVM (LinearSVC), tuned": {
+        "cv": {
+          "cv_bertimbau": 0.757621040598567,
+          "cv_baseline": 0.6954560280287564,
+          "margem": 0.06216501256981066,
+          "dp_folds_bertimbau": 0.04134577182127233,
+          "dp_folds_baseline": 0.03914764796502734,
+          "margem_em_dp_folds_bertimbau": 1.503539777623086,
+          "margem_em_dp_folds_baseline": 1.587962899465785,
+          "margem_em_dp_folds_combinado": 1.544023012802288,
+          "pareado_por_fold": {
+            "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+            "diferencas": [
+              0.0934353539936933,
+              0.09467736564362206,
+              -4.723337353640389e-05,
+              0.06019819385757297,
+              0.06053242561245875
+            ],
+            "media": 0.06175922114676213,
+            "dp": 0.038441388122383444,
+            "media_em_dp": 1.6065814520054054,
+            "folds_bertimbau_melhor": 4,
+            "n_folds": 5
+          }
+        },
+        "cv_selecao_mesmos_folds": {
+          "cv_bertimbau": 0.757621040598567,
+          "cv_baseline": 0.6952145112107598,
+          "margem": 0.06240652938780722,
+          "dp_folds_bertimbau": 0.04134577182127233,
+          "dp_folds_baseline": 0.03936025028818561,
+          "margem_em_dp_folds_bertimbau": 1.5093811685890253,
+          "margem_em_dp_folds_baseline": 1.585521660326921,
+          "margem_em_dp_folds_combinado": 1.5460470096362553,
+          "pareado_por_fold": {
+            "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+            "diferencas": [
+              0.0929180357681314,
+              0.07236611853041974,
+              0.0038441088507829013,
+              0.06019819385757297,
+              0.0806772328168861
+            ],
+            "media": 0.06200073796475862,
+            "dp": 0.034632262966971444,
+            "media_em_dp": 1.790259505244815,
+            "folds_bertimbau_melhor": 5,
+            "n_folds": 5
+          }
+        },
+        "teste": {
+          "teste_bertimbau_media_sementes": 0.6992984050697204,
+          "teste_bertimbau_semente_referencia": 0.7153935397310182,
+          "teste_baseline": 0.6213027753754226,
+          "margem_media_sementes": 0.07799562969429785,
+          "margem_semente_referencia": 0.0940907643555956,
+          "margem_em_dp_sementes": 6.631045011846281
+        }
+      },
+      "Logistic Regression, tuned": {
+        "cv": {
+          "cv_bertimbau": 0.757621040598567,
+          "cv_baseline": 0.6866933363616045,
+          "margem": 0.0709277042369626,
+          "dp_folds_bertimbau": 0.04134577182127233,
+          "dp_folds_baseline": 0.05208996716961737,
+          "margem_em_dp_folds_bertimbau": 1.7154766040785436,
+          "margem_em_dp_folds_baseline": 1.3616384899227343,
+          "margem_em_dp_folds_combinado": 1.5082745669378135,
+          "pareado_por_fold": {
+            "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+            "diferencas": [
+              0.07322842679622088,
+              0.06744289784061541,
+              0.04762779749068058,
+              0.0959526452631203,
+              0.06835779667893305
+            ],
+            "media": 0.07052191281391404,
+            "dp": 0.017265222407520056,
+            "media_em_dp": 4.08462232048615,
+            "folds_bertimbau_melhor": 5,
+            "n_folds": 5
+          }
+        },
+        "cv_selecao_mesmos_folds": {
+          "cv_bertimbau": 0.757621040598567,
+          "cv_baseline": 0.7015399357264511,
+          "margem": 0.05608110487211593,
+          "dp_folds_bertimbau": 0.04134577182127233,
+          "dp_folds_baseline": 0.03707573973902227,
+          "margem_em_dp_folds_bertimbau": 1.356392743483925,
+          "margem_em_dp_folds_baseline": 1.5126091958481003,
+          "margem_em_dp_folds_combinado": 1.428132516349065,
+          "pareado_por_fold": {
+            "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+            "diferencas": [
+              0.07322842679622088,
+              0.06744289784061541,
+              0.01550294669223895,
+              0.05384449923732859,
+              0.06835779667893305
+            ],
+            "media": 0.05567531344906738,
+            "dp": 0.02358285469885424,
+            "media_em_dp": 2.3608385905787874,
+            "folds_bertimbau_melhor": 5,
+            "n_folds": 5
+          }
+        },
+        "teste": {
+          "teste_bertimbau_media_sementes": 0.6992984050697204,
+          "teste_bertimbau_semente_referencia": 0.7153935397310182,
+          "teste_baseline": 0.6243773968789189,
+          "margem_media_sementes": 0.0749210081908015,
+          "margem_semente_referencia": 0.09101614285209925,
+          "margem_em_dp_sementes": 6.369646345485294
+        }
+      },
+      "Complement NB, tuned": {
+        "cv": {
+          "cv_bertimbau": 0.757621040598567,
+          "cv_baseline": 0.6823226030824657,
+          "margem": 0.07529843751610132,
+          "dp_folds_bertimbau": 0.04134577182127233,
+          "dp_folds_baseline": 0.014394789806535024,
+          "margem_em_dp_folds_bertimbau": 1.8211883391994246,
+          "margem_em_dp_folds_baseline": 5.230950818185406,
+          "margem_em_dp_folds_combinado": 2.4323487103516315,
+          "pareado_por_fold": {
+            "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+            "diferencas": [
+              0.060860846901978904,
+              0.13420968421552548,
+              0.04091164487153043,
+              0.04074554553749754,
+              0.09773550893873106
+            ],
+            "media": 0.07489264609305268,
+            "dp": 0.04049052884168184,
+            "media_em_dp": 1.849633685593075,
+            "folds_bertimbau_melhor": 5,
+            "n_folds": 5
+          }
+        },
+        "cv_selecao_mesmos_folds": {
+          "cv_bertimbau": 0.757621040598567,
+          "cv_baseline": 0.6812087842399837,
+          "margem": 0.0764122563585834,
+          "dp_folds_bertimbau": 0.04134577182127233,
+          "dp_folds_baseline": 0.011656027670707312,
+          "margem_em_dp_folds_bertimbau": 1.848127462437874,
+          "margem_em_dp_folds_baseline": 6.555600116720257,
+          "margem_em_dp_folds_combinado": 2.515592636940016,
+          "pareado_por_fold": {
+            "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+            "diferencas": [
+              0.060860846901978904,
+              0.13207430933100917,
+              0.04091164487153043,
+              0.04074554553749754,
+              0.10543997803565786
+            ],
+            "media": 0.07600646493553478,
+            "dp": 0.04097042667067411,
+            "media_em_dp": 1.855154342093753,
+            "folds_bertimbau_melhor": 5,
+            "n_folds": 5
+          }
+        },
+        "teste": {
+          "teste_bertimbau_media_sementes": 0.6992984050697204,
+          "teste_bertimbau_semente_referencia": 0.7153935397310182,
+          "teste_baseline": 0.5955697528278172,
+          "margem_media_sementes": 0.1037286522419032,
+          "margem_semente_referencia": 0.11982378690320095,
+          "margem_em_dp_sementes": 8.818819268850596
+        }
+      },
+      "SVM (LinearSVC)": {
+        "cv": {
+          "cv_bertimbau": 0.757621040598567,
+          "cv_baseline": 0.6878724255010102,
+          "margem": 0.06974861509755681,
+          "dp_folds_bertimbau": 0.04134577182127233,
+          "dp_folds_baseline": 0.04800486942770846,
+          "margem_em_dp_folds_bertimbau": 1.6869588358167076,
+          "margem_em_dp_folds_baseline": 1.452948751430159,
+          "margem_em_dp_folds_combinado": 1.5569158153358578,
+          "pareado_por_fold": {
+            "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+            "diferencas": [
+              0.11808517826302622,
+              0.1014426479267091,
+              -0.0028798919703163506,
+              0.0695337585406629,
+              0.06053242561245875
+            ],
+            "media": 0.06934282367450813,
+            "dp": 0.04663688474025434,
+            "media_em_dp": 1.4868665448113711,
+            "folds_bertimbau_melhor": 4,
+            "n_folds": 5
+          }
+        },
+        "teste": {
+          "teste_bertimbau_media_sementes": 0.6992984050697204,
+          "teste_bertimbau_semente_referencia": 0.7153935397310182,
+          "teste_baseline": 0.5987635359872201,
+          "margem_media_sementes": 0.10053486908250031,
+          "margem_semente_referencia": 0.11663000374379806,
+          "margem_em_dp_sementes": 8.547289697628667
+        }
+      },
+      "Logistic Regression": {
+        "cv": {
+          "cv_bertimbau": 0.757621040598567,
+          "cv_baseline": 0.6846013455735964,
+          "margem": 0.07301969502497063,
+          "dp_folds_bertimbau": 0.04134577182127233,
+          "dp_folds_baseline": 0.045063943876945234,
+          "margem_em_dp_folds_bertimbau": 1.7660740580830594,
+          "margem_em_dp_folds_baseline": 1.6203574020144205,
+          "margem_em_dp_folds_combinado": 1.6885182090770743,
+          "pareado_por_fold": {
+            "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+            "diferencas": [
+              0.10274373999737718,
+              0.10422742956537212,
+              -0.010667064991134123,
+              0.09009301903989375,
+              0.07667239439810114
+            ],
+            "media": 0.07261390360192202,
+            "dp": 0.047866827289086235,
+            "media_em_dp": 1.516998466670428,
+            "folds_bertimbau_melhor": 4,
+            "n_folds": 5
+          }
+        },
+        "teste": {
+          "teste_bertimbau_media_sementes": 0.6992984050697204,
+          "teste_bertimbau_semente_referencia": 0.7153935397310182,
+          "teste_baseline": 0.5902174480626464,
+          "margem_media_sementes": 0.10908095700707399,
+          "margem_semente_referencia": 0.12517609166837174,
+          "margem_em_dp_sementes": 9.273862377728292
+        }
+      },
+      "Random Forest": {
+        "cv": {
+          "cv_bertimbau": 0.757621040598567,
+          "cv_baseline": 0.6481832617294276,
+          "margem": 0.10943777886913941,
+          "dp_folds_bertimbau": 0.04134577182127233,
+          "dp_folds_baseline": 0.04859435422206196,
+          "margem_em_dp_folds_bertimbau": 2.646891666267888,
+          "margem_em_dp_folds_baseline": 2.2520677683880894,
+          "margem_em_dp_folds_combinado": 2.425704525348824,
+          "pareado_por_fold": {
+            "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+            "diferencas": [
+              0.11103236325037757,
+              0.152115591891254,
+              0.08643026177652224,
+              0.1190135687846613,
+              0.0765681515276393
+            ],
+            "media": 0.10903198744609088,
+            "dp": 0.029684040691703086,
+            "media_em_dp": 3.6730844219791865,
+            "folds_bertimbau_melhor": 5,
+            "n_folds": 5
+          }
+        },
+        "teste": {
+          "teste_bertimbau_media_sementes": 0.6992984050697204,
+          "teste_bertimbau_semente_referencia": 0.7153935397310182,
+          "teste_baseline": 0.5779958394949726,
+          "margem_media_sementes": 0.12130256557474783,
+          "margem_semente_referencia": 0.13739770023604558,
+          "margem_em_dp_sementes": 10.312921064055384
+        }
+      },
+      "Naive Bayes": {
+        "cv": {
+          "cv_bertimbau": 0.757621040598567,
+          "cv_baseline": 0.5307962906402891,
+          "margem": 0.22682474995827795,
+          "dp_folds_bertimbau": 0.04134577182127233,
+          "dp_folds_baseline": 0.03472248454426841,
+          "margem_em_dp_folds_bertimbau": 5.486044641729895,
+          "margem_em_dp_folds_baseline": 6.5325034465518845,
+          "margem_em_dp_folds_combinado": 5.941237840998755,
+          "pareado_por_fold": {
+            "fonte_bertimbau": "estágio 2 da busca (semente 42), F1 por fold",
+            "diferencas": [
+              0.25794349259186294,
+              0.3026747251127401,
+              0.1381940956347324,
+              0.19500089007440569,
+              0.23828158926240572
+            ],
+            "media": 0.22641895853522936,
+            "dp": 0.06269007427655811,
+            "media_em_dp": 3.611719417277751,
+            "folds_bertimbau_melhor": 5,
+            "n_folds": 5
+          }
+        },
+        "teste": {
+          "teste_bertimbau_media_sementes": 0.6992984050697204,
+          "teste_bertimbau_semente_referencia": 0.7153935397310182,
+          "teste_baseline": 0.5044831838144103,
+          "margem_media_sementes": 0.19481522125531014,
+          "margem_semente_referencia": 0.2109103559166079,
+          "margem_em_dp_sementes": 16.562831868914284
+        }
+      }
+    }
+  },
+  "timestamp": "20261120_161428"
+}

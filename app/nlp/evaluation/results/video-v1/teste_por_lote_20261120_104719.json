@@ -1,0 +1,124 @@
+{
+  "timestamp": "20261120_104719",
+  "script": "app/nlp/evaluation/scripts/analisar_teste_por_lote.py",
+  "experimento": {
+    "particao": "video",
+    "rotulagem": "v1",
+    "tag": "video-v1",
+    "arquivo_particao": "data\\particoes\\particao_video.csv"
+  },
+  "fontes": {
+    "probabilidades": "probabilidades_teste_20261120_013147.csv",
+    "modelo_final": "modelo_final_20261120_013147.json",
+    "svm_ajustado": "predicoes_teste_baselines_ajustados_20261119_225526.csv"
+  },
+  "regra": "argmax das probabilidades; DP entre sementes com ddof=1 (o mesmo de teste_resumo)",
+  "conferencia_f1_global": {
+    "42": {
+      "recalculado": 0.7510691371988646,
+      "gravado": 0.7510691371988646
+    },
+    "7": {
+      "recalculado": 0.7467399932991854,
+      "gravado": 0.7467399932991854
+    },
+    "2024": {
+      "recalculado": 0.7548459372901494,
+      "gravado": 0.7548459372901494
+    },
+    "11": {
+      "recalculado": 0.7565970857679556,
+      "gravado": 0.7565970857679556
+    },
+    "99": {
+      "recalculado": 0.7419084017787906,
+      "gravado": 0.7419084017787906
+    }
+  },
+  "global": {
+    "n_frases": 417,
+    "n_videos": 44,
+    "distribuicao": {
+      "Nenhuma": 186,
+      "Leve": 133,
+      "Severa": 98
+    },
+    "bertimbau": {
+      "f1_macro_por_semente": {
+        "42": 0.7510691371988646,
+        "7": 0.7467399932991854,
+        "2024": 0.7548459372901494,
+        "11": 0.7565970857679556,
+        "99": 0.7419084017787906
+      },
+      "f1_macro_media": 0.7502321110669892,
+      "f1_macro_dp": 0.005999581879713784,
+      "f1_macro_semente_referencia": 0.7510691371988646
+    },
+    "svm_ajustado": {
+      "f1_macro": 0.7080573918069818
+    }
+  },
+  "por_lote": {
+    "1": {
+      "n_frases": 264,
+      "n_videos": 44,
+      "distribuicao": {
+        "Nenhuma": 120,
+        "Leve": 89,
+        "Severa": 55
+      },
+      "bertimbau": {
+        "f1_macro_por_semente": {
+          "42": 0.8499798465099412,
+          "7": 0.8491033213490841,
+          "2024": 0.8448382054353459,
+          "11": 0.8702594202112041,
+          "99": 0.8395185131531647
+        },
+        "f1_macro_media": 0.8507398613317478,
+        "f1_macro_dp": 0.011672802381576019,
+        "f1_macro_semente_referencia": 0.8499798465099412
+      },
+      "svm_ajustado": {
+        "f1_macro": 0.8227832997813153
+      }
+    },
+    "2": {
+      "n_frases": 153,
+      "n_videos": 19,
+      "distribuicao": {
+        "Nenhuma": 66,
+        "Leve": 44,
+        "Severa": 43
+      },
+      "bertimbau": {
+        "f1_macro_por_semente": {
+          "42": 0.584681640495594,
+          "7": 0.5651803907467339,
+          "2024": 0.5939337776200428,
+          "11": 0.5579362004391063,
+          "99": 0.5728822970390066
+        },
+        "f1_macro_media": 0.5749228612680968,
+        "f1_macro_dp": 0.014528205265134686,
+        "f1_macro_semente_referencia": 0.584681640495594
+      },
+      "svm_ajustado": {
+        "f1_macro": 0.5055674952060495
+      }
+    }
+  },
+  "videos_com_os_dois_lotes_no_teste": 19,
+  "epoca_restaurada": {
+    "fonte": "logs/final.log",
+    "epocas_maximas": 8,
+    "por_semente": {
+      "42": 8,
+      "7": 4,
+      "2024": 3,
+      "11": 5,
+      "99": 6
+    }
+  }
+}

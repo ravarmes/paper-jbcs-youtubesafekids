@@ -1,0 +1,850 @@
+% Gerado por app/nlp/evaluation/scripts/gerar_numeros_artigo.py
+% Rodada: video-v1
+% NAO EDITAR A MAO: reexecute o script depois de refazer a rodada.
+
+% --- Corpus (analisar_corpus.py; corpus inteiro, teste incluído) -----------
+\newcommand{\yskFrases}{1,811}
+\newcommand{\yskVideos}{206}
+\newcommand{\yskFrasesDistintas}{1,811}
+\newcommand{\yskComprMedia}{8.4}  % palavras
+\newcommand{\yskComprMediana}{7}
+\newcommand{\yskComprPercentilNoventaCinco}{20}
+\newcommand{\yskComprMax}{42}
+\newcommand{\yskNenhumaN}{812}
+\newcommand{\yskNenhumaPct}{44.8}
+\newcommand{\yskLeveN}{523}
+\newcommand{\yskLevePct}{28.9}
+\newcommand{\yskSeveraN}{476}
+\newcommand{\yskSeveraPct}{26.3}
+\newcommand{\yskToxicasN}{999}
+\newcommand{\yskUnanimesN}{1,426}
+\newcommand{\yskUnanimesPct}{78.7}
+\newcommand{\yskSemMaioriaN}{3}
+\newcommand{\yskSemMaioriaPct}{0.2}
+\newcommand{\yskAcordoMedio}{85.8}
+\newcommand{\yskKappa}{0.7809}  % Fleiss
+\newcommand{\yskPrevToxicaPct}{55.2}
+\newcommand{\yskComPalavraoN}{402}
+\newcommand{\yskComPalavraoPct}{22.2}
+\newcommand{\yskToxSemPalavraoN}{640}
+\newcommand{\yskToxSemPalavraoPct}{64.1}
+\newcommand{\yskNaoToxComPalavraoN}{43}
+\newcommand{\yskNaoToxComPalavraoPct}{5.3}
+\newcommand{\yskRegraIngenua}{0.60}  % macro F1 binário
+\newcommand{\yskRegraIngenuaLonga}{0.6025}
+\newcommand{\yskRegraIngenuaPrec}{89.3}
+\newcommand{\yskRegraIngenuaRev}{35.9}
+\newcommand{\yskSempreToxica}{0.36}
+\newcommand{\yskAleatoria}{0.50}
+\newcommand{\yskPalavraPuraN}{558}
+\newcommand{\yskPalavraPuraPct}{30.8}
+\newcommand{\yskAnalogoLimiar}{0.8}
+\newcommand{\yskAnalogoN}{28}
+\newcommand{\yskAnalogoPct}{6.7}
+\newcommand{\yskSemAnalogoN}{389}
+
+% --- Anotação (analisar_anotacao.py) ---------------------------------------
+\newcommand{\yskAcordoProfPsi}{86.2}
+\newcommand{\yskCohenProfPsi}{0.7884}
+\newcommand{\yskAcordoProfAluno}{85.6}
+\newcommand{\yskCohenProfAluno}{0.7776}
+\newcommand{\yskAcordoPsiAluno}{85.5}
+\newcommand{\yskCohenPsiAluno}{0.7769}
+\newcommand{\yskKappaNenhuma}{0.838}  % Fleiss por categoria
+\newcommand{\yskKappaLeve}{0.668}  % Fleiss por categoria
+\newcommand{\yskKappaSevera}{0.833}  % Fleiss por categoria
+\newcommand{\yskDesacordosN}{385}
+\newcommand{\yskDesacNenhumaLeve}{213}
+\newcommand{\yskDesacLeveSevera}{169}
+\newcommand{\yskDesacTres}{3}
+\newcommand{\yskDesacNenhumaSevera}{0}
+\newcommand{\yskTresRotulosN}{3}
+\newcommand{\yskTresRotulosFinal}{Severa}
+\newcommand{\yskVideosSeisFrases}{139}
+\newcommand{\yskVideosMaisDeSeis}{66}
+\newcommand{\yskVideosMenosDeSeis}{1}
+\newcommand{\yskFrasesPorVideoMedia}{8.8}
+\newcommand{\yskFrasesPorVideoMax}{25}
+\newcommand{\yskVideosTresClasses}{135}
+\newcommand{\yskAdultaVideos}{90}
+\newcommand{\yskAdultaFrases}{988}
+\newcommand{\yskAdultaFrasesPct}{54.6}
+\newcommand{\yskAdultaPrevPct}{71.9}
+\newcommand{\yskDemaisPrevPct}{35.1}
+\newcommand{\yskFranquiasN}{17}
+\newcommand{\yskOutrosVideos}{68}
+\newcommand{\yskLoteUmN}{1,236}
+\newcommand{\yskLoteUmVideos}{205}
+\newcommand{\yskLoteUmVideosNovos}{0}
+\newcommand{\yskLoteUmVideosAntigos}{205}
+\newcommand{\yskLoteUmKappa}{0.8009}
+\newcommand{\yskLoteUmPrevPct}{52.1}
+\newcommand{\yskLoteDoisN}{575}
+\newcommand{\yskLoteDoisVideos}{66}
+\newcommand{\yskLoteDoisVideosNovos}{1}
+\newcommand{\yskLoteDoisVideosAntigos}{65}
+\newcommand{\yskLoteDoisKappa}{0.7307}
+\newcommand{\yskLoteDoisPrevPct}{61.7}
+\newcommand{\yskParteInicio}{582}
+\newcommand{\yskParteMeio}{702}
+\newcommand{\yskParteFim}{527}
+
+% --- Partição por vídeo (data/particoes/particao_video.csv) ----------------
+\newcommand{\yskTreinoN}{1,394}
+\newcommand{\yskTreinoVideos}{162}
+\newcommand{\yskTesteN}{417}
+\newcommand{\yskTesteVideos}{44}
+\newcommand{\yskTestePct}{23}
+\newcommand{\yskTreinoPct}{77}
+\newcommand{\yskVideosAmbosLados}{0}
+\newcommand{\yskFoldMinN}{211}
+\newcommand{\yskFoldMaxN}{324}
+
+% --- Busca de hiperparâmetros (train_toxicity_gridsearch.py --mode search) ---
+% Fonte: app/nlp/evaluation/results/video-v1/toxicity_gridsearch/gridsearch_optimized_search_20261119_221516.json
+\newcommand{\yskBuscaEspacoN}{4,608}  % combinações possíveis (produto dos tamanhos das listas)
+\newcommand{\yskBuscaDimensoes}{9}  % dimensões com mais de um valor
+\newcommand{\yskBuscaConfigs}{32}  % configurações sorteadas (estágio 1)
+\newcommand{\yskBuscaEstUmFolds}{2}
+\newcommand{\yskBuscaEstUmEpocas}{3}  % teto de épocas no estágio 1
+\newcommand{\yskBuscaEstDoisN}{10}
+\newcommand{\yskBuscaEstDoisFolds}{5}
+\newcommand{\yskBuscaEstTresN}{3}
+\newcommand{\yskBuscaEstTresSementes}{3}
+\newcommand{\yskBuscaEstTresFolds}{5}
+\newcommand{\yskBuscaTreinos}{159}  % estágio 1 x folds + estágio 2 x folds + estágio 3 x sementes x folds (planejado)
+\newcommand{\yskVencEpocas}{8}
+\newcommand{\yskVencBatch}{8}
+\newcommand{\yskVencLr}{5e-5}
+\newcommand{\yskVencMaxLength}{128}  % tokens
+\newcommand{\yskVencWarmupPct}{6}
+\newcommand{\yskVencWeightDecay}{0.01}
+\newcommand{\yskVencLlrd}{0.9}
+\newcommand{\yskVencPerda}{cross-entropy}
+\newcommand{\yskVencSuavizacao}{0.1}  % label smoothing
+\newcommand{\yskVencOversampling}{no}
+\newcommand{\yskBertCvMedia}{0.8075}  % F1 macro de CV do vencedor, média entre as sementes do estágio 3
+\newcommand{\yskBertCvDpSementes}{0.0037}  % DP entre sementes como gravado na busca (np.std, ddof=0)
+\newcommand{\yskBertCvPiorSemente}{0.8024}
+\newcommand{\yskBertCvSementesN}{3}
+\newcommand{\yskVencEraLiderEstDois}{no}
+\newcommand{\yskEstDoisLiderMargem}{0.0053}  % F1 do líder do estágio 2 menos o do vencedor, no estágio 2
+\newcommand{\yskEstTresLiderDp}{0.0088}  % DP entre sementes do líder do estágio 2
+\newcommand{\yskEstTresRazaoDpLider}{2.4}  % DP entre sementes do líder do estágio 2 / DP do vencedor
+\newcommand{\yskEstTresAmplitude}{0.0012}  % max - min do F1 médio entre os finalistas (estágio 3)
+\newcommand{\yskPerdaOutra}{focal}
+\newcommand{\yskPerdaMargem}{0.0006}  % vencedor menos a melhor config. da outra perda, média entre sementes (estágio 3)
+\newcommand{\yskPerdaMargemEstagio}{3}
+\newcommand{\yskLlrdValores}{0.9, 0.95, 1}
+\newcommand{\yskLlrdAmplitudeEstUm}{0.0237}  % max - min do F1 médio por valor de LLRD (estágio 1)
+\newcommand{\yskEstUmDpMedio}{0.0167}  % DP médio entre folds no estágio 1 (faixa de ruído da triagem)
+
+% --- Modelo final (train_toxicity_gridsearch.py --mode final) --------------
+% Fonte: app/nlp/evaluation/results/video-v1/modelo_final/modelo_final_20261120_013147.json
+\newcommand{\yskFinalSementesN}{5}
+\newcommand{\yskFinalSementeRef}{42}
+\newcommand{\yskBertTesteMedia}{0.7502}  % F1 macro no teste, média entre sementes
+\newcommand{\yskBertTesteDp}{0.0060}  % DP entre sementes, como gravado
+\newcommand{\yskBertTesteMin}{0.7419}
+\newcommand{\yskBertTesteMax}{0.7566}
+\newcommand{\yskBertTesteRef}{0.7511}  % F1 macro no teste, semente de referência
+\newcommand{\yskBertOof}{0.8016}  % F1 macro das predições OOF do treino
+\newcommand{\yskFinalNDev}{1,394}
+\newcommand{\yskFinalNTeste}{417}
+
+% --- Avaliação no teste (evaluate_toxicity.py; modelo de referência) -------
+% Fonte: app/nlp/evaluation/results/video-v1/toxicity_evaluation/evaluation_metrics_TOX_20261120_015459.json
+\newcommand{\yskBertTesteFUm}{0.7511}
+\newcommand{\yskBertTesteFUmCurto}{0.75}
+\newcommand{\yskBertTesteAcc}{76.3}
+\newcommand{\yskBertFUmNenhuma}{81.4}
+\newcommand{\yskBertRecNenhuma}{80.1}
+\newcommand{\yskBertPrecNenhuma}{82.8}
+\newcommand{\yskSuporteNenhuma}{186}
+\newcommand{\yskBertFUmLeve}{75.7}
+\newcommand{\yskBertRecLeve}{71.4}
+\newcommand{\yskBertPrecLeve}{80.5}
+\newcommand{\yskSuporteLeve}{133}
+\newcommand{\yskBertFUmSevera}{68.2}
+\newcommand{\yskBertRecSevera}{75.5}
+\newcommand{\yskBertPrecSevera}{62.2}
+\newcommand{\yskSuporteSevera}{98}
+\newcommand{\yskErrosN}{99}
+\newcommand{\yskErrosLeveSeveraN}{31}  % erros na fronteira Leve-Severa (as duas direções)
+\newcommand{\yskLeveComoSevera}{22}
+\newcommand{\yskSeveraComoLeve}{9}
+\newcommand{\yskSeveraComoNenhuma}{15}
+\newcommand{\yskSeveraComoNenhumaPct}{15.3}  % das frases Severa
+\newcommand{\yskSeveraErrosN}{24}
+\newcommand{\yskNenhumaComoLeve}{14}
+\newcommand{\yskNenhumaComoSevera}{23}
+\newcommand{\yskLeveComoNenhuma}{16}
+\newcommand{\yskBertBinFUm}{0.8345}  % F1 macro binário (tóxico x não tóxico), da matriz de confusão de três classes
+\newcommand{\yskBertAucMacro}{0.875}
+\newcommand{\yskAvalSemAnalogoN}{389}
+\newcommand{\yskBertSemAnalogoFUm}{0.7406}
+\newcommand{\yskAvalComAnalogoN}{28}
+\newcommand{\yskBertComAnalogoFUm}{0.7122}
+
+% --- Baselines clássicas, configuração fixa (train_toxicity_baselines.py) ---
+% Fonte: app/nlp/evaluation/results/video-v1/baselines_toxicity_20261120_015516.json
+\newcommand{\yskBaseTfidfMaxFeatures}{10,000}
+\newcommand{\yskSvmCvFUm}{0.7525}
+\newcommand{\yskSvmCvDp}{0.0437}  % DP amostral entre folds (ddof=1)
+\newcommand{\yskLrCvFUm}{0.7364}
+\newcommand{\yskLrCvDp}{0.0419}  % DP amostral entre folds (ddof=1)
+\newcommand{\yskRfCvFUm}{0.7245}
+\newcommand{\yskRfCvDp}{0.0397}  % DP amostral entre folds (ddof=1)
+\newcommand{\yskNbCvFUm}{0.7144}
+\newcommand{\yskNbCvDp}{0.0359}  % DP amostral entre folds (ddof=1)
+\newcommand{\yskMelhorBaseCvNome}{SVM}
+\newcommand{\yskMelhorBaseCvFUm}{0.7525}
+\newcommand{\yskMargemCvPp}{5.5}  % BERTimbau (CV, média entre sementes) menos a melhor baseline de CV
+\newcommand{\yskSvmTesteFUm}{0.6923}
+\newcommand{\yskSvmSemAnalogoFUm}{0.6786}
+\newcommand{\yskLrTesteFUm}{0.6654}
+\newcommand{\yskLrSemAnalogoFUm}{0.6513}
+\newcommand{\yskRfTesteFUm}{0.6727}
+\newcommand{\yskRfSemAnalogoFUm}{0.6575}
+\newcommand{\yskNbTesteFUm}{0.6842}
+\newcommand{\yskNbSemAnalogoFUm}{0.6660}
+\newcommand{\yskMelhorBaseTesteNome}{SVM}
+\newcommand{\yskMelhorBaseTesteFUm}{0.6923}
+\newcommand{\yskMargemTestePp}{5.9}  % BERTimbau (teste, semente de referência) menos a melhor baseline no teste
+\newcommand{\yskMargemMaiorPp}{8.6}  % contra a baseline mais fraca no teste
+\newcommand{\yskMargemMaiorNome}{logistic regression}
+\newcommand{\yskMargemTesteMediaSementesPp}{5.8}  % BERTimbau (teste, média entre sementes) menos a melhor baseline no teste
+\newcommand{\yskMelhorBaseSemAnalogoNome}{SVM}
+\newcommand{\yskMelhorBaseSemAnalogoFUm}{0.6786}
+\newcommand{\yskMargemSemAnalogoPp}{6.2}  % BERTimbau menos a melhor baseline, só frases sem análogo
+
+% --- Baselines ajustadas por CV aninhada (train_toxicity_baselines_ajustados.py) ---
+% Fonte: app/nlp/evaluation/results/video-v1/baselines_ajustados_20261119_225526.json
+% NOTA: svm: sem análogo: não gerado (chave ausente 'por_similaridade')
+% NOTA: lr: sem análogo: não gerado (chave ausente 'por_similaridade')
+% NOTA: cnb: sem análogo: não gerado (chave ausente 'por_similaridade')
+\newcommand{\yskSvmAjConfigs}{32}  % configurações sorteadas
+\newcommand{\yskSvmAjCvFUm}{0.7589}  % CV aninhada
+\newcommand{\yskSvmAjCvDp}{0.0382}  % DP amostral entre folds (ddof=1)
+\newcommand{\yskSvmAjConfigsDistintas}{4}  % configurações distintas escolhidas nos 5 folds externos
+\newcommand{\yskSvmAjTesteFUm}{0.7081}
+\newcommand{\yskLrAjConfigs}{32}  % configurações sorteadas
+\newcommand{\yskLrAjCvFUm}{0.7637}  % CV aninhada
+\newcommand{\yskLrAjCvDp}{0.0433}  % DP amostral entre folds (ddof=1)
+\newcommand{\yskLrAjConfigsDistintas}{3}  % configurações distintas escolhidas nos 5 folds externos
+\newcommand{\yskLrAjTesteFUm}{0.6990}
+\newcommand{\yskCnbAjConfigs}{32}  % configurações sorteadas
+\newcommand{\yskCnbAjCvFUm}{0.7453}  % CV aninhada
+\newcommand{\yskCnbAjCvDp}{0.0443}  % DP amostral entre folds (ddof=1)
+\newcommand{\yskCnbAjConfigsDistintas}{3}  % configurações distintas escolhidas nos 5 folds externos
+\newcommand{\yskCnbAjTesteFUm}{0.6810}
+\newcommand{\yskAjOtimismoMin}{+0.0014}  % melhor F1 da CV plana menos o da CV aninhada (otimismo de seleção), menor
+\newcommand{\yskAjOtimismoMax}{+0.0028}  % idem, maior
+\newcommand{\yskMelhorAjTesteNome}{tuned SVM}
+\newcommand{\yskMelhorAjTesteFUm}{0.7081}
+\newcommand{\yskMelhorAjCvNome}{tuned logistic regression}
+\newcommand{\yskMelhorAjCvFUm}{0.7637}
+\newcommand{\yskMargemAjTestePp}{4.3}  % BERTimbau menos a melhor baseline ajustada, no teste
+\newcommand{\yskMargemAjCvPp}{4.4}  % BERTimbau (CV) menos a melhor baseline ajustada (CV aninhada)
+\newcommand{\yskAjNDev}{1,394}
+\newcommand{\yskAjNTeste}{417}
+
+% --- Dispersão e margens em unidades de DP (analisar_dispersao.py) ---------
+% Fonte: app/nlp/evaluation/results/video-v1/dispersao_20261120_015517.json
+\newcommand{\yskDispBertDpFolds}{0.0410}  % média entre sementes do DP amostral (ddof=1) entre os 5 folds
+\newcommand{\yskDispBertDpSementes}{0.0045}  % DP amostral (ddof=1) entre as médias das sementes
+\newcommand{\yskDispMaisForteCvNome}{tuned logistic regression}
+\newcommand{\yskDispMargemCvEmDp}{1.0}  % margem de CV / DP entre folds combinado dos dois modelos
+\newcommand{\yskDispMargemCvEmDpBert}{1.1}  % margem de CV / DP entre folds do BERTimbau
+\newcommand{\yskDispBaseDpFolds}{0.0433}
+\newcommand{\yskDispMargemTesteEmDpSementes}{8.5}
+\newcommand{\yskDispPareadoMedia}{0.0459}
+\newcommand{\yskDispPareadoDp}{0.0231}
+\newcommand{\yskDispPareadoFoldsMelhor}{5}
+\newcommand{\yskDispPareadoNFolds}{5}
+
+% --- Comparação pareada contra o BERTimbau (comparar_modelos.py) -----------
+% Fonte: app/nlp/evaluation/results/video-v1/comparacao_pareada_20261120_021327.json
+\newcommand{\yskCompNTeste}{417}
+\newcommand{\yskCompNBoot}{5,000}
+\newcommand{\yskCompNVideos}{44}
+\newcommand{\yskCompSondaDif}{0.0078}  % F1 do BERTimbau menos o do outro
+\newcommand{\yskCompSondaIcBaixo}{-0.026}
+\newcommand{\yskCompSondaIcAlto}{+0.042}
+\newcommand{\yskCompSondaP}{= 0.67}  % bootstrap pareado por frase, p corrigido; inclui "="
+\newcommand{\yskCompSondaPHolm}{= 0.67}
+\newcommand{\yskCompSondaMcNemarP}{= 0.78}
+\newcommand{\yskCompSondaSoBert}{26}  % frases que só o BERTimbau acerta
+\newcommand{\yskCompSondaSoOutro}{23}  % frases que só o outro acerta
+\newcommand{\yskCompSondaVideoIcBaixo}{-0.029}
+\newcommand{\yskCompSondaVideoIcAlto}{+0.044}
+\newcommand{\yskCompSondaVideoPHolm}{= 0.69}
+\newcommand{\yskCompSvmDif}{0.0587}  % F1 do BERTimbau menos o do outro
+\newcommand{\yskCompSvmIcBaixo}{+0.018}
+\newcommand{\yskCompSvmIcAlto}{+0.099}
+\newcommand{\yskCompSvmP}{= 0.0052}  % bootstrap pareado por frase, p corrigido; inclui "="
+\newcommand{\yskCompSvmPHolm}{= 0.026}
+\newcommand{\yskCompSvmMcNemarP}{= 0.0095}
+\newcommand{\yskCompSvmSoBert}{48}  % frases que só o BERTimbau acerta
+\newcommand{\yskCompSvmSoOutro}{25}  % frases que só o outro acerta
+\newcommand{\yskCompSvmVideoIcBaixo}{+0.023}
+\newcommand{\yskCompSvmVideoIcAlto}{+0.091}
+\newcommand{\yskCompSvmVideoPHolm}{= 0.0084}
+\newcommand{\yskCompLrDif}{0.0856}  % F1 do BERTimbau menos o do outro
+\newcommand{\yskCompLrIcBaixo}{+0.042}
+\newcommand{\yskCompLrIcAlto}{+0.131}
+\newcommand{\yskCompLrP}{= 0.0008}  % bootstrap pareado por frase, p corrigido; inclui "="
+\newcommand{\yskCompLrPHolm}{= 0.0064}
+\newcommand{\yskCompLrMcNemarP}{= 0.0005}
+\newcommand{\yskCompLrSoBert}{60}  % frases que só o BERTimbau acerta
+\newcommand{\yskCompLrSoOutro}{27}  % frases que só o outro acerta
+\newcommand{\yskCompLrVideoIcBaixo}{+0.042}
+\newcommand{\yskCompLrVideoIcAlto}{+0.128}
+\newcommand{\yskCompLrVideoPHolm}{= 0.0032}
+\newcommand{\yskCompRfDif}{0.0784}  % F1 do BERTimbau menos o do outro
+\newcommand{\yskCompRfIcBaixo}{+0.033}
+\newcommand{\yskCompRfIcAlto}{+0.126}
+\newcommand{\yskCompRfP}{= 0.0020}  % bootstrap pareado por frase, p corrigido; inclui "="
+\newcommand{\yskCompRfPHolm}{= 0.014}
+\newcommand{\yskCompRfMcNemarP}{= 0.0035}
+\newcommand{\yskCompRfSoBert}{61}  % frases que só o BERTimbau acerta
+\newcommand{\yskCompRfSoOutro}{32}  % frases que só o outro acerta
+\newcommand{\yskCompRfVideoIcBaixo}{+0.025}
+\newcommand{\yskCompRfVideoIcAlto}{+0.131}
+\newcommand{\yskCompRfVideoPHolm}{= 0.012}
+\newcommand{\yskCompNbDif}{0.0668}  % F1 do BERTimbau menos o do outro
+\newcommand{\yskCompNbIcBaixo}{+0.019}
+\newcommand{\yskCompNbIcAlto}{+0.116}
+\newcommand{\yskCompNbP}{= 0.0052}  % bootstrap pareado por frase, p corrigido; inclui "="
+\newcommand{\yskCompNbPHolm}{= 0.026}
+\newcommand{\yskCompNbMcNemarP}{= 0.059}
+\newcommand{\yskCompNbSoBert}{55}  % frases que só o BERTimbau acerta
+\newcommand{\yskCompNbSoOutro}{36}  % frases que só o outro acerta
+\newcommand{\yskCompNbVideoIcBaixo}{+0.012}
+\newcommand{\yskCompNbVideoIcAlto}{+0.121}
+\newcommand{\yskCompNbVideoPHolm}{= 0.055}
+\newcommand{\yskCompSvmAjDif}{0.0430}  % F1 do BERTimbau menos o do outro
+\newcommand{\yskCompSvmAjIcBaixo}{+0.000}
+\newcommand{\yskCompSvmAjIcAlto}{+0.087}
+\newcommand{\yskCompSvmAjP}{= 0.049}  % bootstrap pareado por frase, p corrigido; inclui "="
+\newcommand{\yskCompSvmAjPHolm}{= 0.098}
+\newcommand{\yskCompSvmAjMcNemarP}{= 0.064}
+\newcommand{\yskCompSvmAjSoBert}{46}  % frases que só o BERTimbau acerta
+\newcommand{\yskCompSvmAjSoOutro}{29}  % frases que só o outro acerta
+\newcommand{\yskCompSvmAjVideoIcBaixo}{+0.003}
+\newcommand{\yskCompSvmAjVideoIcAlto}{+0.082}
+\newcommand{\yskCompSvmAjVideoPHolm}{= 0.068}
+\newcommand{\yskCompLrAjDif}{0.0520}  % F1 do BERTimbau menos o do outro
+\newcommand{\yskCompLrAjIcBaixo}{+0.009}
+\newcommand{\yskCompLrAjIcAlto}{+0.095}
+\newcommand{\yskCompLrAjP}{= 0.016}  % bootstrap pareado por frase, p corrigido; inclui "="
+\newcommand{\yskCompLrAjPHolm}{= 0.047}
+\newcommand{\yskCompLrAjMcNemarP}{= 0.024}
+\newcommand{\yskCompLrAjSoBert}{46}  % frases que só o BERTimbau acerta
+\newcommand{\yskCompLrAjSoOutro}{26}  % frases que só o outro acerta
+\newcommand{\yskCompLrAjVideoIcBaixo}{+0.012}
+\newcommand{\yskCompLrAjVideoIcAlto}{+0.090}
+\newcommand{\yskCompLrAjVideoPHolm}{= 0.045}
+\newcommand{\yskCompCnbAjDif}{0.0701}  % F1 do BERTimbau menos o do outro
+\newcommand{\yskCompCnbAjIcBaixo}{+0.023}
+\newcommand{\yskCompCnbAjIcAlto}{+0.118}
+\newcommand{\yskCompCnbAjP}{= 0.0020}  % bootstrap pareado por frase, p corrigido; inclui "="
+\newcommand{\yskCompCnbAjPHolm}{= 0.014}
+\newcommand{\yskCompCnbAjMcNemarP}{= 0.014}
+\newcommand{\yskCompCnbAjSoBert}{56}  % frases que só o BERTimbau acerta
+\newcommand{\yskCompCnbAjSoOutro}{32}  % frases que só o outro acerta
+\newcommand{\yskCompCnbAjVideoIcBaixo}{+0.020}
+\newcommand{\yskCompCnbAjVideoIcAlto}{+0.118}
+\newcommand{\yskCompCnbAjVideoPHolm}{= 0.032}
+\newcommand{\yskCompMenorMargemNome}{tuned SVM}
+\newcommand{\yskCompMenorMargemDif}{0.0430}
+\newcommand{\yskCompMenorMargemMcNemarP}{= 0.064}
+\newcommand{\yskCompMenorMargemPHolm}{= 0.098}
+\newcommand{\yskCompMaiorMargemNome}{logistic regression}
+\newcommand{\yskCompMaiorMargemDif}{0.0856}
+\newcommand{\yskCompMaiorMargemPp}{8.6}
+\newcommand{\yskCompNBaselines}{7}  % baselines comparadas (fixas e ajustadas)
+\newcommand{\yskCompNSignifHolm}{6}  % baselines (fixas e ajustadas) separadas do BERTimbau após Holm (bootstrap por frase)
+\newcommand{\yskCompNSignifHolmVideo}{5}  % idem, bootstrap por vídeo
+\newcommand{\yskCompSementesN}{5}
+\newcommand{\yskCompSondaDifMinSementes}{-0.0014}
+\newcommand{\yskCompSondaDifMaxSementes}{0.0133}
+\newcommand{\yskCompSondaSementesSignif}{0}  % sementes em que a diferença é significativa após Holm (frases)
+\newcommand{\yskCompSvmDifMinSementes}{0.0496}
+\newcommand{\yskCompSvmDifMaxSementes}{0.0643}
+\newcommand{\yskCompSvmSementesSignif}{4}  % sementes em que a diferença é significativa após Holm (frases)
+\newcommand{\yskCompLrDifMinSementes}{0.0765}
+\newcommand{\yskCompLrDifMaxSementes}{0.0912}
+\newcommand{\yskCompLrSementesSignif}{5}  % sementes em que a diferença é significativa após Holm (frases)
+\newcommand{\yskCompRfDifMinSementes}{0.0693}
+\newcommand{\yskCompRfDifMaxSementes}{0.0839}
+\newcommand{\yskCompRfSementesSignif}{5}  % sementes em que a diferença é significativa após Holm (frases)
+\newcommand{\yskCompNbDifMinSementes}{0.0577}
+\newcommand{\yskCompNbDifMaxSementes}{0.0724}
+\newcommand{\yskCompNbSementesSignif}{4}  % sementes em que a diferença é significativa após Holm (frases)
+\newcommand{\yskCompSvmAjDifMinSementes}{0.0339}
+\newcommand{\yskCompSvmAjDifMaxSementes}{0.0485}
+\newcommand{\yskCompSvmAjSementesSignif}{1}  % sementes em que a diferença é significativa após Holm (frases)
+\newcommand{\yskCompLrAjDifMinSementes}{0.0429}
+\newcommand{\yskCompLrAjDifMaxSementes}{0.0576}
+\newcommand{\yskCompLrAjSementesSignif}{4}  % sementes em que a diferença é significativa após Holm (frases)
+\newcommand{\yskCompCnbAjDifMinSementes}{0.0609}
+\newcommand{\yskCompCnbAjDifMaxSementes}{0.0756}
+\newcommand{\yskCompCnbAjSementesSignif}{5}  % sementes em que a diferença é significativa após Holm (frases)
+
+% --- Teste por lote de anotação e época restaurada (analisar_teste_por_lote.py) ---
+% Fonte: app/nlp/evaluation/results/video-v1/teste_por_lote_20261120_104719.json
+\newcommand{\yskLoteTesteUmN}{264}
+\newcommand{\yskLoteTesteUmVideos}{44}
+\newcommand{\yskLoteTesteUmSeveraPct}{20.8}  % frases Severa do lote no teste
+\newcommand{\yskBertLoteUmFUm}{0.8507}  % média das 5 sementes
+\newcommand{\yskBertLoteUmDp}{0.0117}  % DP entre sementes (ddof=1)
+\newcommand{\yskSvmAjLoteUmFUm}{0.8228}
+\newcommand{\yskLoteTesteDoisN}{153}
+\newcommand{\yskLoteTesteDoisVideos}{19}
+\newcommand{\yskLoteTesteDoisSeveraPct}{28.1}  % frases Severa do lote no teste
+\newcommand{\yskBertLoteDoisFUm}{0.5749}  % média das 5 sementes
+\newcommand{\yskBertLoteDoisDp}{0.0145}  % DP entre sementes (ddof=1)
+\newcommand{\yskSvmAjLoteDoisFUm}{0.5056}
+\newcommand{\yskLoteTesteVideosAmbos}{19}  % vídeos do teste com frases dos dois lotes
+\newcommand{\yskEpocaMax}{8}  % orçamento de épocas da configuração
+\newcommand{\yskEpocaRef}{8}  % época restaurada, semente 42
+\newcommand{\yskEpocaMinSementes}{3}
+\newcommand{\yskEpocaMaxSementes}{8}
+
+% --- Referências sem ajuste fino: sonda, modelos prontos, zero-shot (train_toxicity_sem_finetuning.py) ---
+% Fonte: app/nlp/evaluation/results/video-v1/sem_finetuning_20261120_015544.json
+\newcommand{\yskSemFtNTeste}{417}
+\newcommand{\yskSondaFUm}{0.7433}
+\newcommand{\yskSondaCvFUm}{0.7797}
+\newcommand{\yskSondaCvDp}{0.0364}  % np.std entre folds (ddof=0), como gravado
+\newcommand{\yskSondaGapPp}{0.8}  % BERTimbau ajustado menos a sonda, no teste
+\newcommand{\yskProntosFUm}{0.4318}
+\newcommand{\yskProntosFUmCurto}{0.43}
+\newcommand{\yskHateBrFUm}{0.6197}
+\newcommand{\yskHateBrFUmCurto}{0.62}
+\newcommand{\yskAlvoFUm}{0.6105}
+\newcommand{\yskAlvoFUmCurto}{0.61}
+\newcommand{\yskZeroShotMoldesN}{3}
+\newcommand{\yskZeroShotTesteMin}{0.3312}  % pior molde no teste (registro)
+\newcommand{\yskZeroShotTesteMax}{0.4490}  % melhor molde no teste (registro, não é a referência)
+\newcommand{\yskZeroShotFUm}{0.4490}  % molde escolhido no treino, F1 no teste
+\newcommand{\yskZeroShotFUmCurto}{0.45}
+\newcommand{\yskZeroShotTreinoFUm}{0.4790}  % F1 do molde escolhido, no treino
+\newcommand{\yskZeroShotTreinoMin}{0.3066}
+\newcommand{\yskZeroShotTreinoMax}{0.4790}
+\newcommand{\yskZeroShotTreinoN}{1,394}
+\newcommand{\yskZeroShotEscolhidoEraMelhorTeste}{yes}
+
+% --- LLM generativo, few-shot (train_toxicity_llm_baselines.py) ------------
+% Fonte: app/nlp/evaluation/results/video-v1/llm_baselines_toxicity_20261120_021243.json
+\newcommand{\yskLlmNome}{llama3.1:8b}
+\newcommand{\yskLlmNAmostras}{417}
+\newcommand{\yskLlmFUm}{0.6314}
+\newcommand{\yskLlmFUmCurto}{0.63}
+\newcommand{\yskLlmAcc}{63.1}
+\newcommand{\yskLlmRecSevera}{82.7}
+\newcommand{\yskLlmSeverasPerdidas}{17}  % Severas não preditas Severa
+\newcommand{\yskLlmFaToxico}{49.5}  % Nenhuma predita Leve ou Severa
+\newcommand{\yskLlmFaSevera}{17.7}  % Nenhuma predita Severa
+\newcommand{\yskLlmNenhumaComoLeve}{59}
+\newcommand{\yskLlmNenhumaN}{186}
+\newcommand{\yskLlmGapPp}{12.0}  % BERTimbau ajustado menos o LLM, no teste
+\newcommand{\yskLlmPorFraseS}{2.42}  % tempo total da avaliação / frases (laço sequencial; ver também Latência)
+\newcommand{\yskLlmForaFormato}{0}
+\newcommand{\yskLlmForaFormatoPct}{0.0}
+\newcommand{\yskLlmFallbackNenhuma}{0}
+\newcommand{\yskLlmReqMedianaS}{2.40}
+\newcommand{\yskLlmReqPNoventaCincoS}{2.52}
+\newcommand{\yskLlmSemAnalogoFUm}{0.6188}
+\newcommand{\yskLlmFewShotPorClasse}{2}
+
+% --- Detoxify multilíngue, sem ajuste fino (avaliar_detoxify.py) -----------
+% Fonte: app/nlp/evaluation/results/video-v1/detoxify/detoxify_20261120_021310.json
+\newcommand{\yskDetoxBinPadraoFUm}{0.7304}
+\newcommand{\yskDetoxBinTreinoFUm}{0.7327}
+\newcommand{\yskDetoxTresLimiaresFUm}{0.5054}
+\newcommand{\yskDetoxTresLogisticaFUm}{0.5647}
+\newcommand{\yskDetoxLimiarTreino}{0.241}
+\newcommand{\yskDetoxNTeste}{417}
+
+% --- Limiar escolhido nas OOF e calibração (analisar_calibracao_limiar.py) ---
+% Fonte: app/nlp/evaluation/results/video-v1/calibracao_limiar_20261120_021452.json
+\newcommand{\yskCalibNOof}{1,394}
+\newcommand{\yskCalibNTeste}{417}
+\newcommand{\yskArgmaxRecSevera}{75.5}
+\newcommand{\yskArgmaxSeverasNaoSinal}{24}
+\newcommand{\yskArgmaxSeverasComoNenhuma}{15}
+\newcommand{\yskArgmaxFaSevera}{12.4}  % Nenhuma sinalizada como Severa
+\newcommand{\yskArgmaxFaToxico}{19.9}  % Nenhuma sinalizada em qualquer grau
+\newcommand{\yskArgmaxPrecSevera}{62.2}
+\newcommand{\yskArgmaxRecSeveraIcBaixo}{66.1}  % IC 95% de Wilson
+\newcommand{\yskArgmaxRecSeveraIcAlto}{83.0}
+\newcommand{\yskArgmaxFaSeveraIcBaixo}{8.4}  % IC 95% de Wilson
+\newcommand{\yskArgmaxFaSeveraIcAlto}{17.9}
+\newcommand{\yskArgmaxFaToxicoIcBaixo}{14.8}  % IC 95% de Wilson
+\newcommand{\yskArgmaxFaToxicoIcAlto}{26.2}
+\newcommand{\yskArgmaxOofRecSevera}{83.3}
+\newcommand{\yskArgmaxOofSeverasNaoSinal}{63}
+\newcommand{\yskArgmaxOofSeverasComoNenhuma}{37}
+\newcommand{\yskArgmaxOofFaSevera}{11.3}  % Nenhuma sinalizada como Severa
+\newcommand{\yskArgmaxOofFaToxico}{17.6}  % Nenhuma sinalizada em qualquer grau
+\newcommand{\yskArgmaxOofPrecSevera}{69.7}
+\newcommand{\yskTauA}{0.34}  % regra a (declarada antes): menor tau com FA Severa OOF até o orçamento acima do argmax
+\newcommand{\yskTauAOrcamentoPp}{2.0}
+\newcommand{\yskTauATetoFaOof}{13.3}
+\newcommand{\yskTauARecSevera}{80.6}
+\newcommand{\yskTauASeverasNaoSinal}{19}
+\newcommand{\yskTauASeverasComoNenhuma}{13}
+\newcommand{\yskTauAFaSevera}{12.9}  % Nenhuma sinalizada como Severa
+\newcommand{\yskTauAFaToxico}{19.9}  % Nenhuma sinalizada em qualquer grau
+\newcommand{\yskTauAPrecSevera}{63.2}
+\newcommand{\yskTauARecSeveraIcBaixo}{71.7}  % IC 95% de Wilson
+\newcommand{\yskTauARecSeveraIcAlto}{87.2}
+\newcommand{\yskTauAFaSeveraIcBaixo}{8.8}  % IC 95% de Wilson
+\newcommand{\yskTauAFaSeveraIcAlto}{18.5}
+\newcommand{\yskTauAFaToxicoIcBaixo}{14.8}  % IC 95% de Wilson
+\newcommand{\yskTauAFaToxicoIcAlto}{26.2}
+\newcommand{\yskTauAOofRecSevera}{85.2}
+\newcommand{\yskTauAOofSeverasNaoSinal}{56}
+\newcommand{\yskTauAOofSeverasComoNenhuma}{33}
+\newcommand{\yskTauAOofFaSevera}{13.3}  % Nenhuma sinalizada como Severa
+\newcommand{\yskTauAOofFaToxico}{19.2}  % Nenhuma sinalizada em qualquer grau
+\newcommand{\yskTauAOofPrecSevera}{67.5}
+\newcommand{\yskTauAGanhoRecPp}{5.1}  % recall Severa: tau da regra a menos argmax, no teste
+\newcommand{\yskTauACustoFaSeveraPp}{0.5}  % FA Severa: tau da regra a menos argmax, no teste
+\newcommand{\yskTauACustoFaToxicoPp}{0.0}  % FA tóxico: tau da regra a menos argmax, no teste
+\newcommand{\yskTauARecSeveraMinSementes}{76.5}
+\newcommand{\yskTauARecSeveraMaxSementes}{86.7}
+\newcommand{\yskTauAFaSeveraMinSementes}{10.8}
+\newcommand{\yskTauAFaSeveraMaxSementes}{15.6}
+\newcommand{\yskArgmaxRecSeveraMinSementes}{75.5}
+\newcommand{\yskArgmaxRecSeveraMaxSementes}{86.7}
+\newcommand{\yskTauB}{0.16}  % regra b: tau que maximiza o F2 da Severa nas OOF
+\newcommand{\yskTauBRecSevera}{84.7}
+\newcommand{\yskTauBSeverasNaoSinal}{15}
+\newcommand{\yskTauBSeverasComoNenhuma}{10}
+\newcommand{\yskTauBFaSevera}{14.0}  % Nenhuma sinalizada como Severa
+\newcommand{\yskTauBFaToxico}{20.4}  % Nenhuma sinalizada em qualquer grau
+\newcommand{\yskTauBPrecSevera}{62.4}
+\newcommand{\yskTauBRecSeveraIcBaixo}{76.3}  % IC 95% de Wilson
+\newcommand{\yskTauBRecSeveraIcAlto}{90.5}
+\newcommand{\yskTauBFaSeveraIcBaixo}{9.7}  % IC 95% de Wilson
+\newcommand{\yskTauBFaSeveraIcAlto}{19.7}
+\newcommand{\yskTauBFaToxicoIcBaixo}{15.3}  % IC 95% de Wilson
+\newcommand{\yskTauBFaToxicoIcAlto}{26.8}
+\newcommand{\yskTauBOofRecSevera}{87.3}
+\newcommand{\yskTauBOofSeverasNaoSinal}{48}
+\newcommand{\yskTauBOofSeverasComoNenhuma}{29}
+\newcommand{\yskTauBOofFaSevera}{16.3}  % Nenhuma sinalizada como Severa
+\newcommand{\yskTauBOofFaToxico}{22.0}  % Nenhuma sinalizada em qualquer grau
+\newcommand{\yskTauBOofPrecSevera}{65.1}
+\newcommand{\yskExplTauA}{0.15}  % EXPLORATÓRIO: escolhido no teste
+\newcommand{\yskExplTauARecSevera}{84.7}
+\newcommand{\yskExplTauASeverasNaoSinal}{15}
+\newcommand{\yskExplTauASeverasComoNenhuma}{10}
+\newcommand{\yskExplTauAFaSevera}{14.0}  % Nenhuma sinalizada como Severa
+\newcommand{\yskExplTauAFaToxico}{20.4}  % Nenhuma sinalizada em qualquer grau
+\newcommand{\yskExplTauAPrecSevera}{62.4}
+\newcommand{\yskExplTauB}{0.09}  % EXPLORATÓRIO: escolhido no teste
+\newcommand{\yskExplTauBRecSevera}{87.8}
+\newcommand{\yskExplTauBSeverasNaoSinal}{12}
+\newcommand{\yskExplTauBSeverasComoNenhuma}{9}
+\newcommand{\yskExplTauBFaSevera}{17.2}  % Nenhuma sinalizada como Severa
+\newcommand{\yskExplTauBFaToxico}{23.1}  % Nenhuma sinalizada em qualquer grau
+\newcommand{\yskExplTauBPrecSevera}{59.7}
+\newcommand{\yskSevNenhumaN}{15}
+\newcommand{\yskSevNenhumaDe}{98}
+\newcommand{\yskSevNenhumaPct}{15.3}
+\newcommand{\yskSevNenhumaSinalizadasTau}{2}  % quantas delas o tau OOF sinaliza
+\newcommand{\yskSevNenhumaScoreMediano}{0.924}
+\newcommand{\yskSevNenhumaScoreMin}{0.545}
+\newcommand{\yskNenhumaCorretasScoreMediano}{0.927}
+\newcommand{\yskCalibBins}{15}
+\newcommand{\yskTemperatura}{1.30}  % ajustada nas OOF
+\newcommand{\yskEceAntes}{0.142}  % teste, antes da temperatura
+\newcommand{\yskEceSeveraAntes}{0.104}
+\newcommand{\yskBrierAntes}{0.396}
+\newcommand{\yskNllAntes}{0.790}
+\newcommand{\yskEceDepois}{0.086}  % teste, depois da temperatura
+\newcommand{\yskEceSeveraDepois}{0.106}
+\newcommand{\yskBrierDepois}{0.377}
+\newcommand{\yskNllDepois}{0.709}
+\newcommand{\yskEceOofAntes}{0.078}
+\newcommand{\yskCalibScoreSpearman}{0.9996}
+\newcommand{\yskCalibScoreDeltaMedio}{0.037}
+\newcommand{\yskCalibScoreDeltaMax}{0.066}
+\newcommand{\yskCalibArgmaxPreservado}{yes}
+\newcommand{\yskPesosLeveTestados}{0.25, 0.5, 0.75}
+\newcommand{\yskPesosSpearmanMin}{0.975}  % menor Spearman entre as ordens produzidas por pesos diferentes da Leve
+
+% --- Pontos de operação com tau escolhido no teste (analisar_pontos_operacao.py; EXPLORATÓRIO) ---
+% Fonte: app/nlp/evaluation/results/video-v1/pontos_operacao_20261120_021336.json
+\newcommand{\yskPoTau}{0.1}  % EXPLORATÓRIO: escolhido no teste
+\newcommand{\yskPoTauRecSevera}{86.7}
+\newcommand{\yskPoTauSeverasPerdidas}{13}
+\newcommand{\yskPoTauFaSevera}{17.2}
+\newcommand{\yskPoTauFaToxico}{23.1}
+
+% --- Simulação de amostragem (simular_amostragem.py) -----------------------
+% Fonte: app/nlp/evaluation/results/video-v1/simulacao_amostragem_20261120_021412.json
+\newcommand{\yskSimN}{30,000}  % vídeos simulados por célula
+\newcommand{\yskSimFaAlvoPct}{5}
+\newcommand{\yskSimF}{0.20}  % fração de frases Severa no vídeo de risco (tabela)
+\newcommand{\yskSimFPct}{20}
+\newcommand{\yskSimPopulacao}{out-of-fold}
+\newcommand{\yskSimPopN}{1,394}
+\newcommand{\yskSimPopTesteN}{417}
+\newcommand{\yskLimiarAPriori}{0.511}  % percentil 5 do score de vídeos só Nenhuma, k = 3, regra media, população oof
+\newcommand{\yskLimiarAPrioriK}{3}
+\newcommand{\yskLimiarAPrioriFaVerif}{4.9}
+\newcommand{\yskLimiarAPrioriIcBaixo}{0.477}
+\newcommand{\yskLimiarAPrioriIcAlto}{0.559}
+\newcommand{\yskBandaDelta}{0.425}  % percentil 95 de |S1 - S2| entre vídeos só Nenhuma
+\newcommand{\yskBandaPercentil}{95}
+\newcommand{\yskBandaIcBaixo}{0.386}
+\newcommand{\yskBandaIcAlto}{0.456}
+\newcommand{\yskSimMediaKTres}{21.7}  % detecção (%), f = 0.20
+\newcommand{\yskSimMediaKTresIcBaixo}{18.7}  % IC 95% bootstrap da população
+\newcommand{\yskSimMediaKTresIcAlto}{24.0}
+\newcommand{\yskSimMediaKDoze}{45.4}  % detecção (%), f = 0.20
+\newcommand{\yskSimMediaKDozeIcBaixo}{41.0}  % IC 95% bootstrap da população
+\newcommand{\yskSimMediaKDozeIcAlto}{51.5}
+\newcommand{\yskSimMinimoKTres}{26.3}  % detecção (%), f = 0.20
+\newcommand{\yskSimMinimoKTresIcBaixo}{16.8}  % IC 95% bootstrap da população
+\newcommand{\yskSimMinimoKTresIcAlto}{35.1}
+\newcommand{\yskSimMinimoKDoze}{18.5}  % detecção (%), f = 0.20
+\newcommand{\yskSimMinimoKDozeIcBaixo}{9.9}  % IC 95% bootstrap da população
+\newcommand{\yskSimMinimoKDozeIcAlto}{62.8}
+\newcommand{\yskSimMinPondKTres}{23.8}  % detecção (%), f = 0.20
+\newcommand{\yskSimMinPondKTresIcBaixo}{20.3}  % IC 95% bootstrap da população
+\newcommand{\yskSimMinPondKTresIcAlto}{32.2}
+\newcommand{\yskSimMinPondKDoze}{49.5}  % detecção (%), f = 0.20
+\newcommand{\yskSimMinPondKDozeIcBaixo}{44.0}  % IC 95% bootstrap da população
+\newcommand{\yskSimMinPondKDozeIcAlto}{58.3}
+\newcommand{\yskSimDuasPioresKTres}{22.0}  % detecção (%), f = 0.20
+\newcommand{\yskSimDuasPioresKTresIcBaixo}{18.9}  % IC 95% bootstrap da população
+\newcommand{\yskSimDuasPioresKTresIcAlto}{24.0}
+\newcommand{\yskSimDuasPioresKDoze}{52.9}  % detecção (%), f = 0.20
+\newcommand{\yskSimDuasPioresKDozeIcBaixo}{41.9}  % IC 95% bootstrap da população
+\newcommand{\yskSimDuasPioresKDozeIcAlto}{62.3}
+\newcommand{\yskSimAmplitudeKTresPp}{4.5}  % max - min da detecção entre as quatro regras, k = 3
+\newcommand{\yskSimTesteMediaKTres}{17.7}  % detecção (%), f = 0.20
+\newcommand{\yskSimTesteMediaKTresIcBaixo}{15.0}  % IC 95% bootstrap da população
+\newcommand{\yskSimTesteMediaKTresIcAlto}{21.6}
+\newcommand{\yskSimTesteMediaKDoze}{37.1}  % detecção (%), f = 0.20
+\newcommand{\yskSimTesteMediaKDozeIcBaixo}{28.9}  % IC 95% bootstrap da população
+\newcommand{\yskSimTesteMediaKDozeIcAlto}{46.1}
+\newcommand{\yskSimTesteMinimoKTres}{16.8}  % detecção (%), f = 0.20
+\newcommand{\yskSimTesteMinimoKTresIcBaixo}{0.7}  % IC 95% bootstrap da população
+\newcommand{\yskSimTesteMinimoKTresIcAlto}{34.0}
+\newcommand{\yskSimTesteMinimoKDoze}{2.3}  % detecção (%), f = 0.20
+\newcommand{\yskSimTesteMinimoKDozeIcBaixo}{0.0}  % IC 95% bootstrap da população
+\newcommand{\yskSimTesteMinimoKDozeIcAlto}{45.9}
+\newcommand{\yskSimTesteMinPondKTres}{18.5}  % detecção (%), f = 0.20
+\newcommand{\yskSimTesteMinPondKTresIcBaixo}{15.4}  % IC 95% bootstrap da população
+\newcommand{\yskSimTesteMinPondKTresIcAlto}{23.6}
+\newcommand{\yskSimTesteMinPondKDoze}{37.4}  % detecção (%), f = 0.20
+\newcommand{\yskSimTesteMinPondKDozeIcBaixo}{28.6}  % IC 95% bootstrap da população
+\newcommand{\yskSimTesteMinPondKDozeIcAlto}{47.3}
+\newcommand{\yskSimTesteDuasPioresKTres}{17.9}  % detecção (%), f = 0.20
+\newcommand{\yskSimTesteDuasPioresKTresIcBaixo}{14.9}  % IC 95% bootstrap da população
+\newcommand{\yskSimTesteDuasPioresKTresIcAlto}{21.8}
+\newcommand{\yskSimTesteDuasPioresKDoze}{26.6}  % detecção (%), f = 0.20
+\newcommand{\yskSimTesteDuasPioresKDozeIcBaixo}{9.0}  % IC 95% bootstrap da população
+\newcommand{\yskSimTesteDuasPioresKDozeIcAlto}{61.2}
+\newcommand{\yskSimTesteAmplitudeKTresPp}{1.7}  % max - min da detecção entre as quatro regras, k = 3
+\newcommand{\yskSimBlocoFixoMediaKTres}{10.9}
+\newcommand{\yskSimBlocoFixoMediaKDoze}{39.1}
+\newcommand{\yskSimBlocoFixoMinPondKTres}{12.0}
+\newcommand{\yskSimBlocoFixoMinPondKDoze}{44.5}
+\newcommand{\yskSimBlocoEstratMediaKTres}{19.0}
+\newcommand{\yskSimBlocoEstratMediaKDoze}{44.7}
+\newcommand{\yskSimBlocoEstratMinPondKTres}{21.8}
+\newcommand{\yskSimBlocoEstratMinPondKDoze}{50.4}
+\newcommand{\yskSimNenhumaLeveMediaKTres}{19.9}
+\newcommand{\yskSimNenhumaLeveMediaKDoze}{35.1}
+\newcommand{\yskSimNenhumaLeveMinPondKTres}{21.4}
+\newcommand{\yskSimNenhumaLeveMinPondKDoze}{39.8}
+
+% --- Estudo de caso: estratos de busca (analisar_estratos.py) --------------
+% Fonte: app/nlp/evaluation/results/video-v1/estratos_20261120_021431.json
+% NOTA: 17 falha(s) do estrato B sem categoria final por julgamento humano; o texto usa só as categorias mecânicas (*Prov)
+\newcommand{\yskEstNVideos}{40}
+\newcommand{\yskEstNBuscas}{4}
+\newcommand{\yskEstSemTranscricao}{0}
+\newcommand{\yskEstANVideos}{20}
+\newcommand{\yskEstAMedia}{0.903}
+\newcommand{\yskEstAMin}{0.627}
+\newcommand{\yskEstAMax}{0.930}
+\newcommand{\yskEstAAmplitude}{0.303}
+\newcommand{\yskEstBNVideos}{20}
+\newcommand{\yskEstBMedia}{0.700}
+\newcommand{\yskEstBMin}{0.347}
+\newcommand{\yskEstBMax}{0.931}
+\newcommand{\yskEstBAmplitude}{0.584}
+\newcommand{\yskEstDifMedias}{0.203}
+\newcommand{\yskEstU}{315}  % Mann-Whitney
+\newcommand{\yskEstP}{= 0.0010}  % inclui "="; modo matemático
+\newcommand{\yskEstAuc}{0.787}  % AUC A x B, score = média das frases
+\newcommand{\yskEstAucIcBaixo}{0.604}
+\newcommand{\yskEstAucIcAlto}{0.941}
+\newcommand{\yskEstScoreMin}{0.347}
+\newcommand{\yskEstAucMinimo}{0.815}
+\newcommand{\yskEstLimiar}{0.511}  % origem: simulacao_oof
+\newcommand{\yskEstDetB}{3}
+\newcommand{\yskEstTotB}{20}
+\newcommand{\yskEstFalsosA}{0}
+\newcommand{\yskEstTotA}{20}
+\newcommand{\yskEstLimiarNoventaCincoDetB}{20}  % limiar 0.95 (EXPLORATÓRIO)
+\newcommand{\yskEstLimiarNoventaCincoFalsosA}{20}
+\newcommand{\yskEstLimiarNoventaDetB}{15}  % limiar 0.9 (EXPLORATÓRIO)
+\newcommand{\yskEstLimiarNoventaFalsosA}{2}
+\newcommand{\yskEstLimiarOitentaCincoDetB}{15}  % limiar 0.85 (EXPLORATÓRIO)
+\newcommand{\yskEstLimiarOitentaCincoFalsosA}{2}
+\newcommand{\yskEstLimiarOitentaDetB}{15}  % limiar 0.8 (EXPLORATÓRIO)
+\newcommand{\yskEstLimiarOitentaFalsosA}{2}
+\newcommand{\yskEstLimiarSetentaCincoDetB}{10}  % limiar 0.75 (EXPLORATÓRIO)
+\newcommand{\yskEstLimiarSetentaCincoFalsosA}{1}
+\newcommand{\yskEstLimiarSetentaDetB}{10}  % limiar 0.7 (EXPLORATÓRIO)
+\newcommand{\yskEstLimiarSetentaFalsosA}{1}
+\newcommand{\yskEstLimiarSessentaDetB}{6}  % limiar 0.6 (EXPLORATÓRIO)
+\newcommand{\yskEstLimiarSessentaFalsosA}{0}
+\newcommand{\yskEstLimiarCinquentaDetB}{3}  % limiar 0.5 (EXPLORATÓRIO)
+\newcommand{\yskEstLimiarCinquentaFalsosA}{0}
+\newcommand{\yskEstSemTreinoNA}{20}
+\newcommand{\yskEstSemTreinoNB}{19}
+\newcommand{\yskEstSemTreinoAuc}{0.779}
+\newcommand{\yskEstSemTreinoAucIcBaixo}{0.592}
+\newcommand{\yskEstSemTreinoAucIcAlto}{0.938}
+\newcommand{\yskEstSemTreinoDetB}{3}
+\newcommand{\yskEstSemTreinoFalsosA}{0}
+\newcommand{\yskEstSemSobrepNA}{18}
+\newcommand{\yskEstSemSobrepNB}{18}
+\newcommand{\yskEstSemSobrepAuc}{0.772}
+\newcommand{\yskEstSemSobrepAucIcBaixo}{0.573}
+\newcommand{\yskEstSemSobrepAucIcAlto}{0.935}
+\newcommand{\yskEstSemSobrepDetB}{3}
+\newcommand{\yskEstSemSobrepFalsosA}{0}
+\newcommand{\yskEstBandaDelta}{0.425}
+\newcommand{\yskEstSemBandaDeslocA}{3.7}  % deslocamento médio |posição| na lista
+\newcommand{\yskEstSemBandaAlteradasA}{17}
+\newcommand{\yskEstSemBandaTopTresA}{0.17}  % sobreposição média do Top-3
+\newcommand{\yskEstSemBandaNovoPrimeiroA}{2}
+\newcommand{\yskEstSemBandaRebaixadosA}{0}
+\newcommand{\yskEstSemBandaRebaixadosDesceramA}{0}
+\newcommand{\yskEstSemBandaDeslocB}{3.5}  % deslocamento médio |posição| na lista
+\newcommand{\yskEstSemBandaAlteradasB}{20}
+\newcommand{\yskEstSemBandaTopTresB}{0.33}  % sobreposição média do Top-3
+\newcommand{\yskEstSemBandaNovoPrimeiroB}{2}
+\newcommand{\yskEstSemBandaRebaixadosB}{3}
+\newcommand{\yskEstSemBandaRebaixadosDesceramB}{2}
+\newcommand{\yskEstComBandaDeslocA}{0.0}  % deslocamento médio |posição| na lista
+\newcommand{\yskEstComBandaAlteradasA}{0}
+\newcommand{\yskEstComBandaTopTresA}{1.00}  % sobreposição média do Top-3
+\newcommand{\yskEstComBandaNovoPrimeiroA}{0}
+\newcommand{\yskEstComBandaRebaixadosA}{0}
+\newcommand{\yskEstComBandaRebaixadosDesceramA}{0}
+\newcommand{\yskEstComBandaDeslocB}{0.7}  % deslocamento médio |posição| na lista
+\newcommand{\yskEstComBandaAlteradasB}{9}
+\newcommand{\yskEstComBandaTopTresB}{1.00}  % sobreposição média do Top-3
+\newcommand{\yskEstComBandaNovoPrimeiroB}{0}
+\newcommand{\yskEstComBandaRebaixadosB}{3}
+\newcommand{\yskEstComBandaRebaixadosDesceramB}{2}
+\newcommand{\yskEstFalhasN}{17}
+\newcommand{\yskEstFalhasTotal}{20}
+\newcommand{\yskEstFalhasSemToxica}{0}
+\newcommand{\yskEstFalhasErroClassif}{0}
+\newcommand{\yskEstFalhasDiluicao}{0}
+\newcommand{\yskEstFalhasForaEscopo}{0}
+\newcommand{\yskEstFalhasPendentes}{17}
+\newcommand{\yskEstFalhasDiluicaoProv}{12}  % perdas com alguma frase amostrada predita tóxica (média acima do limiar)
+\newcommand{\yskEstFalhasSemSinalProv}{5}  % perdas com as três frases amostradas preditas Nenhuma
+\newcommand{\yskEstFalhasDiluicaoComSevera}{8}  % perdas por diluição em que uma frase amostrada foi predita Severa
+\newcommand{\yskEstSensN}{12}
+\newcommand{\yskEstSensAucMin}{0.772}
+\newcommand{\yskEstSensAucMax}{0.820}
+\newcommand{\yskEstSensDeslocAMin}{3.6}
+\newcommand{\yskEstSensDeslocAMax}{4.1}
+
+% --- Latência por página de resultados (medir_latencia.py) -----------------
+% Fonte: app/nlp/evaluation/results/video-v1/latencia_20261120_095422.json
+\newcommand{\yskLatVideosPorPagina}{10}
+\newcommand{\yskLatBertGpuKTresMs}{157.9}  % mediana por página (30 frases)
+\newcommand{\yskLatBertGpuKTresPNoventaCincoMs}{171.4}
+\newcommand{\yskLatBertGpuKDozeMs}{600.9}  % mediana por página (120 frases)
+\newcommand{\yskLatBertGpuKDozePNoventaCincoMs}{635.3}
+\newcommand{\yskLatBertGpuPorFraseMs}{5.01}  % mediana da página de k = 12 / frases
+\newcommand{\yskLatBertGpuCargaS}{0.5}  % fora do tempo da página
+\newcommand{\yskLatBertGpuMemPicoMb}{926}
+\newcommand{\yskLatBertCpuKTresS}{1.87}  % mediana por página (30 frases)
+\newcommand{\yskLatBertCpuKTresPNoventaCincoS}{2.07}
+\newcommand{\yskLatBertCpuKDozeS}{5.78}  % mediana por página (120 frases)
+\newcommand{\yskLatBertCpuKDozePNoventaCincoS}{6.33}
+\newcommand{\yskLatBertCpuPorFraseMs}{48.13}  % mediana da página de k = 12 / frases
+\newcommand{\yskLatBertCpuCargaS}{0.2}  % fora do tempo da página
+\newcommand{\yskLatLlmNome}{llama3.1:8b}
+\newcommand{\yskLatLlmMemGpuPct}{75}  % fração do modelo na memória da GPU (/api/ps)
+\newcommand{\yskLatLlmLivreUmKTresS}{5.4}  % mediana por página (30 frases)
+\newcommand{\yskLatLlmLivreUmKTresPNoventaCincoS}{5.8}
+\newcommand{\yskLatLlmLivreUmKDozeS}{24.9}  % mediana por página (120 frases)
+\newcommand{\yskLatLlmLivreUmKDozePNoventaCincoS}{25.7}
+\newcommand{\yskLatLlmLivreUmReqMedianaS}{0.18}
+\newcommand{\yskLatLlmLivreUmTokensKTres}{2}  % mediana de tokens gerados por resposta, k = 3
+\newcommand{\yskLatLlmLivreUmServidorKTresS}{0.17}  % mediana do total_duration do Ollama por requisição, k = 3
+\newcommand{\yskLatLlmLivreUmPorFraseS}{0.21}
+\newcommand{\yskLatLlmRestritaUmKTresS}{19.7}  % mediana por página (30 frases)
+\newcommand{\yskLatLlmRestritaUmKTresPNoventaCincoS}{20.0}
+\newcommand{\yskLatLlmRestritaUmKDozeS}{78.1}  % mediana por página (120 frases)
+\newcommand{\yskLatLlmRestritaUmKDozePNoventaCincoS}{79.3}
+\newcommand{\yskLatLlmRestritaUmReqMedianaS}{0.65}
+\newcommand{\yskLatLlmRestritaUmTokensKTres}{11}  % mediana de tokens gerados por resposta, k = 3
+\newcommand{\yskLatLlmRestritaUmServidorKTresS}{0.64}  % mediana do total_duration do Ollama por requisição, k = 3
+\newcommand{\yskLatLlmRestritaUmPorFraseS}{0.65}
+\newcommand{\yskLatLlmRestritaUmConcordKTres}{93.3}  % classe igual à do modo livre:1
+\newcommand{\yskLatLlmRestritaQuatroKTresS}{18.7}  % mediana por página (30 frases)
+\newcommand{\yskLatLlmRestritaQuatroKTresPNoventaCincoS}{18.8}
+\newcommand{\yskLatLlmRestritaQuatroKDozeS}{75.7}  % mediana por página (120 frases)
+\newcommand{\yskLatLlmRestritaQuatroKDozePNoventaCincoS}{75.8}
+\newcommand{\yskLatLlmRestritaQuatroReqMedianaS}{2.48}
+\newcommand{\yskLatLlmRestritaQuatroTokensKTres}{11}  % mediana de tokens gerados por resposta, k = 3
+\newcommand{\yskLatLlmRestritaQuatroServidorKTresS}{2.46}  % mediana do total_duration do Ollama por requisição, k = 3
+\newcommand{\yskLatLlmRestritaQuatroPorFraseS}{0.63}
+\newcommand{\yskLatLlmRestritaQuatroConcordKTres}{93.3}  % classe igual à do modo livre:1
+\newcommand{\yskLatLlmRestritaOitoKTresS}{18.7}  % mediana por página (30 frases)
+\newcommand{\yskLatLlmRestritaOitoKTresPNoventaCincoS}{18.7}
+\newcommand{\yskLatLlmRestritaOitoKDozeS}{77.0}  % mediana por página (120 frases)
+\newcommand{\yskLatLlmRestritaOitoKDozePNoventaCincoS}{81.8}
+\newcommand{\yskLatLlmRestritaOitoReqMedianaS}{4.94}
+\newcommand{\yskLatLlmRestritaOitoTokensKTres}{11}  % mediana de tokens gerados por resposta, k = 3
+\newcommand{\yskLatLlmRestritaOitoServidorKTresS}{4.93}  % mediana do total_duration do Ollama por requisição, k = 3
+\newcommand{\yskLatLlmRestritaOitoPorFraseS}{0.64}
+\newcommand{\yskLatLlmRestritaOitoConcordKTres}{93.3}  % classe igual à do modo livre:1
+\newcommand{\yskLatRazaoLlmBertGpuKTres}{34}  % mediana LLM (livre, sequencial) / mediana BERTimbau GPU, k = 3
+\newcommand{\yskLatRazaoOrdens}{1}  % ordens de grandeza (piso de log10 da razão)
+\newcommand{\yskLatCpuNome}{13th Gen Intel(R) Core(TM) i7-13700H}
+\newcommand{\yskLatGpuNome}{NVIDIA GeForce RTX 4050 Laptop GPU}
+\newcommand{\yskLatRamGb}{16}
+
+% --- Score de toxicidade verbal no teste (calcular_scores_exemplo.py) ------
+% Fonte: app/nlp/evaluation/results/video-v1/artigo/scores_exemplo.json
+\newcommand{\yskScoreFrasesN}{417}
+\newcommand{\yskScoreMedianaNenhuma}{0.925}
+\newcommand{\yskScoreQUmNenhuma}{0.886}  % primeiro quartil
+\newcommand{\yskScoreQTresNenhuma}{0.929}  % terceiro quartil
+\newcommand{\yskScoreMediaNenhuma}{0.780}
+\newcommand{\yskScoreMedianaLeve}{0.493}
+\newcommand{\yskScoreQUmLeve}{0.492}  % primeiro quartil
+\newcommand{\yskScoreQTresLeve}{0.494}  % terceiro quartil
+\newcommand{\yskScoreMediaLeve}{0.477}
+\newcommand{\yskScoreMedianaSevera}{0.032}
+\newcommand{\yskScoreQUmSevera}{0.031}  % primeiro quartil
+\newcommand{\yskScoreQTresSevera}{0.239}  % terceiro quartil
+\newcommand{\yskScoreMediaSevera}{0.195}
+\newcommand{\yskAppVideosN}{4}
+\newcommand{\yskAppScoreMax}{0.927}
+\newcommand{\yskAppScoreMin}{0.756}
+
+% --- Conferência entre as fontes (sem macros) ------------------------------
+% NOTA: n do teste igual em todas as fontes (417): modelo_final, avaliacao, baselines, baselines_ajustados, comparacao, teste_por_lote, sem_finetuning, llm, detoxify, calibracao, pontos_operacao, scores_exemplo
+% NOTA: rodada gravada nos JSON: video-v1

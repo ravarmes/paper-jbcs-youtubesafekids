@@ -1,0 +1,24 @@
+% Gerado por app/nlp/evaluation/scripts/gerar_figuras_artigo.py
+% NAO EDITAR A MAO: reexecute o script apos retreinar.
+\begin{table*}[!t]
+\centering
+\caption{References that do not use the labels of this corpus for training, on the held-out test set. The LLM operates few-shot, with two examples per class drawn from the training split; the zero-shot row queries BERTimbau by masked-token filling, without supervision, with the template that scored highest in macro F1 on the training split (the test set plays no part in the choice); the off-the-shelf models are public Portuguese toxicity classifiers, composed into the three-class scheme of this work. Detoxify (multilingual model) is mapped onto the three classes with every parameter fitted on the training split only: two thresholds on its toxicity probability, or a logistic regression over its seven attribute probabilities. Rows in italics are binary tasks, on their own scale; the fine-tuned model is collapsed to toxic (Mild or Severe) \emph{versus} non-toxic for comparison. The fine-tuned rows show the reference model, trained with seed 42 and used in the paired comparisons, not the mean over training seeds.}
+\label{tab:sem-finetuning}
+\begin{tabular}{lc}
+\toprule
+Reference & F1 (macro) \\
+\midrule
+\textbf{BERTimbau (fine-tuned)} & \textbf{0.7154} \\
+Detoxify (logistic regression, fitted on training) & 0.5720 \\
+Detoxify (two thresholds, fitted on training) & 0.5637 \\
+llama3.1:8b (\emph{few-shot}) & 0.5411 \\
+Masked zero-shot (template selected on training data) & 0.4468 \\
+Off-the-shelf models composed (HateBR + target) & 0.4272 \\
+\midrule
+\emph{BERTimbau (fine-tuned), toxic vs. non-toxic} & 0.8128 \\
+\emph{HateBR alone (toxic vs. non-toxic)} & 0.6456 \\
+\emph{Detoxify alone (toxic vs. non-toxic)} & 0.7676 \\
+\emph{Target classifier alone (Mild vs. Severe)} & 0.5203 \\
+\bottomrule
+\end{tabular}
+\end{table*}

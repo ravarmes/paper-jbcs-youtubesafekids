@@ -1,0 +1,17 @@
+% Gerado por app/nlp/evaluation/scripts/analisar_pontos_operacao.py
+% NAO EDITAR A MAO: reexecute o script apos retreinar.
+\begin{table*}[!t]
+\centering
+\caption{Effect of the threshold $\tau$ on the probability of the Severe class. Every row flags by the same rule, $P(\text{Severe}) > \tau$, so relaxing $\tau$ can only enlarge the flagged set. In practice, \emph{argmax} coincides with $\tau = 0.5$ on this test set.}
+\label{tab:limiar}
+\begin{tabular}{cccc}
+\toprule
+$\tau$ & Severe recall & Severe not flagged & False alarm on None \\
+\midrule
+0.50 (\emph{argmax}) & 92.0\% & 7 & 2.2\% \\
+0.20 & 94.3\% & 5 & 4.4\% \\
+\textbf{0.15} & \textbf{95.4\%} & \textbf{4} & \textbf{4.4\%} \\
+0.10 & 95.4\% & 4 & 5.1\% \\
+\bottomrule
+\end{tabular}
+\end{table*}

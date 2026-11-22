@@ -1,0 +1,118 @@
+{
+  "timestamp": "20261120_122331",
+  "script": "app/nlp/evaluation/scripts/analisar_quase_duplicatas.py",
+  "experimento": {
+    "particao": "video",
+    "rotulagem": "v1",
+    "tag": "video-v1",
+    "arquivo_particao": "data\\particoes\\particao_video.csv"
+  },
+  "fontes": {
+    "probabilidades": "probabilidades_teste_20261120_013147.csv",
+    "svm_ajustado": "predicoes_teste_baselines_ajustados_20261119_225526.csv"
+  },
+  "descricao_grupos": {
+    "regra": "as 3 últimas palavras (normalizadas) repetidas em 4 ou mais frases do corpus",
+    "n_frases": 234,
+    "n_terminacoes": 33,
+    "terminacoes_rotulo_unico": 30,
+    "maior_grupo": 12,
+    "n_videos": 154,
+    "distribuicao": {
+      "Nenhuma": 0,
+      "Leve": 147,
+      "Severa": 87
+    },
+    "por_lote": {
+      "1": 233,
+      "2": 1
+    },
+    "por_particao": {
+      "treino": 175,
+      "teste": 59
+    },
+    "toxicas_sem_palavrao_no_grupo": 225,
+    "toxicas_sem_palavrao_no_corpus": 640,
+    "toxicas_no_corpus": 999,
+    "frases_corpus": 1811,
+    "videos_corpus": 206,
+    "regras_vizinhas": {
+      "3_palavras_min_3": {
+        "n_frases": 249,
+        "n_nenhuma": 3
+      },
+      "3_palavras_min_5": {
+        "n_frases": 218,
+        "n_nenhuma": 0
+      },
+      "2_palavras_min_4": {
+        "n_frases": 309,
+        "n_nenhuma": 13
+      },
+      "4_palavras_min_4": {
+        "n_frases": 195,
+        "n_nenhuma": 0
+      }
+    }
+  },
+  "teste": {
+    "inteiro": {
+      "n_frases": 417,
+      "n_videos": 44,
+      "bertimbau_f1_media": 0.7502321110669892,
+      "bertimbau_f1_dp": 0.005999581879713784,
+      "svm_ajustado_f1": 0.7080573918069818
+    },
+    "sem_3_palavras_min_4": {
+      "n_frases": 358,
+      "n_videos": 44,
+      "bertimbau_f1_media": 0.6903887587407017,
+      "bertimbau_f1_dp": 0.007345625665979074,
+      "svm_ajustado_f1": 0.634017024476893,
+      "frases_retiradas": 59
+    },
+    "sem_3_palavras_min_3": {
+      "n_frases": 353,
+      "n_videos": 44,
+      "bertimbau_f1_media": 0.6864561515196456,
+      "bertimbau_f1_dp": 0.007362655772012179,
+      "svm_ajustado_f1": 0.6293069172072377,
+      "frases_retiradas": 64
+    },
+    "sem_3_palavras_min_5": {
+      "n_frases": 363,
+      "n_videos": 44,
+      "bertimbau_f1_media": 0.6972695564747112,
+      "bertimbau_f1_dp": 0.007022100207477844,
+      "svm_ajustado_f1": 0.6427298188312432,
+      "frases_retiradas": 54
+    },
+    "sem_2_palavras_min_4": {
+      "n_frases": 349,
+      "n_videos": 44,
+      "bertimbau_f1_media": 0.6896302627109386,
+      "bertimbau_f1_dp": 0.006768275209885495,
+      "svm_ajustado_f1": 0.6381281416390775,
+      "frases_retiradas": 68
+    },
+    "sem_4_palavras_min_4": {
+      "n_frases": 370,
+      "n_videos": 44,
+      "bertimbau_f1_media": 0.7027359110866491,
+      "bertimbau_f1_dp": 0.007132841284662848,
+      "svm_ajustado_f1": 0.6495938039371226,
+      "frases_retiradas": 47
+    }
+  },
+  "acuracia_quase_duplicatas_teste": {
+    "n_frases": 59,
+    "bertimbau_media": 0.9864406779661017,
+    "svm_ajustado": 0.9830508474576272
+  },
+  "acuracia_demais_toxicas_teste": {
+    "n_frases": 172,
+    "bertimbau_media": 0.6372093023255813,
+    "svm_ajustado": 0.5348837209302325
+  },
+  "nota": "Na v1 o teste contém as quase-duplicatas; na v2 elas já estão fora, e as linhas sem_<regra vizinha> medem só as frases a mais daquela regra."
+}

@@ -20,6 +20,7 @@ from .bertimbau_base import BertimbauBase
 from ..config import get_task_config, get_training_config, PATHS
 from ..utils.data_utils import DataProcessor
 from ..utils.training_utils import TrainingHelper
+from .. import experimento
 
 logger = logging.getLogger(__name__)
 
@@ -175,7 +176,8 @@ class BertimbauToxicity(BertimbauBase):
         training_helper = TrainingHelper(
             task_name=self.task_name,
             model_name=self.model_config['base_model'],
-            output_base_dir=os.path.join(PATHS['models_dir'], 'trained')
+            # Pasta da rodada experimental (partição × rotulagem): ver app/nlp/experimento.py
+            output_base_dir=str(experimento.dir_modelos())
         )
         
         # Configurações de treinamento

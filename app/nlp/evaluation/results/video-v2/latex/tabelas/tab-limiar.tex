@@ -1,0 +1,25 @@
+% Gerado por app/nlp/evaluation/scripts/analisar_calibracao_limiar.py
+% NAO EDITAR A MAO: reexecute o script apos retreinar.
+\begin{table*}[!t]
+\centering
+\caption{Effect of the threshold $\tau$ on the probability of the Severe class, on the out-of-fold (OOF) predictions of the training split and on the held-out test set. Every threshold row flags by the same rule, $P(\text{Severe}) > \tau$, and false alarm is the fraction of None sentences so flagged. The rows marked OOF were chosen on the out-of-fold predictions alone, by rules fixed in advance: the smallest $\tau$ whose OOF false alarm stays within 2 percentage points of that of \emph{argmax} (false-alarm budget), and the $\tau$ that maximises the OOF $F_2$ of the Severe class. Fixed-grid rows illustrate the trade-off on the test set and were not used to choose anything; grid rows whose test outcome repeats another row, or that flag more than half of the None sentences, are omitted.}
+\label{tab:limiar}
+\begin{tabular}{llccccc}
+\toprule
+ & & \multicolumn{2}{c}{Out-of-fold (training split)} & \multicolumn{3}{c}{Held-out test} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-7}
+$\tau$ & Chosen by & Severe recall & False alarm & Severe recall & Severe not flagged & False alarm \\
+\midrule
+--- & \emph{argmax} & 71.3\% & 8.3\% & 76.0\% & 18 & 13.4\% \\
+0.50 & fixed grid & 70.1\% & 7.5\% & 74.7\% & 19 & 12.4\% \\
+0.40 & fixed grid & 72.0\% & 9.3\% & 76.0\% & 18 & 14.0\% \\
+\textbf{0.34} & \textbf{OOF: false-alarm budget} & \textbf{74.5\%} & \textbf{10.1\%} & \textbf{76.0\%} & \textbf{18} & \textbf{14.5\%} \\
+0.30 & fixed grid & 77.1\% & 10.5\% & 77.3\% & 17 & 14.5\% \\
+0.20 & fixed grid & 81.2\% & 13.4\% & 81.3\% & 14 & 16.7\% \\
+0.15 & fixed grid & 83.8\% & 15.7\% & 81.3\% & 14 & 18.3\% \\
+0.13 & OOF: max.\ $F_2$ & 86.0\% & 17.1\% & 82.7\% & 13 & 20.4\% \\
+0.10 & fixed grid & 87.3\% & 21.1\% & 82.7\% & 13 & 23.7\% \\
+0.07 & fixed grid & 90.1\% & 36.6\% & 84.0\% & 12 & 28.0\% \\
+\bottomrule
+\end{tabular}
+\end{table*}

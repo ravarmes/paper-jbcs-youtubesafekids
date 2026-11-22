@@ -1,0 +1,15 @@
+\begin{table}[!t]
+\centering
+\caption{Detecção simulada de vídeo com 20\% de conteúdo severamente tóxico, em função do número $k$ de sentenças amostradas e da regra de agregação. Cada regra é calibrada para 5\% de falso alarme sobre vídeos inteiramente apropriados, de modo que as colunas sejam comparáveis. População de amostragem: as 302 sentenças do teste retido.}
+\label{tab:simulacao}
+\begin{tabular}{lcccc}
+\hline
+Agregação & $k=3$ & $k=5$ & $k=8$ & $k=12$ \\
+\hline
+Média das $k$ (Eq. atual) & 45\% & 44\% & 60\% & 75\% \\
+Mínimo das $k$ & 47\% & 61\% & 14\% & 20\% \\
+\textbf{$0{,}7\cdot$mín $+\ 0{,}3\cdot$média} & \textbf{47\%} & \textbf{62\%} & \textbf{64\%} & \textbf{77\%} \\
+Média das 2 piores & 46\% & 45\% & 63\% & 77\% \\
+\hline
+\end{tabular}
+\end{table}

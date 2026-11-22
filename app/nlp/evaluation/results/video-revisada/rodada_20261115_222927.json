@@ -1,0 +1,12 @@
+{
+  "tag": "video-revisada",
+  "inicio": "2026-11-15T22:29:27.158417",
+  "etapas": [
+    {
+      "etapa": "busca",
+      "status": "falhou (código 1073807364)",
+      "segundos": 10780.0
+    }
+  ],
+  "fim": "2026-11-16T01:29:07.133009"
+}

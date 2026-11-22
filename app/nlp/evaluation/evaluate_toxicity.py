@@ -15,6 +15,8 @@ from pathlib import Path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 sys.path.insert(0, project_root)
 
+from app.nlp import experimento  # noqa: E402
+
 from app.nlp.models.bertimbau_toxicity import BertimbauToxicity
 from app.nlp.evaluation.model_evaluator import ModelEvaluator
 from app.nlp.datasets.prepare_data_toxicity import get_data_for_cv_and_test
@@ -169,7 +171,7 @@ def main():
     class_names = task_config['classes']
     
     # Caminho do modelo treinado (busca o mais recente)
-    models_dir = Path(__file__).parent.parent / 'models' / 'trained'
+    models_dir = experimento.dir_modelos()
     
     # Lista modelos de toxicidade disponíveis.
     # O grid search deixa uma pasta TOX_* por fold contendo apenas logs; só
@@ -180,15 +182,15 @@ def main():
         logger.error("Por favor, treine o modelo primeiro usando train_toxicity_gridsearch.py")
         return
     
-    # Usa o modelo mais recente
-    model_path = max(model_paths, key=lambda p: p.stat().st_mtime)
+    # Modelo de referência da rodada (semente de referência do treino final)
+    model_path = experimento.caminho_modelo_referencia()
     logger.info(f"Carregando modelo de: {model_path}")
     
     # Carrega modelo treinado
     model = BertimbauToxicity(model_path=str(model_path))
     
     # Cria avaliador
-    output_dir = Path(__file__).parent / 'results' / 'toxicity_evaluation'
+    output_dir = experimento.dir_resultados('toxicity_evaluation')
     output_dir.mkdir(parents=True, exist_ok=True)
     
     evaluator = ModelEvaluator(

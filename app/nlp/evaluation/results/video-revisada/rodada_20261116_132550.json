@@ -1,0 +1,66 @@
+{
+  "tag": "video-revisada",
+  "inicio": "2026-11-16T13:25:50.804638",
+  "etapas": [
+    {
+      "etapa": "busca",
+      "status": "pulada"
+    },
+    {
+      "etapa": "final",
+      "status": "ok",
+      "segundos": 2114.3
+    },
+    {
+      "etapa": "avaliacao",
+      "status": "ok",
+      "segundos": 19.5
+    },
+    {
+      "etapa": "baselines",
+      "status": "ok",
+      "segundos": 39.6
+    },
+    {
+      "etapa": "sem_finetuning",
+      "status": "ok",
+      "segundos": 28.2
+    },
+    {
+      "etapa": "llm",
+      "status": "ok",
+      "segundos": 747.9
+    },
+    {
+      "etapa": "comparacao",
+      "status": "ok",
+      "segundos": 157.0
+    },
+    {
+      "etapa": "pontos_operacao",
+      "status": "ok",
+      "segundos": 13.8
+    },
+    {
+      "etapa": "simulacao",
+      "status": "ok",
+      "segundos": 19.2
+    },
+    {
+      "etapa": "estratos",
+      "status": "ok",
+      "segundos": 52.7
+    },
+    {
+      "etapa": "scores_exemplo",
+      "status": "ok",
+      "segundos": 11.5
+    },
+    {
+      "etapa": "corpus",
+      "status": "ok",
+      "segundos": 8.9
+    }
+  ],
+  "fim": "2026-11-16T14:19:23.531050"
+}

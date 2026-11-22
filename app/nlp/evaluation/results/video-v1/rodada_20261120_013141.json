@@ -1,0 +1,100 @@
+{
+  "tag": "video-v1",
+  "inicio": "2026-11-20T01:31:41.004067",
+  "etapas": [
+    {
+      "etapa": "busca",
+      "status": "pulada"
+    },
+    {
+      "etapa": "final",
+      "status": "ok",
+      "segundos": 1382.9
+    },
+    {
+      "etapa": "avaliacao",
+      "status": "ok",
+      "segundos": 18.5
+    },
+    {
+      "etapa": "baselines",
+      "status": "ok",
+      "segundos": 14.2
+    },
+    {
+      "etapa": "baselines_ajustadas",
+      "status": "pulada"
+    },
+    {
+      "etapa": "dispersao",
+      "status": "ok",
+      "segundos": 0.7
+    },
+    {
+      "etapa": "sem_finetuning",
+      "status": "ok",
+      "segundos": 28.7
+    },
+    {
+      "etapa": "llm",
+      "status": "ok",
+      "segundos": 1024.7
+    },
+    {
+      "etapa": "detoxify",
+      "status": "ok",
+      "segundos": 21.3
+    },
+    {
+      "etapa": "comparacao",
+      "status": "ok",
+      "segundos": 16.1
+    },
+    {
+      "etapa": "pontos_operacao",
+      "status": "ok",
+      "segundos": 9.0
+    },
+    {
+      "etapa": "simulacao",
+      "status": "ok",
+      "segundos": 35.9
+    },
+    {
+      "etapa": "estratos",
+      "status": "ok",
+      "segundos": 19.8
+    },
+    {
+      "etapa": "scores_exemplo",
+      "status": "ok",
+      "segundos": 9.0
+    },
+    {
+      "etapa": "corpus",
+      "status": "ok",
+      "segundos": 6.7
+    },
+    {
+      "etapa": "anotacao",
+      "status": "ok",
+      "segundos": 1.7
+    },
+    {
+      "etapa": "calibracao_limiar",
+      "status": "ok",
+      "segundos": 2.5
+    },
+    {
+      "etapa": "figura_resultado",
+      "status": "ok",
+      "segundos": 1.2
+    },
+    {
+      "etapa": "latencia",
+      "status": "ok",
+      "segundos": 2330.5
+    }
+  ],
+  "fim": "2026-11-20T02:53:44.250056"
+}

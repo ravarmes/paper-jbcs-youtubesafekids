@@ -18,6 +18,11 @@ três referências que respondem à pergunta de forma interpretável:
    palavras-âncora de cada classe. Mede o que o BERTimbau já sabe sobre
    ofensividade sem nenhuma supervisão. É sensível ao molde e às âncoras
    escolhidas, então roda com vários moldes e reporta a dispersão.
+   O molde de referência é escolhido no TREINO (revisão do JBCS, m5): vence o de
+   maior F1 macro sobre o conjunto de treino/desenvolvimento inteiro; o F1 nos
+   folds de validação vai junto, para registro. O teste dos três moldes continua
+   no JSON, por transparência, mas só o do molde escolhido no treino é a
+   referência (`escolhido_no_treino`, `zero_shot_selecao`).
 
 3. MODELOS PRONTOS DE TOXICIDADE (`--modo prontos`)
    Dois classificadores públicos em português, ambos derivados do BERTimbau,
@@ -28,6 +33,10 @@ três referências que respondem à pergunta de forma interpretável:
    ofensivo e com alvo -> Severa. O mapeamento segue a própria definição dos
    rótulos deste corpus (Leve = ofensividade indireta; Severa = dirigida).
    Mede o que se obteria sem construir corpus algum.
+   Os pesos são lidos de cópias locais em data/models/ (baixadas com
+   `hf download --local-dir`); a revisão (commit do Hub) de cada cópia é lida do
+   .cache/huggingface/download/ que o download deixa e gravada no JSON
+   (`modelos_externos`). Ver docs/external-models.md.
 
 Todas as referências são avaliadas no MESMO conjunto de teste retido do ajuste
 fino. A sonda linear, por ser treinada nos nossos folds, também reporta
@@ -37,6 +46,8 @@ têm coluna de CV.
 Uso:
     python -m app.nlp.training.train_toxicity_sem_finetuning              # tudo
     python -m app.nlp.training.train_toxicity_sem_finetuning --modo sonda
+    # ensaio fora da rodada (o JSON não entra em results/<tag>/):
+    python -m app.nlp.training.train_toxicity_sem_finetuning --modo cloze --saida <pasta>
 """
 
 import argparse
@@ -45,6 +56,7 @@ import logging
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -53,6 +65,8 @@ from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 sys.path.insert(0, project_root)
+
+from app.nlp import experimento  # noqa: E402
 
 from app.nlp.datasets.prepare_data_toxicity import get_data_for_cv_and_test
 from app.nlp.utils.data_utils import get_kfold_split
@@ -65,6 +79,25 @@ CLASSES = ['Nenhuma', 'Leve', 'Severa']
 K_FOLDS = 5
 RANDOM_STATE = 42
 MODELOS_PRONTOS_DIR = os.path.join(project_root, 'data', 'models')
+
+# Modelos prontos: identificador no Hugging Face, pasta local e a revisão
+# (commit) da cópia usada nos resultados, conferida contra o Hub em 2026-11-19
+# (docs/external-models.md). Se a cópia local for de outra revisão, o script
+# avisa e grava a revisão encontrada -- não troca de modelo em silêncio.
+MODELOS_PRONTOS = {
+    'hatebr': {
+        'hf_id': 'ruanchaves/bert-base-portuguese-cased-hatebr',
+        'pasta': 'ruanchaves_bert_base_hatebr',
+        'revisao_esperada': 'ed31720b2f3c0b6cefe81cf267751b255b377a7d',
+        'rotulos': {0: 'não ofensivo', 1: 'ofensivo'},
+    },
+    'alvo': {
+        'hf_id': 'dougtrajano/toxicity-target-classification',
+        'pasta': 'dougtrajano_toxicity_target_classification',
+        'revisao_esperada': '885d2698f9b68f0fc90850fe7fc4dc7cc970f2f5',
+        'rotulos': {0: 'UNTARGETED', 1: 'TARGETED INSULT'},
+    },
+}
 
 # Moldes e âncoras do zero-shot por máscara. Vários moldes porque a escolha de
 # um único seria arbitrária e o resultado depende bastante dela.
@@ -134,7 +167,7 @@ def extrair_embeddings(textos, batch_size=64):
     return np.vstack(saidas)
 
 
-def rodar_sonda(X_train, y_train, X_test, y_test):
+def rodar_sonda(X_train, y_train, X_test, y_test, grupos=None):
     logger.info("Extraindo representações congeladas do BERTimbau...")
     E_train = extrair_embeddings(list(X_train))
     E_test = extrair_embeddings(list(X_test))
@@ -148,7 +181,7 @@ def rodar_sonda(X_train, y_train, X_test, y_test):
     f1s = []
     for fold, (tr, va) in enumerate(
         get_kfold_split(np.array(X_train), y_train, n_splits=K_FOLDS,
-                        random_state=RANDOM_STATE), 1
+                        random_state=RANDOM_STATE, groups=grupos), 1
     ):
         modelo = classificador().fit(E_train[tr], y_train[tr])
         f1 = f1_score(y_train[va], modelo.predict(E_train[va]), average='macro', zero_division=0)
@@ -168,7 +201,87 @@ def rodar_sonda(X_train, y_train, X_test, y_test):
 # 2. Zero-shot por preenchimento de máscara
 # ---------------------------------------------------------------------------
 
-def rodar_cloze(X_test, y_test):
+def _prever_cloze(modelo, tokenizador, ancoras_ids, molde, textos, batch_size=32):
+    """Classe predita para cada texto: a âncora de maior probabilidade na máscara."""
+    preds = []
+    with torch.no_grad():
+        for i in range(0, len(textos), batch_size):
+            lote = [molde.format(frase=t) for t in textos[i:i + batch_size]]
+            entradas = tokenizador(lote, padding=True, truncation=True,
+                                   max_length=MODEL_CONFIG['max_length'],
+                                   return_tensors='pt')
+            entradas = {k: v.to(_dispositivo()) for k, v in entradas.items()}
+            logits = modelo(**entradas).logits
+            pos = (entradas['input_ids'] == tokenizador.mask_token_id)
+            for linha in range(logits.size(0)):
+                j = pos[linha].nonzero()
+                if len(j) == 0:            # máscara truncada: cai na majoritária
+                    preds.append(0)
+                    continue
+                probs = torch.softmax(logits[linha, j[0, 0]], dim=-1)
+                pontos = [float(probs[ids].max()) if ids else -1.0
+                          for _, ids in sorted(ancoras_ids.items())]
+                preds.append(int(np.argmax(pontos)))
+    return preds
+
+
+def _f1_treino_cloze(X_train, y_train, preds_treino, grupos):
+    """
+    F1 do molde no treino inteiro (critério de escolha) e nos folds de validação
+    da rodada (só registro: sem ajuste, cada fold é apenas um subconjunto).
+    """
+    y = np.asarray(y_train)
+    p = np.asarray(preds_treino)
+    saida = {
+        'n': int(len(y)),
+        'f1_macro': float(f1_score(y, p, average='macro', zero_division=0)),
+        'accuracy': float(accuracy_score(y, p)),
+    }
+    try:
+        f1s = [float(f1_score(y[va], p[va], average='macro', zero_division=0))
+               for _, va in get_kfold_split(np.array(X_train), y, n_splits=K_FOLDS,
+                                            random_state=RANDOM_STATE, groups=grupos)]
+        saida.update(cv_f1_por_fold=f1s, cv_f1_mean=float(np.mean(f1s)),
+                     cv_f1_std=float(np.std(f1s)))
+    except Exception as e:  # noqa: BLE001 -- os folds são só registro
+        logger.warning(f"F1 por fold do zero-shot não calculado: {e}")
+        saida['cv_erro'] = str(e)
+    return saida
+
+
+def resumo_selecao_cloze(resultados):
+    """Resumo da escolha do molde no treino, para o topo do JSON (m5)."""
+    com_treino = [r for r in resultados if 'treino' in r]
+    if not com_treino:
+        return None
+    escolhido = next((r for r in com_treino if r.get('escolhido_no_treino')), None)
+    if escolhido is None:
+        return None
+    return {
+        'molde_escolhido_no_treino': escolhido['molde'],
+        'criterio': ('maior F1 macro no conjunto de treino/desenvolvimento inteiro; '
+                     'empate: o primeiro na ordem de MOLDES_CLOZE. O teste não entra '
+                     'na escolha.'),
+        'n_treino': escolhido['treino']['n'],
+        'f1_treino_por_molde': {r['molde']: r['treino']['f1_macro'] for r in com_treino},
+        'cv_f1_treino_por_molde': {
+            r['molde']: {'media': r['treino'].get('cv_f1_mean'),
+                         'dp': r['treino'].get('cv_f1_std')} for r in com_treino},
+        'f1_teste_do_escolhido': escolhido['f1_macro'],
+        'f1_teste_por_molde_so_registro': {r['molde']: r['f1_macro'] for r in com_treino},
+        'nota': ('Só o teste do molde escolhido no treino é a referência; o teste dos '
+                 'demais fica no JSON por transparência e não entra em tabela nem figura.'),
+    }
+
+
+def rodar_cloze(X_test, y_test, X_train=None, y_train=None, grupos=None):
+    """
+    Zero-shot por máscara com os moldes de MOLDES_CLOZE.
+
+    Com X_train/y_train (o que main faz), cada molde também é avaliado no treino
+    e o de maior F1 macro no treino vira a referência (`escolhido_no_treino`).
+    Sem eles, comportamento antigo: só o teste, sem escolha.
+    """
     from transformers import BertForMaskedLM, BertTokenizer
 
     nome = MODEL_CONFIG['base_model']
@@ -193,30 +306,30 @@ def rodar_cloze(X_test, y_test):
 
     resultados = []
     for molde in MOLDES_CLOZE:
-        preds = []
-        with torch.no_grad():
-            for i in range(0, len(X_test), 32):
-                textos = [molde.format(frase=t) for t in X_test[i:i + 32]]
-                entradas = tokenizador(textos, padding=True, truncation=True,
-                                       max_length=MODEL_CONFIG['max_length'],
-                                       return_tensors='pt')
-                entradas = {k: v.to(_dispositivo()) for k, v in entradas.items()}
-                logits = modelo(**entradas).logits
-                pos = (entradas['input_ids'] == tokenizador.mask_token_id)
-                for linha in range(logits.size(0)):
-                    j = pos[linha].nonzero()
-                    if len(j) == 0:            # máscara truncada: cai na majoritária
-                        preds.append(0)
-                        continue
-                    probs = torch.softmax(logits[linha, j[0, 0]], dim=-1)
-                    pontos = [float(probs[ids].max()) if ids else -1.0
-                              for _, ids in sorted(ancoras_ids.items())]
-                    preds.append(int(np.argmax(pontos)))
-
+        preds = _prever_cloze(modelo, tokenizador, ancoras_ids, molde, list(X_test))
         r = _metricas(y_test, preds, f'Zero-shot máscara: "{molde}"')
         r['molde'] = molde
+        if X_train is not None and y_train is not None:
+            preds_tr = _prever_cloze(modelo, tokenizador, ancoras_ids, molde, list(X_train))
+            r['treino'] = _f1_treino_cloze(X_train, y_train, preds_tr, grupos)
+            logger.info(f"  {molde[:40]:42} F1 treino={r['treino']['f1_macro']:.4f} | "
+                        f"teste={r['f1_macro']:.4f}")
+        else:
+            logger.info(f"  {molde[:40]:42} F1={r['f1_macro']:.4f}")
         resultados.append(r)
-        logger.info(f"  {molde[:40]:42} F1={r['f1_macro']:.4f}")
+
+    # m5: a referência é o molde de maior F1 no TREINO (max devolve o primeiro
+    # em caso de empate, isto é, a ordem de MOLDES_CLOZE). O teste dos outros
+    # moldes fica marcado como só registro.
+    if resultados and all('treino' in r for r in resultados):
+        i_esc = max(range(len(resultados)), key=lambda i: resultados[i]['treino']['f1_macro'])
+        for i, r in enumerate(resultados):
+            r['escolhido_no_treino'] = (i == i_esc)
+            r['papel'] = ('referência: molde escolhido no treino' if i == i_esc else
+                          'só registro: molde não escolhido no treino (teste não usado '
+                          'em nenhuma escolha)')
+        logger.info(f"  Molde escolhido no treino: {resultados[i_esc]['molde']} "
+                    f"(teste: F1={resultados[i_esc]['f1_macro']:.4f})")
 
     del modelo
     torch.cuda.empty_cache()
@@ -247,9 +360,72 @@ def _prever_binario(caminho, textos, batch_size=32):
     return preds
 
 
+def revisao_local(pasta):
+    """
+    Revisão (commit do Hub) de uma cópia baixada com `hf download --local-dir`.
+
+    O download grava .cache/huggingface/download/<arquivo>.metadata com três
+    linhas: commit, etag e data. Para arquivos LFS (os pesos), o etag é o sha256
+    do arquivo. Devolve {arquivo: {'commit', 'etag'}} para os arquivos que
+    definem o modelo.
+    """
+    meta = os.path.join(pasta, '.cache', 'huggingface', 'download')
+    saida = {}
+    for nome in ('config.json', 'pytorch_model.bin', 'model.safetensors',
+                 'tokenizer.json', 'vocab.txt'):
+        arq = os.path.join(meta, nome + '.metadata')
+        if os.path.isfile(arq):
+            with open(arq, encoding='utf-8') as f:
+                linhas = f.read().split()
+            if len(linhas) >= 2:
+                saida[nome] = {'commit': linhas[0], 'etag': linhas[1]}
+    return saida
+
+
+def info_modelos_externos():
+    """Identificador, revisão usada e conferência contra a revisão esperada (M6c, m12)."""
+    infos = []
+    for papel, m in MODELOS_PRONTOS.items():
+        pasta = os.path.join(MODELOS_PRONTOS_DIR, m['pasta'])
+        arquivos = revisao_local(pasta)
+        commits = sorted({v['commit'] for v in arquivos.values()})
+        usada = commits[0] if len(commits) == 1 else None
+        info = {
+            'papel': papel,
+            'hf_id': m['hf_id'],
+            'url': f"https://huggingface.co/{m['hf_id']}",
+            'pasta_local': os.path.relpath(pasta, project_root).replace(os.sep, '/'),
+            'revisao_usada': usada,
+            'revisoes_encontradas': commits,
+            'revisao_esperada': m['revisao_esperada'],
+            'confere': usada == m['revisao_esperada'],
+            'pesos_sha256': (arquivos.get('pytorch_model.bin')
+                             or arquivos.get('model.safetensors') or {}).get('etag'),
+            'rotulos': m['rotulos'],
+        }
+        if not info['confere']:
+            logger.warning(f"Revisão local de {m['hf_id']} = {commits or 'desconhecida'}; "
+                           f"esperada {m['revisao_esperada']} (docs/external-models.md)")
+        infos.append(info)
+    return infos
+
+
+def info_modelo_base():
+    """Revisão do BERTimbau base no cache do Hugging Face usado pelo projeto."""
+    nome = MODEL_CONFIG['base_model']
+    cache = MODEL_CONFIG.get('cache_dir') or ''
+    ref = os.path.join(cache, 'models--' + nome.replace('/', '--'), 'refs', 'main')
+    revisao = None
+    if os.path.isfile(ref):
+        with open(ref, encoding='utf-8') as f:
+            revisao = f.read().strip() or None
+    return {'hf_id': nome, 'url': f'https://huggingface.co/{nome}',
+            'revisao_no_cache': revisao}
+
+
 def rodar_prontos(X_test, y_test):
-    hatebr = os.path.join(MODELOS_PRONTOS_DIR, 'ruanchaves_bert_base_hatebr')
-    alvo = os.path.join(MODELOS_PRONTOS_DIR, 'dougtrajano_toxicity_target_classification')
+    hatebr = os.path.join(MODELOS_PRONTOS_DIR, MODELOS_PRONTOS['hatebr']['pasta'])
+    alvo = os.path.join(MODELOS_PRONTOS_DIR, MODELOS_PRONTOS['alvo']['pasta'])
 
     faltando = [p for p in (hatebr, alvo) if not os.path.isdir(p)]
     if faltando:
@@ -295,9 +471,13 @@ def main():
     parser = argparse.ArgumentParser(description='Referências sem ajuste fino')
     parser.add_argument('--modo', choices=['tudo', 'sonda', 'cloze', 'prontos'],
                         default='tudo')
+    parser.add_argument('--saida', default=None,
+                        help='Pasta do JSON (padrão: experimento.dir_resultados()); para '
+                             'ensaios que não devem entrar nos resultados da rodada')
     args = parser.parse_args()
 
-    (X_train, y_train), (X_test, y_test) = get_data_for_cv_and_test(test_size=0.20)
+    (X_train, y_train, g_train), (X_test, y_test) = get_data_for_cv_and_test(
+        test_size=0.20, return_groups=True)
     logger.info(f"Treino: {len(X_train)} | Teste: {len(X_test)}")
 
     saida = {'timestamp': datetime.now().isoformat(),
@@ -306,18 +486,31 @@ def main():
 
     if args.modo in ('tudo', 'sonda'):
         logger.info("\n=== 1. SONDA LINEAR (representações congeladas) ===")
-        saida['resultados'].append(rodar_sonda(X_train, y_train, X_test, y_test))
+        saida['resultados'].append(rodar_sonda(X_train, y_train, X_test, y_test, grupos=g_train))
+
+    if args.modo in ('tudo', 'sonda', 'cloze'):
+        saida['modelo_base'] = info_modelo_base()
 
     if args.modo in ('tudo', 'cloze'):
         logger.info("\n=== 2. ZERO-SHOT POR MÁSCARA ===")
-        saida['resultados'].extend(rodar_cloze(list(X_test), list(y_test)))
+        # m5: o molde é escolhido no treino; o teste dos três fica só para registro.
+        res_cloze = rodar_cloze(list(X_test), list(y_test),
+                                X_train=list(X_train), y_train=list(y_train), grupos=g_train)
+        saida['resultados'].extend(res_cloze)
+        saida['zero_shot_selecao'] = resumo_selecao_cloze(res_cloze)
 
     if args.modo in ('tudo', 'prontos'):
         logger.info("\n=== 3. MODELOS PRONTOS DE TOXICIDADE ===")
+        try:
+            saida['modelos_externos'] = info_modelos_externos()
+        except Exception as e:  # noqa: BLE001 -- registro nunca derruba a etapa
+            logger.warning(f"Revisões dos modelos prontos não registradas: {e}")
         saida['resultados'].extend(rodar_prontos(list(X_test), list(y_test)))
 
-    destino = os.path.join(PATHS['evaluation_dir'],
-                           f"sem_finetuning_{datetime.now():%Y%m%d_%H%M%S}.json")
+    pasta_saida = Path(args.saida) if args.saida else experimento.dir_resultados()
+    pasta_saida.mkdir(parents=True, exist_ok=True)
+    destino = str(pasta_saida / f"sem_finetuning_{datetime.now():%Y%m%d_%H%M%S}.json")
+    saida['experimento'] = experimento.descricao()
     with open(destino, 'w', encoding='utf-8') as f:
         json.dump(saida, f, indent=2, ensure_ascii=False)
 
@@ -327,8 +520,14 @@ def main():
     print(f"{'Referência':<52} {'F1 macro':>10} {'Acurácia':>10}")
     print("-" * 78)
     for r in saida['resultados']:
-        print(f"{r['modelo'][:52]:<52} {r['f1_macro']:>10.4f} {r['accuracy']:>10.4f}")
+        marca = ''
+        if 'escolhido_no_treino' in r:
+            marca = ' *' if r['escolhido_no_treino'] else ' (registro)'
+        print(f"{(r['modelo'][:46] + marca):<52} {r['f1_macro']:>10.4f} {r['accuracy']:>10.4f}")
     print("=" * 78)
+    if saida.get('zero_shot_selecao'):
+        print("* zero-shot: molde escolhido no treino; '(registro)' = teste só para "
+              "transparência")
     print(f"\nSalvo em: {destino}")
 
 

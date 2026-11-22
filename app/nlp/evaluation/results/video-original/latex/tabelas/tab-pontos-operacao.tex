@@ -1,0 +1,18 @@
+% Gerado por app/nlp/evaluation/scripts/analisar_pontos_operacao.py
+% NAO EDITAR A MAO: reexecute o script apos retreinar.
+\begin{table*}[!t]
+\centering
+\caption{Operating points on the test set. The expensive error is letting severely toxic content through; the cheap one is flagging appropriate content, which merely demotes it in the ranking. False alarm is reported under both flagging rules, because the rows do not flag alike: \emph{argmax} and the generative model return a class, whereas the threshold is applied to $P(\text{Severe})$. Reading a single rule down the column would compare different policies; under either rule taken on its own, relaxing the threshold costs false alarms, as it must.}
+\label{tab:pontos-operacao}
+\begin{tabular}{lcccc}
+\toprule
+Model & Severe recall & Severe missed & \multicolumn{2}{c}{Appropriate flagged} \\
+\cmidrule(lr){4-5}
+ & & & as Severe & as toxic (any)  \\
+\midrule
+BERTimbau (argmax) & 96.1\% & 3 & 2.3\% & 5.3\% \\
+\textbf{BERTimbau ($\tau$ = 0.1)} & \textbf{96.1\%} & \textbf{3} & \textbf{4.5\%} & \textbf{7.5\%} \\
+llama3.1:8b & 92.2\% & 6 & 10.5\% & 28.6\% \\
+\bottomrule
+\end{tabular}
+\end{table*}

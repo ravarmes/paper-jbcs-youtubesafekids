@@ -25,8 +25,20 @@ Uso:
     python src/app/nlp/training/train_toxicity_llm_baselines.py --models llama3.1:8b mistral:7b
 
 Config por variáveis de ambiente:
-    OLLAMA_HOST   (default http://localhost:11434)
+    OLLAMA_HOST   (default http://127.0.0.1:11434)
     TOX_LLM_MODELS (lista separada por vírgula; sobrepõe o default)
+
+Transparência (revisão do JBCS, M6b e m12) — só acréscimos, sem mudar prompt,
+decodificação nem predição:
+  - o JSON grava o prompt exato (system, exemplos few-shot, molde da mensagem),
+    as opções de decodificação, as regras do parser, a resposta bruta e a
+    predição de cada frase, a latência de cada requisição e a contagem de saídas
+    fora do formato pedido (`saidas`, ver classificar_saida);
+  - grava também a versão do Ollama e o digest do modelo (/api/version,
+    /api/tags) e se ele estava na GPU (/api/ps);
+  - ao fim, escreve o apêndice LaTeX com o prompt em experimento.dir_latex('apendice').
+    `--so-apendice` escreve só o apêndice, sem chamar o Ollama.
+  A documentação em inglês fica em docs/llm-baseline.md.
 """
 
 import os
@@ -50,6 +62,8 @@ from sklearn.metrics import (
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 sys.path.insert(0, project_root)
 
+from app.nlp import experimento  # noqa: E402
+
 from app.nlp.datasets.prepare_data_toxicity import get_data_for_cv_and_test
 from app.nlp.config import PATHS
 
@@ -63,7 +77,10 @@ logger = logging.getLogger(__name__)
 RANDOM_STATE = 42
 CLASS_NAMES = ['Nenhuma', 'Leve', 'Severa']
 
-OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
+# 127.0.0.1, não "localhost": no Windows, "localhost" resolve primeiro para ::1, o
+# Ollama escuta só em IPv4, e cada conexão nova esperava ~2 s pela recusa em IPv6
+# antes de cair para IPv4 -- atraso do cliente que entrava na latência medida.
+OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'http://127.0.0.1:11434')
 
 # 2 LLMs abertos por padrão (ajuste conforme o que você baixou no Ollama).
 # Os revisores citaram explicitamente llama / gemma / mistral.
@@ -84,6 +101,27 @@ SYSTEM_PROMPT = (
     "Robson fez isso\").\n"
     "Responda APENAS com o número 0, 1 ou 2, sem nenhuma outra palavra."
 )
+
+# Opções de decodificação enviadas ao /api/chat. As demais (num_ctx, top_k,
+# top_p, seed...) ficam no padrão do servidor Ollama. Constante única para que a
+# medição de latência (evaluation/scripts/medir_latencia.py) e a documentação
+# usem exatamente a requisição da linha de base.
+OPCOES_OLLAMA = {"temperature": 0, "num_predict": 5}
+
+# Categorias de saída do LLM, na ordem em que parse_label as testa. Só 'valida'
+# segue o formato pedido no prompt (um único dígito); as demais são recuperadas
+# pelo parser ou caem no fallback.
+CATEGORIAS_SAIDA = ('valida', 'digito_extraido', 'palavra_chave', 'sem_rotulo')
+
+REGRAS_PARSER = {
+    'valida': "a resposta, sem espaços nas pontas, é exatamente '0', '1' ou '2'",
+    'digito_extraido': "fora do formato, mas contém um caractere '0', '1' ou '2'; "
+                       "vale o primeiro deles na ordem do texto",
+    'palavra_chave': "sem dígito 0/1/2; o rótulo vem da primeira palavra-chave "
+                     "encontrada, testadas nesta ordem: 'severa' -> 2, 'leve' -> 1, "
+                     "'nenhuma' -> 0 (sem diferenciar maiúsculas)",
+    'sem_rotulo': "vazia ou sem nada reconhecível: fallback conservador para 0 (Nenhuma)",
+}
 
 
 def montar_fewshot(X_train, y_train):
@@ -129,6 +167,84 @@ def parse_label(resposta: str) -> int:
     return 0  # fallback conservador: assume Nenhuma se não parsear
 
 
+def classificar_saida(resposta) -> str:
+    """
+    Diz por qual regra parse_label chegou ao rótulo, sem alterar a predição (que
+    continua sendo a de parse_label). Serve para contar as saídas fora do
+    formato pedido no prompt. Categorias e regras em REGRAS_PARSER.
+    """
+    if not resposta:
+        return 'sem_rotulo'
+    if resposta.strip() in ('0', '1', '2'):
+        return 'valida'
+    if any(ch in '012' for ch in resposta):
+        return 'digito_extraido'
+    baixo = resposta.lower()
+    if 'severa' in baixo or 'leve' in baixo or 'nenhuma' in baixo:
+        return 'palavra_chave'
+    return 'sem_rotulo'
+
+
+def consultar_ollama(caminho: str, payload=None, timeout: int = 10):
+    """GET (sem payload) ou POST (com payload) num endpoint do Ollama; devolve o JSON."""
+    url = f"{OLLAMA_HOST}{caminho}"
+    data = json.dumps(payload).encode('utf-8') if payload is not None else None
+    req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read().decode('utf-8'))
+
+
+def info_ollama(models):
+    """
+    Versão do servidor, digest e detalhes dos modelos avaliados (/api/tags) e o
+    que está carregado agora (/api/ps: size_vram diz quanto do modelo está na
+    GPU). Nunca interrompe a rodada: o que falhar fica registrado como erro.
+    """
+    info = {'host': OLLAMA_HOST}
+    try:
+        info['versao'] = consultar_ollama('/api/version').get('version')
+    except Exception as e:  # noqa: BLE001
+        info['erro_versao'] = str(e)
+    try:
+        tags = consultar_ollama('/api/tags').get('models', [])
+        info['modelos'] = {
+            m.get('name'): {'digest': m.get('digest'), 'size': m.get('size'),
+                            'modified_at': m.get('modified_at'), 'details': m.get('details')}
+            for m in tags if m.get('name') in models or m.get('model') in models
+        }
+    except Exception as e:  # noqa: BLE001
+        info['erro_tags'] = str(e)
+    try:
+        ps = consultar_ollama('/api/ps').get('models', [])
+        info['carregados'] = [
+            {'name': m.get('name'), 'size': m.get('size'), 'size_vram': m.get('size_vram'),
+             'context_length': m.get('context_length'), 'expires_at': m.get('expires_at')}
+            for m in ps
+        ]
+    except Exception as e:  # noqa: BLE001
+        info['erro_ps'] = str(e)
+    return info
+
+
+def descrever_prompt(fewshot):
+    """O prompt exato, montado pelas mesmas funções que a avaliação usa."""
+    mensagens = montar_mensagens(fewshot, '{frase}')
+    return {
+        'system': SYSTEM_PROMPT,
+        'modelo_mensagem_usuario': mensagens[-1]['content'],
+        'resposta_dos_exemplos': 'str(classe): "0", "1" ou "2"',
+        'fewshot': [{'frase': txt, 'classe': int(cls)} for txt, cls in fewshot],
+        'mensagens': mensagens,
+        'selecao_fewshot': (
+            f"{FEWSHOT_PER_CLASS} por classe, do conjunto de treino/desenvolvimento "
+            f"(nunca do teste): random.Random({RANDOM_STATE}); as frases de treino são "
+            "agrupadas por classe na ordem do corpus; para as classes 0, 1 e 2, nesta "
+            "ordem, o grupo é embaralhado e entram as primeiras; ao fim, a ordem dos "
+            "exemplos é embaralhada com o mesmo gerador (montar_fewshot)"
+        ),
+    }
+
+
 def chamar_ollama(model: str, messages, timeout: int = 120, retries: int = 3) -> str:
     """Chama o endpoint /api/chat do Ollama (stream=False) e devolve o conteúdo."""
     url = f"{OLLAMA_HOST}/api/chat"
@@ -136,7 +252,7 @@ def chamar_ollama(model: str, messages, timeout: int = 120, retries: int = 3) ->
         "model": model,
         "messages": messages,
         "stream": False,
-        "options": {"temperature": 0, "num_predict": 5},
+        "options": dict(OPCOES_OLLAMA),  # {"temperature": 0, "num_predict": 5}
     }
     data = json.dumps(payload).encode('utf-8')
     last_err = None
@@ -161,7 +277,7 @@ def referencia_bertimbau():
     retreino e passam a mentir silenciosamente.
     """
     import glob
-    padrao = os.path.join(PATHS['evaluation_dir'], 'toxicity_evaluation',
+    padrao = os.path.join(str(experimento.dir_resultados('toxicity_evaluation')),
                           'evaluation_metrics_TOX_*.json')
     arquivos = glob.glob(padrao)
     if not arquivos:
@@ -177,12 +293,18 @@ def avaliar_modelo(model, fewshot, X_test, y_test, limit=None, idx_sem_analogo=N
         X_test, y_test = X_test[:limit], y_test[:limit]
 
     y_true, y_pred = [], []
+    respostas, categorias, latencias = [], [], []
     n = len(X_test)
     t0 = time.time()
     for i, (frase, gold) in enumerate(zip(X_test, y_test), 1):
         messages = montar_mensagens(fewshot, frase)
+        t_req = time.perf_counter()
         resposta = chamar_ollama(model, messages)
+        latencias.append(round(time.perf_counter() - t_req, 4))
         pred = parse_label(resposta)
+        # Só registro (M6b): a predição continua sendo a de parse_label.
+        respostas.append(resposta)
+        categorias.append(classificar_saida(resposta))
         y_true.append(int(gold))
         y_pred.append(pred)
         if i % 25 == 0 or i == n:
@@ -199,6 +321,26 @@ def avaliar_modelo(model, fewshot, X_test, y_test, limit=None, idx_sem_analogo=N
             y_true, y_pred, target_names=CLASS_NAMES, zero_division=0),
         'n_amostras': int(n),
         'segundos': round(time.time() - t0, 1),
+    }
+
+    # Saídas fora do formato pedido (M6b): quantas foram recuperadas pelo parser
+    # e quantas caíram no fallback para Nenhuma. Não altera nenhuma predição.
+    contagem = {c: categorias.count(c) for c in CATEGORIAS_SAIDA}
+    metrics['saidas'] = {
+        'contagem': contagem,
+        'n_fora_do_formato': int(n - contagem['valida']),
+        'n_fallback_nenhuma': int(contagem['sem_rotulo']),
+        'regras': REGRAS_PARSER,
+    }
+    metrics['respostas_brutas'] = respostas
+    metrics['y_pred'] = [int(p) for p in y_pred]
+    # Latência de cada requisição sequencial, como a linha de base rodou (M6a).
+    lat = np.asarray(latencias, dtype=float)
+    metrics['latencia_requisicao_s'] = {
+        'mediana': float(np.median(lat)) if len(lat) else None,
+        'p95': float(np.percentile(lat, 95)) if len(lat) else None,
+        'media': float(lat.mean()) if len(lat) else None,
+        'amostras': latencias,
     }
 
     # Mesmo recorte usado pelos demais modelos: as frases de teste que não têm
@@ -236,8 +378,8 @@ def print_tabela(resultados):
     print("Obs.: LLMs são zero/few-shot (sem fine-tuning) — coluna F1 (CV) não se aplica.")
 
 
-def salvar(resultados, models, limit):
-    out_dir = PATHS.get('evaluation_dir', os.path.join(project_root, 'results'))
+def salvar(resultados, models, limit, fewshot=None):
+    out_dir = str(experimento.dir_resultados())
     os.makedirs(out_dir, exist_ok=True)
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     path = os.path.join(out_dir, f"llm_baselines_toxicity_{ts}.json")
@@ -256,10 +398,163 @@ def salvar(resultados, models, limit):
         'results': resultados,
         'bertimbau_reference': referencia_bertimbau(),
     }
+    # Transparência (M6b, m12): prompt exato, decodificação, parser e servidor.
+    saida['experimento'] = experimento.descricao()
+    if fewshot is not None:
+        saida['prompt'] = descrever_prompt(fewshot)
+    saida['decodificacao'] = {
+        'endpoint': '/api/chat', 'stream': False, 'options': dict(OPCOES_OLLAMA),
+        'nota': 'opções não listadas (num_ctx, top_k, top_p, seed...) ficam no padrão do servidor',
+    }
+    saida['parser'] = {
+        'funcao': 'parse_label',
+        'regras_em_ordem': REGRAS_PARSER,
+        'tratamento_de_invalidas': 'nenhuma frase é descartada nem reenviada; '
+                                   'sem rótulo reconhecível, a predição é 0 (Nenhuma)',
+    }
+    saida['ollama'] = info_ollama(models)
     with open(path, 'w', encoding='utf-8') as f:
         json.dump(saida, f, indent=2, ensure_ascii=False)
     logger.info(f"\nResultados salvos em: {path}")
     return path
+
+
+# ----------------------------------------------------------------------
+# Apêndice LaTeX com o prompt (M6b)
+# ----------------------------------------------------------------------
+
+LARGURA_APENDICE = 88  # caracteres por linha no verbatim (limite pedido: 90)
+
+
+def _quebrar_linha(linha, largura=LARGURA_APENDICE, recuo='  '):
+    """Quebra uma linha longa em palavras; continuações recuadas em dois espaços."""
+    import textwrap
+    if len(linha) <= largura:
+        return [linha]
+    return textwrap.wrap(linha, width=largura, subsequent_indent=recuo,
+                         break_long_words=True, break_on_hyphens=False) or ['']
+
+
+def _tex(texto):
+    """Escapa texto comum para LaTeX (fora do verbatim)."""
+    trocas = {'\\': r'\textbackslash{}', '&': r'\&', '%': r'\%', '$': r'\$', '#': r'\#',
+              '_': r'\_', '{': r'\{', '}': r'\}', '~': r'\textasciitilde{}',
+              '^': r'\textasciicircum{}'}
+    return ''.join(trocas.get(c, c) for c in str(texto))
+
+
+def _ultimo_resultado_json():
+    import glob
+    arquivos = glob.glob(os.path.join(str(experimento.dir_resultados()),
+                                      'llm_baselines_toxicity_*.json'))
+    if not arquivos:
+        return None, None
+    caminho = max(arquivos, key=os.path.getmtime)
+    with open(caminho, encoding='utf-8') as f:
+        return json.load(f), os.path.basename(caminho)
+
+
+def escrever_apendice(fewshot, resultados=None, models=None, fonte=None):
+    """
+    Escreve apendice-llm.tex: as mensagens exatas enviadas ao modelo, em
+    verbatim (compila com XeLaTeX), mais decodificação, parser e a contagem de
+    saídas fora do formato quando houver resultado gravado. Sem cabeçalho de
+    seção: o manuscrito decide onde e com que título entra.
+    """
+    mensagens = montar_mensagens(fewshot, '<sentence to classify>')
+    corpo = []
+    for msg in mensagens:
+        corpo.append(f"[{msg['role']}]")
+        for linha in msg['content'].split('\n'):
+            corpo.extend(_quebrar_linha(linha))
+        corpo.append('')
+    while corpo and corpo[-1] == '':
+        corpo.pop()
+    if any('\\end{verbatim}' in l for l in corpo):
+        raise ValueError('texto do prompt contém \\end{verbatim}')
+
+    modelos = list(resultados) if resultados else list(models or [])
+    opcoes = ', '.join(f'\\texttt{{{_tex(k)}}} = {v}' for k, v in OPCOES_OLLAMA.items())
+
+    L = []
+    add = L.append
+    add('% Gerado por app/nlp/training/train_toxicity_llm_baselines.py')
+    add('% (ao fim da rodada, ou com --so-apendice). NAO EDITAR A MAO.')
+    add(f"% Rodada: {experimento.tag()}" + (f" | resultados: {fonte}" if fonte else ''))
+    add(f'% Linhas longas do prompt quebradas em {LARGURA_APENDICE} caracteres; '
+        'continuacoes com 2 espacos.')
+    add('% O verbatim vai num figure*: no template de duas colunas do JBCS a coluna tem')
+    add('% 240pt (~56 caracteres em \\footnotesize), e a largura total, 498pt (~117).')
+    add('\\begin{figure*}[!t]')
+    add('\\begingroup\\footnotesize')
+    add('\\begin{verbatim}')
+    L.extend(corpo)
+    add('\\end{verbatim}')
+    add('\\endgroup')
+    add('\\caption{Messages sent to the generative baseline for each test sentence, in '
+        'order; the role of each message is given in brackets. Lines longer than '
+        f'{LARGURA_APENDICE} characters are wrapped here for typesetting, with '
+        'continuation lines indented by two spaces; blank lines separate messages, and '
+        'every other line break in the listing is part of the prompt. The final user '
+        'message carries the sentence being classified.}')
+    add('\\label{fig:prompt-llm}')
+    add('\\end{figure*}')
+    add('')
+    add('\\begin{itemize}')
+    if modelos:
+        add('\\item Model: ' + ', '.join(f'\\texttt{{{_tex(m)}}}' for m in modelos)
+            + ', served locally by Ollama through the \\texttt{/api/chat} endpoint, '
+              'one request per sentence, without streaming.')
+    else:
+        add('% [modelo: sem resultado gravado -- reexecute com --models <tag>]')
+    add(f'\\item Decoding: {opcoes}; all other options at the server defaults.')
+    add(f'\\item Few-shot examples: {FEWSHOT_PER_CLASS} per class, drawn from the '
+        'training split with a fixed seed (' + str(RANDOM_STATE) + '); the test split '
+        'is never used.')
+    add('\\item Parsing: if the stripped reply is exactly \\texttt{0}, \\texttt{1} or '
+        '\\texttt{2}, that is the label; otherwise the first of these characters '
+        'anywhere in the reply; otherwise the first keyword found, tested in the order '
+        '\\emph{severa}, \\emph{leve}, \\emph{nenhuma}; otherwise the sentence is '
+        'labelled None. No sentence is discarded or re-sent.')
+    contagens = []
+    for nome, r in (resultados or {}).items():
+        s = r.get('saidas') if isinstance(r, dict) else None
+        if s:
+            c = s['contagem']
+            contagens.append(
+                f'\\texttt{{{_tex(nome)}}}: {c["valida"]} of {r["n_amostras"]} replies in '
+                f'the requested format, {c["digito_extraido"]} recovered from a digit, '
+                f'{c["palavra_chave"]} from a keyword, and {c["sem_rotulo"]} with no '
+                'recognisable label (assigned None)')
+    if contagens:
+        add('\\item Replies outside the requested format: ' + '; '.join(contagens) + '.')
+    else:
+        add('% [contagem de saidas fora do formato: sai da rodada v1 -- depois do passo')
+        add('%  llm, reexecute com --so-apendice para preencher]')
+    add('\\end{itemize}')
+
+    # Fonte .tex também em no máximo 90 colunas: fora do verbatim, quebra de
+    # linha é espaço para o LaTeX; dentro dele, as linhas já vêm quebradas.
+    import textwrap
+    saida, no_verbatim = [], False
+    for linha in L:
+        if linha == '\\begin{verbatim}':
+            no_verbatim = True
+        elif linha == '\\end{verbatim}':
+            no_verbatim = False
+            saida.append(linha)
+            continue
+        if no_verbatim or linha.startswith('%') or len(linha) <= 90:
+            saida.append(linha)
+        else:
+            recuo = '  ' if linha.startswith('\\item') else ''
+            saida.extend(textwrap.wrap(linha, width=90, subsequent_indent=recuo,
+                                       break_long_words=False, break_on_hyphens=False))
+
+    destino = experimento.dir_latex('apendice') / 'apendice-llm.tex'
+    destino.write_text('\n'.join(saida) + '\n', encoding='utf-8')
+    logger.info(f"Apêndice LaTeX: {destino}")
+    return destino
 
 
 def main():
@@ -268,6 +563,9 @@ def main():
                         help="Modelos Ollama (default: llama3.1:8b gemma2:9b)")
     parser.add_argument('--limit', type=int, default=None,
                         help="Avalia só as N primeiras frases de teste (ensaio rápido)")
+    parser.add_argument('--so-apendice', action='store_true',
+                        help="Só escreve o apêndice LaTeX com o prompt (não chama o Ollama); "
+                             "usa a contagem de saídas do resultado mais recente, se houver")
     args = parser.parse_args()
 
     env_models = os.getenv('TOX_LLM_MODELS')
@@ -283,6 +581,17 @@ def main():
     logger.info(f"Teste: {len(X_test)} amostras | Few-shot: {FEWSHOT_PER_CLASS}/classe")
 
     fewshot = montar_fewshot(X_train_cv, y_train_cv)
+
+    if args.so_apendice:
+        anterior, fonte = _ultimo_resultado_json()
+        # Sem resultado gravado, só cita modelo passado explicitamente: o default
+        # (llama3.1:8b e gemma2:9b) não é necessariamente o que a rodada usou.
+        explicitos = args.models or (env_models.split(',') if env_models else None)
+        escrever_apendice(fewshot,
+                          resultados=(anterior or {}).get('results'),
+                          models=(anterior or {}).get('models') or explicitos,
+                          fonte=fonte)
+        return
 
     # Mesmo recorte de proximidade usado pelo BERTimbau e pelas baselines
     from app.nlp.evaluation.evaluate_toxicity import (
@@ -307,7 +616,12 @@ def main():
 
     if resultados:
         print_tabela(resultados)
-        salvar(resultados, models, args.limit)
+        caminho = salvar(resultados, models, args.limit, fewshot=fewshot)
+        try:
+            escrever_apendice(fewshot, resultados=resultados, models=models,
+                              fonte=os.path.basename(caminho))
+        except Exception as e:  # noqa: BLE001 -- o apêndice nunca derruba a rodada
+            logger.warning(f"Apêndice LaTeX não escrito: {e}")
     else:
         print("Nenhum modelo avaliado com sucesso. Verifique se o 'ollama serve' está ativo "
               "e se os modelos foram baixados (ollama pull ...).")

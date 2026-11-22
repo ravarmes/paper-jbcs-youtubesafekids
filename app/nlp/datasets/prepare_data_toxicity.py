@@ -20,12 +20,19 @@ inteiro sem nenhum dado a mais.
   - P1, P2, A1: anotações individuais
 Classes: 0=Nenhuma, 1=Leve, 2=Severa
 
-Divisão sem repetição de frases: se o corpus contiver frases idênticas em
-vídeos diferentes, uma divisão aleatória colocaria a mesma frase em treino e em
-teste, inflando as métricas por memorização. Por isso o particionamento é
-agrupado pelo texto normalizado (StratifiedGroupKFold) sempre que houver
-repetição; quando todas as frases são distintas — caso do corpus atual — usa-se
-StratifiedKFold, cuja estratificação é exata.
+Partição (ver app/nlp/experimento.py, variável YSK_PARTICAO):
+  - 'video' (padrão): a divisão é lida de data/particoes/particao_video.csv, em
+    que todas as frases de um vídeo ficam do mesmo lado. O vídeo é a unidade em
+    que o serviço opera; dividir por frase deixava frases do mesmo vídeo -- mesmos
+    falantes, personagens, alvos nomeados e idiossincrasias de transcrição -- em
+    treino e em teste ao mesmo tempo.
+  - 'frase': a divisão da versão submetida, estratificada por frase. Se o corpus
+    contiver frases idênticas, agrupa pelo texto normalizado (StratifiedGroupKFold);
+    com todas as frases distintas -- caso do corpus atual -- usa StratifiedKFold.
+
+Rotulagem (YSK_ROTULAGEM): os rótulos são sempre os do corpus v1, de uma só rodada
+de anotação; 'v2' (padrão) deixa de fora dos experimentos os grupos de
+quase-duplicatas (coluna quase_duplicata) e 'v1' os mantém (ver app/nlp/experimento.py).
 """
 
 import pandas as pd
@@ -39,6 +46,7 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 sys.path.insert(0, project_root)
 
 from app.nlp.config import PATHS
+from app.nlp import experimento
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -120,14 +128,23 @@ def _to_label(value) -> float:
     return num if num in (0, 1, 2) else np.nan
 
 
-def load_toxicity_corpus() -> pd.DataFrame:
+def load_toxicity_corpus(rotulagem: str = None) -> pd.DataFrame:
     """
     Carrega o corpus de toxicidade.
 
+    Args:
+        rotulagem: 'v1' (único valor); por padrão, a da rodada (variável
+            YSK_ROTULAGEM, ver app/nlp/experimento.py). Conferido aqui para que
+            uma rodada com outra rotulagem falhe em vez de usar o v1 calada.
+
     Returns:
-        DataFrame com as colunas 'texto' (frase normalizada), 'label' (0/1/2) e
-        as anotações individuais convertidas ('P1', 'P2', 'A1'), quando existirem.
+        DataFrame com as colunas 'id_sentenca' (posição 1-based no corpus),
+        'texto' (frase normalizada), 'label' (0/1/2), as anotações individuais
+        convertidas ('P1', 'P2', 'A1') e, quando existirem, 'ID' (vídeo) e 'PARTE'.
     """
+    rotulagem = rotulagem or experimento.rotulagem()
+    if rotulagem not in experimento.ROTULAGENS_VALIDAS:
+        raise ValueError(f"rotulagem={rotulagem!r}; use um de {experimento.ROTULAGENS_VALIDAS}")
     corpus_path = _resolve_corpus_path()
     logger.info(f"Carregando corpus de toxicidade de: {corpus_path}")
 
@@ -135,10 +152,12 @@ def load_toxicity_corpus() -> pd.DataFrame:
     df = pd.read_csv(corpus_path, sep=None, engine='python', encoding='utf-8-sig')
     logger.info(f"Corpus carregado: {len(df)} registros | colunas: {list(df.columns)}")
 
+
     text_col = _pick_column(df, TEXT_COLUMNS)
     label_col = _pick_column(df, LABEL_COLUMNS)
 
     out = pd.DataFrame({
+        'id_sentenca': np.arange(1, len(df) + 1),
         'texto': df[text_col].map(normalize_text),
         'label': df[label_col].map(_to_label),
     })
@@ -168,26 +187,73 @@ def load_toxicity_corpus() -> pd.DataFrame:
     return out.reset_index(drop=True)
 
 
-def get_data_for_cv_and_test(test_size: float = 0.20, return_groups: bool = False):
+def _divisao_por_video(df: pd.DataFrame):
+    """Índices de treino e teste lidos da partição por vídeo gravada em disco."""
+    part = experimento.carregar_particao_video()
+    if len(part) != len(df) or not (part['id_sentenca'].values == df['id_sentenca'].values).all():
+        raise ValueError("A partição gravada não corresponde ao corpus (id_sentenca). "
+                         "Regere com: python -m app.nlp.datasets.gerar_particoes")
+    if 'ID' in df.columns and not (part['video_id'].values == df['ID'].astype(str).values).all():
+        raise ValueError("video_id da partição não bate com o corpus, linha a linha")
+    train_idx = np.where(part['particao'].values == 'treino')[0]
+    test_idx = np.where(part['particao'].values == 'teste')[0]
+    return train_idx, test_idx, part['video_id'].astype(str).tolist()
+
+
+def get_data_for_cv_and_test(test_size: float = 0.20, return_groups: bool = False,
+                             return_frame: bool = False):
     """
     Prepara dados para Cross-Validation e teste final.
 
-    A divisão é *agrupada pelo texto normalizado*: nenhuma frase aparece nos
-    dois lados. Usa-se StratifiedGroupKFold com k = round(1/test_size) folds,
-    tomando o primeiro fold como teste — isso preserva a proporção das classes
-    e a proporção pedida em `test_size` sem quebrar os grupos.
+    Com YSK_PARTICAO='video' (padrão), a divisão vem do arquivo de partição por
+    vídeo e os grupos devolvidos são os video_id: os folds de CV gerados a partir
+    deles (get_kfold_split) também são os gravados no arquivo. `test_size` é então
+    ignorado -- a proporção foi fixada ao gerar a partição (20% dos vídeos).
+
+    Com YSK_PARTICAO='frase', reproduz a divisão da versão submetida: agrupada
+    pelo texto normalizado, com StratifiedGroupKFold de k = round(1/test_size)
+    folds e o primeiro fold como teste (StratifiedKFold quando não há texto
+    repetido).
 
     Args:
-        test_size: Proporção aproximada do conjunto de teste (padrão 20%)
+        test_size: Proporção aproximada do conjunto de teste (só na partição por frase)
         return_groups: Se True, devolve também os grupos do conjunto de CV,
             necessários para gerar folds sem vazamento.
+        return_frame: Se True, devolve por último o DataFrame do corpus e os
+            índices (train_idx, test_idx), para quem precisa de id_sentenca/vídeo.
 
     Returns:
         (X_train_cv, y_train_cv), (X_test, y_test)
         ou, com return_groups=True,
         (X_train_cv, y_train_cv, groups_train_cv), (X_test, y_test)
+        e, com return_frame=True, mais (df, train_idx, test_idx) ao final.
     """
     df = load_toxicity_corpus()
+
+    if experimento.particao() == 'video':
+        train_idx, test_idx, groups = _divisao_por_video(df)
+        texts = df['texto'].tolist()
+        labels = df['label'].tolist()
+        X_train_cv = [texts[i] for i in train_idx]
+        y_train_cv = [labels[i] for i in train_idx]
+        g_train_cv = [groups[i] for i in train_idx]
+        X_test = [texts[i] for i in test_idx]
+        y_test = [labels[i] for i in test_idx]
+
+        compartilhados = set(g_train_cv) & {groups[i] for i in test_idx}
+        logger.info(f"=== METODOLOGIA DE DIVISÃO (por vídeo; rotulagem {experimento.rotulagem()}) ===")
+        logger.info(f"Total: {len(texts)} frases | treino {len(X_train_cv)} "
+                    f"({len(set(g_train_cv))} vídeos) | teste {len(X_test)} "
+                    f"({len({groups[i] for i in test_idx})} vídeos)")
+        logger.info(f"Vídeos compartilhados entre treino e teste: {len(compartilhados)} (deve ser 0)")
+        if compartilhados:
+            raise ValueError(f"{len(compartilhados)} vídeos em treino e teste ao mesmo tempo")
+
+        saida = [(X_train_cv, y_train_cv, g_train_cv) if return_groups
+                 else (X_train_cv, y_train_cv), (X_test, y_test)]
+        if return_frame:
+            saida.append((df, train_idx, test_idx))
+        return tuple(saida)
 
     texts = df['texto'].tolist()
     labels = df['label'].tolist()
@@ -221,9 +287,11 @@ def get_data_for_cv_and_test(test_size: float = 0.20, return_groups: bool = Fals
                 f"({len(X_test)/len(texts)*100:.1f}%)")
     logger.info(f"Frases compartilhadas entre treino e teste: {len(vazamento)} (deve ser 0)")
 
-    if return_groups:
-        return (X_train_cv, y_train_cv, g_train_cv), (X_test, y_test)
-    return (X_train_cv, y_train_cv), (X_test, y_test)
+    saida = [(X_train_cv, y_train_cv, g_train_cv) if return_groups
+             else (X_train_cv, y_train_cv), (X_test, y_test)]
+    if return_frame:
+        saida.append((df, train_idx, test_idx))
+    return tuple(saida)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,17 @@
+{
+  "tag": "video-v1",
+  "inicio": "2026-11-19T22:14:35.151453",
+  "etapas": [
+    {
+      "etapa": "busca",
+      "status": "ok",
+      "segundos": 11677.8
+    },
+    {
+      "etapa": "final",
+      "status": "falhou (código 3221225477)",
+      "segundos": 20.4
+    }
+  ],
+  "fim": "2026-11-20T01:29:33.366282"
+}

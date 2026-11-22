@@ -1,0 +1,34 @@
+% Gerado por app/nlp/evaluation/scripts/analisar_anotacao.py
+% NAO EDITAR A MAO: reexecute o script apos mudar o corpus.
+\begin{table}[!t]
+\centering
+\small
+\caption{Confusion between each pair of raters over the full corpus, Cohen's kappa per pair and category-wise Fleiss' kappa (P1 professor, P2 psychologist, A1 student).}
+\label{tab:concordancia}
+\begin{tabular}{lrrr}
+\toprule
+\multicolumn{4}{l}{P1 $\times$ P2: agreement 86.2\%, Cohen's $\kappa$ = 0.7884} \\
+\midrule
+P1 $\downarrow$ / P2 $\rightarrow$ & None & Mild & Severe \\
+None & 708 & 61 & 0 \\
+Mild & 74 & 435 & 79 \\
+Severe & 3 & 33 & 418 \\
+\midrule
+\multicolumn{4}{l}{P1 $\times$ A1: agreement 85.6\%, Cohen's $\kappa$ = 0.7776} \\
+\midrule
+P1 $\downarrow$ / A1 $\rightarrow$ & None & Mild & Severe \\
+None & 722 & 47 & 0 \\
+Mild & 94 & 444 & 50 \\
+Severe & 0 & 70 & 384 \\
+\midrule
+\multicolumn{4}{l}{P2 $\times$ A1: agreement 85.5\%, Cohen's $\kappa$ = 0.7769} \\
+\midrule
+P2 $\downarrow$ / A1 $\rightarrow$ & None & Mild & Severe \\
+None & 724 & 61 & 0 \\
+Mild & 92 & 414 & 23 \\
+Severe & 0 & 86 & 411 \\
+\midrule
+Fleiss' $\kappa$ by class & 0.838 & 0.668 & 0.833 \\
+\bottomrule
+\end{tabular}
+\end{table}

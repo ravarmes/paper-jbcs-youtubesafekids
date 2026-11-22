@@ -1,0 +1,85 @@
+% Gerado por app/nlp/training/train_toxicity_llm_baselines.py
+% (ao fim da rodada, ou com --so-apendice). NAO EDITAR A MAO.
+% Rodada: video-v1 | resultados: llm_baselines_toxicity_20261120_021243.json
+% Linhas longas do prompt quebradas em 88 caracteres; continuacoes com 2 espacos.
+% O verbatim vai num figure*: no template de duas colunas do JBCS a coluna tem
+% 240pt (~56 caracteres em \footnotesize), e a largura total, 498pt (~117).
+\begin{figure*}[!t]
+\begingroup\footnotesize
+\begin{verbatim}
+[system]
+Você é um sistema de moderação de conteúdo em português brasileiro. Sua tarefa é
+  classificar o grau de toxicidade de uma frase extraída da transcrição de um vídeo, em
+  três níveis:
+0 = Nenhuma: texto apropriado, isento de linguagem agressiva.
+1 = Leve: ofensividade indireta — críticas dirigidas a objetos, situações ou entidades
+  abstratas, sem alvo pessoal (ex.: "Que porra de ônibus").
+2 = Severa: ofensividade direta — insultos, ameaças ou discurso de ódio dirigidos
+  explicitamente a uma pessoa ou grupo (ex.: "Este idiota do Robson fez isso").
+Responda APENAS com o número 0, 1 ou 2, sem nenhuma outra palavra.
+
+[user]
+Frase: Cala esse focinho, Roger, seu alienígena miserável e insuportável!
+
+[assistant]
+2
+
+[user]
+Frase: esse falatório estragou nosso dia
+
+[assistant]
+1
+
+[user]
+Frase: lanchinhos comprados e agora livros
+
+[assistant]
+0
+
+[user]
+Frase: agora sabemos por US vai se foder Summer e que se for o governo e que eu me foda
+  também por ter abaixado a guarda o que eu nunca farei de novo
+
+[assistant]
+2
+
+[user]
+Frase: eu perguntei pro Léo ah o Léo disse que gosta de brincar com as fantasias ótimo
+  vamos Léo
+
+[assistant]
+0
+
+[user]
+Frase: Gastar todo o dinheiro em apostas foi uma tremenda idiotice.
+
+[assistant]
+1
+
+[user]
+Frase: <sentence to classify>
+\end{verbatim}
+\endgroup
+\caption{Messages sent to the generative baseline for each test sentence, in order; the
+role of each message is given in brackets. Lines longer than 88 characters are wrapped
+here for typesetting, with continuation lines indented by two spaces; blank lines separate
+messages, and every other line break in the listing is part of the prompt. The final user
+message carries the sentence being classified.}
+\label{fig:prompt-llm}
+\end{figure*}
+
+\begin{itemize}
+\item Model: \texttt{llama3.1:8b}, served locally by Ollama through the \texttt{/api/chat}
+  endpoint, one request per sentence, without streaming.
+\item Decoding: \texttt{temperature} = 0, \texttt{num\_predict} = 5; all other options at
+  the server defaults.
+\item Few-shot examples: 2 per class, drawn from the training split with a fixed seed
+  (42); the test split is never used.
+\item Parsing: if the stripped reply is exactly \texttt{0}, \texttt{1} or \texttt{2}, that
+  is the label; otherwise the first of these characters anywhere in the reply; otherwise
+  the first keyword found, tested in the order \emph{severa}, \emph{leve}, \emph{nenhuma};
+  otherwise the sentence is labelled None. No sentence is discarded or re-sent.
+\item Replies outside the requested format: \texttt{llama3.1:8b}: 417 of 417 replies in
+  the requested format, 0 recovered from a digit, 0 from a keyword, and 0 with no
+  recognisable label (assigned None).
+\end{itemize}

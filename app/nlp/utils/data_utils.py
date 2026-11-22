@@ -189,6 +189,13 @@ def get_kfold_split(
     apareceriam em treino e validação ao mesmo tempo, inflando as métricas por
     memorização.
     """
+    # Partição por vídeo (protocolo principal): os folds são os gravados em
+    # data/particoes/particao_video.csv, idênticos para qualquer rotulagem.
+    if groups is not None:
+        from app.nlp import experimento
+        if experimento.particao() == 'video':
+            return experimento.folds_por_video(groups, n_splits)
+
     # Só vale a pena agrupar se houver de fato texto repetido: com grupos todos
     # distintos, o StratifiedKFold dá estratificação exata.
     if groups is not None and len(set(groups)) < len(groups):

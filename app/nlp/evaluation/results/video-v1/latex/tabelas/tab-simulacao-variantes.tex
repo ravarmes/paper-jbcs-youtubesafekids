@@ -1,0 +1,30 @@
+\begin{table*}[!t]
+\centering
+\caption{Simulated detection (\%) under alternative video models, rule ``Mean of the $k$ (current Eq.)'', population: out-of-fold predictions on the training split ($n = 1394$). \emph{i.i.d.}: each of the $k$ sampled sentences is severely toxic with probability $f$; the appropriate part is drawn from None sentences, or from None and Mild pooled (Mild then counts as appropriate content and enters the calibration). \emph{Contiguous block}: a video is an ordered sequence of $L = 200$ sentences whose toxic content is one run of $\mathrm{round}(fL)$ consecutive Severe sentences starting at a uniformly random position; the service reads $k$ positions, either fixed and evenly spaced (for $k = 3$: first, middle and last sentence) or one uniformly random position in each of $k$ equal strata. The threshold is recalibrated to 5\% false alarm on entirely appropriate videos of the same kind. Confidence intervals are in the result file.}
+\label{tab:simulacao-variantes}
+\begin{tabular}{llcccc}
+\toprule
+Video model & $f$ & $k=3$ & $k=5$ & $k=8$ & $k=12$ \\
+\midrule
+i.i.d.; appropriate part: None & 0.05 & 8.6 & 9.8 & 10.8 & 12.0 \\
+ & 0.10 & 12.6 & 15.8 & 18.1 & 21.6 \\
+ & 0.20 & 21.7 & 29.9 & 36.8 & 45.4 \\
+ & 0.30 & 31.5 & 45.6 & 56.1 & 68.5 \\
+\midrule
+i.i.d.; appropriate part: None and Mild & 0.05 & 7.8 & 8.3 & 9.3 & 10.4 \\
+ & 0.10 & 11.6 & 12.4 & 14.3 & 16.7 \\
+ & 0.20 & 19.9 & 22.3 & 28.3 & 35.1 \\
+ & 0.30 & 28.6 & 33.7 & 43.8 & 55.3 \\
+\midrule
+contiguous block; fixed positions & 0.05 & 6.7 & 8.1 & 8.8 & 10.0 \\
+ & 0.10 & 7.7 & 10.8 & 12.8 & 16.2 \\
+ & 0.20 & 10.9 & 17.8 & 26.7 & 39.1 \\
+ & 0.30 & 14.6 & 29.4 & 47.9 & 68.3 \\
+\midrule
+contiguous block; one random position per stratum & 0.05 & 8.3 & 9.3 & 10.2 & 10.6 \\
+ & 0.10 & 11.6 & 13.8 & 15.6 & 19.0 \\
+ & 0.20 & 19.0 & 27.0 & 33.7 & 44.7 \\
+ & 0.30 & 28.3 & 45.8 & 57.9 & 75.1 \\
+\bottomrule
+\end{tabular}
+\end{table*}

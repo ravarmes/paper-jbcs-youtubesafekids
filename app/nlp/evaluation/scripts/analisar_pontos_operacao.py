@@ -20,6 +20,15 @@ O QUE CALCULA
      cada uma, contra a mediana das Nenhuma corretamente classificadas — que é o
      teste de se o score contínuo recupera o que o argmax perde.
 
+LIMIAR ESCOLHIDO NO TESTE (revisão do JBCS, item M6e)
+------------------------------------------------------
+Os limiares deste script são avaliados -- e o "melhor" escolhido -- no próprio
+teste. As Tabelas 6 e 7 do manuscrito (tab-limiar.tex e tab-pontos-operacao.tex)
+passaram a ser geradas por analisar_calibracao_limiar.py, com tau escolhido nas
+predições out-of-fold. Este script continua no pipeline, mas grava as versões
+dele como tab-limiar-teste.tex e tab-pontos-operacao-teste.tex (exploratórias),
+sem sobrescrever as do manuscrito.
+
 Uso:
     python -m app.nlp.evaluation.scripts.analisar_pontos_operacao
     python -m app.nlp.evaluation.scripts.analisar_pontos_operacao --idioma en
@@ -38,27 +47,22 @@ import numpy as np
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 
+from app.nlp import experimento  # noqa: E402
+
 from app.nlp.models.bertimbau_toxicity import BertimbauToxicity  # noqa: E402
 
 CLASSES = ['Nenhuma', 'Leve', 'Severa']
 PESOS = [0.0, 0.5, 1.0]
 TAUS = [0.50, 0.20, 0.15, 0.10]
 
-RESULTS_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'results'
-)
+RESULTS_DIR = str(experimento.dir_resultados())
 # project_root aponta para src/; as tabelas do manuscrito ficam um nivel acima.
-LATEX_TABELAS = os.path.join(os.path.dirname(project_root), 'latex', 'tabelas')
+LATEX_TABELAS = str(experimento.dir_latex('tabelas'))
 
 
 def modelo_mais_recente() -> str:
-    trained = Path(project_root) / 'src' / 'app' / 'nlp' / 'models' / 'trained'
-    if not trained.is_dir():
-        trained = Path(project_root) / 'app' / 'nlp' / 'models' / 'trained'
-    candidatos = [p for p in trained.glob('TOX_*') if (p / 'config.json').exists()]
-    if not candidatos:
-        raise FileNotFoundError(f"Nenhum modelo TOX_* treinado em {trained}")
-    return str(max(candidatos, key=lambda p: p.stat().st_mtime))
+    """Modelo de referência da rodada (ver app/nlp/experimento.py)."""
+    return str(experimento.caminho_modelo_referencia())
 
 
 def probabilidades_do_teste(modelo, batch_size=64):
@@ -197,6 +201,8 @@ def tex_limiar(linhas, idioma, argmax_coincide):
     ident = (" In practice, \\emph{argmax} coincides with $\\tau = 0.5$ on this test set."
              if en else " Na prática, o \\emph{argmax} coincide com $\\tau = 0{,}5$ neste "
              "conjunto de teste.") if argmax_coincide else ""
+    ident += (" Exploratory: the highlighted threshold was chosen on the test set itself."
+              if en else " Exploratória: o limiar destacado foi escolhido no próprio teste.")
     cap = (("Effect of the threshold $\\tau$ on the probability of the Severe class. Every "
             "row flags by the same rule, $P(\\text{Severe}) > \\tau$, so relaxing $\\tau$ "
             "can only enlarge the flagged set." + ident) if en else
@@ -210,7 +216,7 @@ def tex_limiar(linhas, idioma, argmax_coincide):
     out = ["% Gerado por app/nlp/evaluation/scripts/analisar_pontos_operacao.py",
            "% NAO EDITAR A MAO: reexecute o script apos retreinar.",
            "\\begin{table*}[!t]", "\\centering", f"\\caption{{{cap}}}",
-           "\\label{tab:limiar}", "\\begin{tabular}{cccc}", "\\toprule",
+           "\\label{tab:limiar-teste}", "\\begin{tabular}{cccc}", "\\toprule",
            cab + " \\\\", "\\midrule"]
     for l in linhas:
         rot = f"{l['tau']:.2f}" if en else f"{l['tau']:.2f}".replace('.', '{,}')
@@ -234,7 +240,8 @@ def tex_pontos(pontos, idioma):
            "generative model return a class, whereas the threshold is applied to "
            "$P(\\text{Severe})$. Reading a single rule down the column would compare "
            "different policies; under either rule taken on its own, relaxing the "
-           "threshold costs false alarms, as it must." if en else
+           "threshold costs false alarms, as it must. Exploratory: the threshold row was "
+           "chosen on the test set itself." if en else
            "Pontos de operação no conjunto de teste. O erro caro é deixar passar conteúdo "
            "severamente tóxico; o barato é sinalizar conteúdo apropriado, que apenas o "
            "rebaixa no ranqueamento. O falso alarme vai sob as duas regras de "
@@ -242,7 +249,8 @@ def tex_pontos(pontos, idioma):
            "e o modelo generativo devolvem uma classe, enquanto o limiar se aplica a "
            "$P(\\text{Severa})$. Ler uma regra só ao longo da coluna compararia "
            "políticas diferentes; sob qualquer uma delas isolada, afrouxar o limiar "
-           "custa falso alarme, como tem de custar.")
+           "custa falso alarme, como tem de custar. Exploratória: a linha do limiar foi "
+           "escolhida no próprio teste.")
     cab = ("Model & Severe recall & Severe missed & \\multicolumn{2}{c}{Appropriate flagged} \\\\\n"
            "\\cmidrule(lr){4-5}\n"
            " & & & as Severe & as toxic (any) " if en else
@@ -253,7 +261,7 @@ def tex_pontos(pontos, idioma):
     out = ["% Gerado por app/nlp/evaluation/scripts/analisar_pontos_operacao.py",
            "% NAO EDITAR A MAO: reexecute o script apos retreinar.",
            "\\begin{table*}[!t]", "\\centering", f"\\caption{{{cap}}}",
-           "\\label{tab:pontos-operacao}", "\\begin{tabular}{lcccc}", "\\toprule",
+           "\\label{tab:pontos-operacao-teste}", "\\begin{tabular}{lcccc}", "\\toprule",
            cab + " \\\\", "\\midrule"]
     for i, p in enumerate(pontos):
         cells = [p['modelo'].replace('tau', '$\\tau$'), dec(100 * p['recall_severa']),
@@ -319,13 +327,19 @@ def main():
         json.dump({'modelo': os.path.basename(caminho), 'n_teste': int(len(y)),
                    'curva_limiar': linhas, 'pontos_operacao': pontos,
                    'argmax_coincide_tau_050': bool(argmax_coincide),
+                   'tau_escolhido_no_teste': True,
+                   'nota': ('exploratório: limiares avaliados e escolhidos no teste; o tau '
+                            'escolhido nas OOF está em calibracao_limiar_*.json'),
                    'severas_perdidas': perdidas, 'llm': llm},
                   f, indent=2, ensure_ascii=False)
     print(f"\nSalvo em: {destino}")
 
     os.makedirs(LATEX_TABELAS, exist_ok=True)
-    for nome, conteudo in (('tab-limiar.tex', tex_limiar(linhas, args.idioma, argmax_coincide)),
-                           ('tab-pontos-operacao.tex', tex_pontos(pontos, args.idioma))):
+    # Sufixo -teste: as tabelas do manuscrito (tau escolhido nas OOF) são de
+    # analisar_calibracao_limiar.py; estas, com tau escolhido no teste, ficam como
+    # registro exploratório e não podem sobrescrevê-las.
+    for nome, conteudo in (('tab-limiar-teste.tex', tex_limiar(linhas, args.idioma, argmax_coincide)),
+                           ('tab-pontos-operacao-teste.tex', tex_pontos(pontos, args.idioma))):
         alvo = os.path.join(LATEX_TABELAS, nome)
         with open(alvo, 'w', encoding='utf-8') as f:
             f.write(conteudo)

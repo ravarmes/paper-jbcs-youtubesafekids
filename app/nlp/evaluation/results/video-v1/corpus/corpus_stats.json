@@ -1,0 +1,71 @@
+{
+  "escopo": "corpus inteiro (treino + teste)",
+  "total_sentencas": 1811,
+  "textos_distintos": 1811,
+  "n_videos": 206,
+  "distribuicao": {
+    "Nenhuma": 812,
+    "Leve": 523,
+    "Severa": 476
+  },
+  "distribuicao_pct": {
+    "Nenhuma": 44.8,
+    "Leve": 28.9,
+    "Severa": 26.3
+  },
+  "textos_repetidos": {
+    "n_textos": 0,
+    "n_linhas": 0,
+    "pct_linhas": 0.0
+  },
+  "comprimento_palavras": {
+    "media": 8.4,
+    "mediana": 7.0,
+    "p95": 20.0,
+    "max": 42
+  },
+  "concordancia": {
+    "anotadores_disponiveis": [
+      "P1",
+      "P2",
+      "A1"
+    ],
+    "n_anotadores": 3,
+    "unanimidade_n": 1426,
+    "unanimidade_pct": 0.7874102705687466,
+    "com_maioria_n": 1808,
+    "sem_maioria_n": 3,
+    "acordo_par_a_par": {
+      "P1-P2": 0.8619547211485368,
+      "P1-A1": 0.8558807288790723,
+      "P2-A1": 0.8553285477636665
+    },
+    "acordo_par_a_par_medio": 0.8577213325970918,
+    "fleiss_kappa": 0.7808849002539824
+  },
+  "decidibilidade_lexical": {
+    "prevalencia_toxica_pct": 55.2,
+    "regra_ingenua_precisao_toxica": 0.893,
+    "regra_ingenua_revocacao_toxica": 0.3594,
+    "referencia_sempre_toxica_f1_macro": 0.3555,
+    "referencia_aleatoria_q05_f1_macro": 0.4987,
+    "referencia_aleatoria_estratificada_f1_macro": 0.5,
+    "palavras_de_classe_pura": 110,
+    "sentencas_decidiveis_por_palavra": 558,
+    "pct_decidiveis_por_palavra": 30.8,
+    "sentencas_com_palavrao": 402,
+    "pct_com_palavrao": 22.2,
+    "regra_ingenua_palavrao_f1_macro": 0.6025,
+    "nao_toxicas_com_palavrao": 43,
+    "pct_nao_toxicas_com_palavrao": 5.3,
+    "toxicas_sem_palavrao": 640,
+    "pct_toxicas_sem_palavrao": 64.1
+  },
+  "proximidade_treino_teste": {
+    "limiar": 0.8,
+    "n_teste": 417,
+    "com_analogo_proximo": 28,
+    "sem_analogo_proximo": 389,
+    "pct_com_analogo_proximo": 6.7
+  }
+}

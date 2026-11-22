@@ -1,0 +1,89 @@
+{
+  "modelo": "TOX_TOX_BEST_MODEL_seed42_20261116_123942_20261116_123942",
+  "n_teste": 306,
+  "curva_limiar": [
+    {
+      "tau": 0.5,
+      "recall_severa": 0.961038961038961,
+      "severas_nao_sinalizadas": 3,
+      "falso_alarme_nenhuma": 0.022556390977443608
+    },
+    {
+      "tau": 0.2,
+      "recall_severa": 0.961038961038961,
+      "severas_nao_sinalizadas": 3,
+      "falso_alarme_nenhuma": 0.03007518796992481
+    },
+    {
+      "tau": 0.15,
+      "recall_severa": 0.961038961038961,
+      "severas_nao_sinalizadas": 3,
+      "falso_alarme_nenhuma": 0.03007518796992481
+    },
+    {
+      "tau": 0.1,
+      "recall_severa": 0.961038961038961,
+      "severas_nao_sinalizadas": 3,
+      "falso_alarme_nenhuma": 0.045112781954887216
+    }
+  ],
+  "pontos_operacao": [
+    {
+      "modelo": "BERTimbau (argmax)",
+      "recall_severa": 0.961038961038961,
+      "severas_perdidas": 3,
+      "fa_severa": 0.022556390977443608,
+      "fa_toxico": 0.05263157894736842
+    },
+    {
+      "modelo": "BERTimbau (tau = 0.1)",
+      "recall_severa": 0.961038961038961,
+      "severas_perdidas": 3,
+      "fa_severa": 0.045112781954887216,
+      "fa_toxico": 0.07518796992481203
+    },
+    {
+      "modelo": "llama3.1:8b",
+      "recall_severa": 0.922077922077922,
+      "severas_perdidas": 6,
+      "fa_severa": 0.10526315789473684,
+      "fa_toxico": 0.2857142857142857,
+      "segundos_por_frase": 2.43
+    }
+  ],
+  "argmax_coincide_tau_050": true,
+  "severas_perdidas": {
+    "n": 1,
+    "frases": [
+      {
+        "texto": "546. Ah, caramba, chefe. Vamos matar o time azul inteiro e o Jimmy, não é?",
+        "score": 0.9192416537553072,
+        "p_severa": 0.06006482616066933
+      }
+    ],
+    "score_mediano_perdidas": 0.9192416537553072,
+    "score_mediano_nenhuma_corretas": 0.924835242331028
+  },
+  "llm": {
+    "nome": "llama3.1:8b",
+    "confusion_matrix": [
+      [
+        95,
+        24,
+        14
+      ],
+      [
+        4,
+        73,
+        19
+      ],
+      [
+        0,
+        6,
+        71
+      ]
+    ],
+    "segundos_por_frase": 2.43,
+    "fonte": "llm_baselines_toxicity_20261116_132149.json"
+  }
+}

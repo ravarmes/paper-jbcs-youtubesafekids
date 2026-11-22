@@ -1,0 +1,33 @@
+% NAO EDITAR A MAO: gerado por regerar_tabelas_estudo_caso.py (tabela_estrato_b).
+\begin{table*}[!t]
+\centering
+\small
+\caption{The 20 stratum-B videos of the case study, ordered by verbal-toxicity score. Classes: the class predicted for the beginning, middle and end sentence (N None, M Mild, S Severe). Outcome at the a priori threshold $\tau^{*} = 0.511$ (rule: score $< \tau^{*}$ $\Rightarrow$ demoted). The categories of the missed videos are mechanical: \emph{dilution} when some sampled sentence was predicted Mild or Severe but the mean stayed at or above $\tau^{*}$, \emph{no sentence flagged} when all three were predicted None. Titles as published, truncated.}
+\label{tab:estrato-b}
+\begin{tabular}{@{}llp{0.43\textwidth}ccl@{}}
+\toprule
+Query & Pos. & Title & Classes & Score & Outcome \\
+\midrule
+Rick and Morty & 6 & Vô fazê sá porra!!! & M/S/M & 0.347 & demoted \\
+South Park & 6 & Cartman machista opressor - SOUTH PARK & S/M/N & 0.445 & demoted \\
+South Park & 10 & 30 MINUTOS das MAIORES MALDADES do Cartman | South Park |… & M/N/S & 0.486 & demoted \\
+Rick and Morty & 7 & Rick Chapa Com Dragão Rick And Morty Dublado & N/S/M & 0.537 & missed: dilution \\
+Rick and Morty & 5 & O problema com os problemas | Rick \& Morty | Adult Swim B… & N/S/N & 0.570 & missed: dilution \\
+South Park & 2 & Scott Tenorman deve morrer & N/N/S & 0.591 & missed: dilution \\
+Rick and Morty & 1 & Sobrevivendo aos Piores Predadores do Universo | Rick and… & N/S/N & 0.624 & missed: dilution \\
+Rick and Morty & 9 & Parasitas invasores | Rick \& Morty | Adult Swim Brasil & S/N/N & 0.626 & missed: dilution \\
+South Park & 1 & 30 Minutos de Risadas com a Galerinha de South Park | Plu… & S/N/N & 0.628 & missed: dilution \\
+South Park & 7 & DESENHO PARA ASSISTIR CHAPADO - ASSISTA CHAPADO - SOUTH P… & N/N/S & 0.630 & missed: dilution \\
+Rick and Morty & 3 & Rick e Morty: tudo por uma selfie | Rick \& Morty | Adult… & S/N/N & 0.764 & missed: dilution \\
+South Park & 4 & Os Melhores Episódios de South Park | Pluto TV & N/N/M & 0.779 & missed: dilution \\
+Rick and Morty & 10 & Rick and Morty Brasil: Clipes das Temps. 1-3 | Melhores M… & N/N/M & 0.780 & missed: dilution \\
+Rick and Morty & 2 & A experiência amorosa | Rick \& Morty | Adult Swim Brasil & N/N/M & 0.783 & missed: dilution \\
+Rick and Morty & 4 & Rick And Morty Dublado - Completo & M/N/N & 0.783 & missed: dilution \\
+South Park & 8 & 30 Minutos de South Park | Pluto TV & N/N/N & 0.908 & missed: no sentence flagged \\
+Rick and Morty & 8 & Os melhores momentos de suspense da 1ª temporada | Rick a… & N/N/N & 0.928 & missed: no sentence flagged \\
+South Park & 9 & South Park: A Fenda que Abunda a Força - O Filme (Dublado) & N/N/N & 0.930 & missed: no sentence flagged \\
+South Park & 5 & SOUTH PARK - EPISÓDIO - CARTMAN ENCONTRA O AMOR - PARTE 1 & N/N/N & 0.931 & missed: no sentence flagged \\
+South Park & 3 & patinetes - parte 1 - SOUTH PARK (completo) & N/N/N & 0.931 & missed: no sentence flagged \\
+\bottomrule
+\end{tabular}
+\end{table*}

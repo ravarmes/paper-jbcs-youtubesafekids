@@ -23,23 +23,20 @@ import numpy as np
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 
+from app.nlp import experimento  # noqa: E402
+
 from app.nlp.models.bertimbau_toxicity import BertimbauToxicity
 
 # Mesmos pesos de penalização do filtro em produção (app/filters/toxicity.py)
 PESOS = {'Nenhuma': 0.0, 'Leve': 0.5, 'Severa': 1.0}
 
 CACHE = os.path.join(project_root, 'app', 'cache', 'cache_pernalonga.json')
-OUTPUT_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'results', 'artigo'
-)
+OUTPUT_DIR = str(experimento.dir_resultados('artigo'))
 
 
 def modelo_mais_recente() -> str:
-    trained = Path(project_root) / 'app' / 'nlp' / 'models' / 'trained'
-    candidatos = [p for p in trained.glob('TOX_*') if (p / 'config.json').exists()]
-    if not candidatos:
-        raise FileNotFoundError(f"Nenhum modelo TOX_* treinado em {trained}")
-    return str(max(candidatos, key=lambda p: p.stat().st_mtime))
+    """Modelo de referência da rodada (ver app/nlp/experimento.py)."""
+    return str(experimento.caminho_modelo_referencia())
 
 
 def distribuicao_por_classe(modelo, batch_size=64):

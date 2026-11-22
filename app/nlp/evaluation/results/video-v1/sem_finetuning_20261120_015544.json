@@ -1,0 +1,313 @@
+{
+  "timestamp": "2026-11-20T01:55:23.176068",
+  "n_treino": 1394,
+  "n_teste": 417,
+  "resultados": [
+    {
+      "modelo": "Sonda linear (BERTimbau congelado)",
+      "f1_macro": 0.7432731542543589,
+      "accuracy": 0.7553956834532374,
+      "f1_per_class": [
+        0.8116710875331565,
+        0.7038626609442059,
+        0.7142857142857143
+      ],
+      "confusion_matrix": [
+        [
+          153,
+          13,
+          20
+        ],
+        [
+          25,
+          82,
+          26
+        ],
+        [
+          13,
+          5,
+          80
+        ]
+      ],
+      "cv_f1_mean": 0.7796830885129017,
+      "cv_f1_std": 0.03644886974635385
+    },
+    {
+      "modelo": "Zero-shot máscara: \"{frase} Isso é uma fala [MASK].\"",
+      "f1_macro": 0.44902452761981765,
+      "accuracy": 0.5059952038369304,
+      "f1_per_class": [
+        0.6474820143884892,
+        0.24581005586592178,
+        0.453781512605042
+      ],
+      "confusion_matrix": [
+        [
+          135,
+          16,
+          35
+        ],
+        [
+          60,
+          22,
+          51
+        ],
+        [
+          36,
+          8,
+          54
+        ]
+      ],
+      "molde": "{frase} Isso é uma fala [MASK].",
+      "treino": {
+        "n": 1394,
+        "f1_macro": 0.47902411262920763,
+        "accuracy": 0.5286944045911047,
+        "cv_f1_por_fold": [
+          0.4923672302929269,
+          0.456409745557151,
+          0.4660350973347546,
+          0.45745181236464844,
+          0.534766066411636
+        ],
+        "cv_f1_mean": 0.4814059903922234,
+        "cv_f1_std": 0.029672633004753896
+      },
+      "escolhido_no_treino": true,
+      "papel": "referência: molde escolhido no treino"
+    },
+    {
+      "modelo": "Zero-shot máscara: \"{frase} Essa frase é [MASK].\"",
+      "f1_macro": 0.343046274148782,
+      "accuracy": 0.4412470023980815,
+      "f1_per_class": [
+        0.6490765171503958,
+        0.0,
+        0.3800623052959502
+      ],
+      "confusion_matrix": [
+        [
+          123,
+          0,
+          63
+        ],
+        [
+          34,
+          0,
+          99
+        ],
+        [
+          36,
+          1,
+          61
+        ]
+      ],
+      "molde": "{frase} Essa frase é [MASK].",
+      "treino": {
+        "n": 1394,
+        "f1_macro": 0.3942453904019023,
+        "accuracy": 0.5078909612625538,
+        "cv_f1_por_fold": [
+          0.40308161331520614,
+          0.360641747738522,
+          0.41470882935851083,
+          0.38430173292558617,
+          0.40776781903542475
+        ],
+        "cv_f1_mean": 0.39410034847465003,
+        "cv_f1_std": 0.019532860435196347
+      },
+      "escolhido_no_treino": false,
+      "papel": "só registro: molde não escolhido no treino (teste não usado em nenhuma escolha)"
+    },
+    {
+      "modelo": "Zero-shot máscara: \"Comentário: {frase} Classificação: [MASK].\"",
+      "f1_macro": 0.33125,
+      "accuracy": 0.4460431654676259,
+      "f1_per_class": [
+        0.46874999999999994,
+        0.5249999999999999,
+        0.0
+      ],
+      "confusion_matrix": [
+        [
+          60,
+          126,
+          0
+        ],
+        [
+          7,
+          126,
+          0
+        ],
+        [
+          3,
+          95,
+          0
+        ]
+      ],
+      "molde": "Comentário: {frase} Classificação: [MASK].",
+      "treino": {
+        "n": 1394,
+        "f1_macro": 0.30664797106595015,
+        "accuracy": 0.40028694404591103,
+        "cv_f1_por_fold": [
+          0.3138740559003223,
+          0.32682539682539674,
+          0.28436195587358376,
+          0.297008547008547,
+          0.307707338042342
+        ],
+        "cv_f1_mean": 0.3059554587300384,
+        "cv_f1_std": 0.014475179952857716
+      },
+      "escolhido_no_treino": false,
+      "papel": "só registro: molde não escolhido no treino (teste não usado em nenhuma escolha)"
+    },
+    {
+      "modelo": "Modelos prontos compostos (HateBR + alvo)",
+      "f1_macro": 0.43178249421527165,
+      "accuracy": 0.460431654676259,
+      "f1_per_class": [
+        0.5421686746987951,
+        0.22999999999999995,
+        0.5231788079470199
+      ],
+      "confusion_matrix": [
+        [
+          90,
+          34,
+          62
+        ],
+        [
+          47,
+          23,
+          63
+        ],
+        [
+          9,
+          10,
+          79
+        ]
+      ]
+    },
+    {
+      "modelo": "HateBR isolado (tóxico vs. não-tóxico)",
+      "f1_macro": 0.6196899150386406,
+      "accuracy": 0.6354916067146283,
+      "f1_per_class": [
+        0.5421686746987951,
+        0.697211155378486
+      ],
+      "confusion_matrix": [
+        [
+          90,
+          96
+        ],
+        [
+          56,
+          175
+        ]
+      ],
+      "tarefa": "binária: tóxico vs. não-tóxico"
+    },
+    {
+      "modelo": "Classificador de alvo isolado (Leve vs. Severa)",
+      "f1_macro": 0.6105143506678034,
+      "accuracy": 0.6147186147186147,
+      "f1_per_class": [
+        0.5700483091787439,
+        0.6509803921568628
+      ],
+      "confusion_matrix": [
+        [
+          59,
+          74
+        ],
+        [
+          15,
+          83
+        ]
+      ],
+      "tarefa": "binária, só nas tóxicas: Leve vs. Severa"
+    }
+  ],
+  "modelo_base": {
+    "hf_id": "neuralmind/bert-base-portuguese-cased",
+    "url": "https://huggingface.co/neuralmind/bert-base-portuguese-cased",
+    "revisao_no_cache": "94d69c95f98f7d5b2a8700c420230ae10def0baa"
+  },
+  "zero_shot_selecao": {
+    "molde_escolhido_no_treino": "{frase} Isso é uma fala [MASK].",
+    "criterio": "maior F1 macro no conjunto de treino/desenvolvimento inteiro; empate: o primeiro na ordem de MOLDES_CLOZE. O teste não entra na escolha.",
+    "n_treino": 1394,
+    "f1_treino_por_molde": {
+      "{frase} Isso é uma fala [MASK].": 0.47902411262920763,
+      "{frase} Essa frase é [MASK].": 0.3942453904019023,
+      "Comentário: {frase} Classificação: [MASK].": 0.30664797106595015
+    },
+    "cv_f1_treino_por_molde": {
+      "{frase} Isso é uma fala [MASK].": {
+        "media": 0.4814059903922234,
+        "dp": 0.029672633004753896
+      },
+      "{frase} Essa frase é [MASK].": {
+        "media": 0.39410034847465003,
+        "dp": 0.019532860435196347
+      },
+      "Comentário: {frase} Classificação: [MASK].": {
+        "media": 0.3059554587300384,
+        "dp": 0.014475179952857716
+      }
+    },
+    "f1_teste_do_escolhido": 0.44902452761981765,
+    "f1_teste_por_molde_so_registro": {
+      "{frase} Isso é uma fala [MASK].": 0.44902452761981765,
+      "{frase} Essa frase é [MASK].": 0.343046274148782,
+      "Comentário: {frase} Classificação: [MASK].": 0.33125
+    },
+    "nota": "Só o teste do molde escolhido no treino é a referência; o teste dos demais fica no JSON por transparência e não entra em tabela nem figura."
+  },
+  "modelos_externos": [
+    {
+      "papel": "hatebr",
+      "hf_id": "ruanchaves/bert-base-portuguese-cased-hatebr",
+      "url": "https://huggingface.co/ruanchaves/bert-base-portuguese-cased-hatebr",
+      "pasta_local": "data/models/ruanchaves_bert_base_hatebr",
+      "revisao_usada": "ed31720b2f3c0b6cefe81cf267751b255b377a7d",
+      "revisoes_encontradas": [
+        "ed31720b2f3c0b6cefe81cf267751b255b377a7d"
+      ],
+      "revisao_esperada": "ed31720b2f3c0b6cefe81cf267751b255b377a7d",
+      "confere": true,
+      "pesos_sha256": "8447edf46bf471477005e336896a5a13f67880b41c3a2059966343897c2a1e7c",
+      "rotulos": {
+        "0": "não ofensivo",
+        "1": "ofensivo"
+      }
+    },
+    {
+      "papel": "alvo",
+      "hf_id": "dougtrajano/toxicity-target-classification",
+      "url": "https://huggingface.co/dougtrajano/toxicity-target-classification",
+      "pasta_local": "data/models/dougtrajano_toxicity_target_classification",
+      "revisao_usada": "885d2698f9b68f0fc90850fe7fc4dc7cc970f2f5",
+      "revisoes_encontradas": [
+        "885d2698f9b68f0fc90850fe7fc4dc7cc970f2f5"
+      ],
+      "revisao_esperada": "885d2698f9b68f0fc90850fe7fc4dc7cc970f2f5",
+      "confere": true,
+      "pesos_sha256": "2494ada141fc9b43ee71dd958e772766aedc9a020ce7e6f7b3a5de7cbcc44948",
+      "rotulos": {
+        "0": "UNTARGETED",
+        "1": "TARGETED INSULT"
+      }
+    }
+  ],
+  "experimento": {
+    "particao": "video",
+    "rotulagem": "v1",
+    "tag": "video-v1",
+    "arquivo_particao": "data\\particoes\\particao_video.csv"
+  }
+}

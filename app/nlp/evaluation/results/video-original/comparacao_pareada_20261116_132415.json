@@ -1,0 +1,84 @@
+{
+  "f1_macro_teste": {
+    "BERTimbau (ajuste fino)": 0.919303742210169,
+    "Sonda linear (congelado)": 0.8582152185586498,
+    "SVM (LinearSVC)": 0.825908733842748,
+    "Logistic Regression": 0.8294982561381042,
+    "Random Forest": 0.7729991344579155,
+    "Naive Bayes": 0.7958533194962351
+  },
+  "comparacoes_vs_BERTimbau (ajuste fino)": {
+    "Sonda linear (congelado)": {
+      "bootstrap": {
+        "diferenca_observada": 0.06108852365151918,
+        "ic95_baixo": 0.026321336561795194,
+        "ic95_alto": 0.09717365263617213,
+        "p_bootstrap": 0.0,
+        "significativo": true
+      },
+      "mcnemar": {
+        "so_a": 23,
+        "so_b": 4,
+        "p_valor": 0.000310748815536499
+      }
+    },
+    "SVM (LinearSVC)": {
+      "bootstrap": {
+        "diferenca_observada": 0.09339500836742098,
+        "ic95_baixo": 0.05131140895446897,
+        "ic95_alto": 0.13779004425837688,
+        "p_bootstrap": 0.0,
+        "significativo": true
+      },
+      "mcnemar": {
+        "so_a": 35,
+        "so_b": 7,
+        "p_valor": 1.5097200957825409e-05
+      }
+    },
+    "Logistic Regression": {
+      "bootstrap": {
+        "diferenca_observada": 0.08980548607206473,
+        "ic95_baixo": 0.04694664798454929,
+        "ic95_alto": 0.13482042234844593,
+        "p_bootstrap": 0.0,
+        "significativo": true
+      },
+      "mcnemar": {
+        "so_a": 36,
+        "so_b": 8,
+        "p_valor": 2.5448598648836196e-05
+      }
+    },
+    "Random Forest": {
+      "bootstrap": {
+        "diferenca_observada": 0.1463046077522535,
+        "ic95_baixo": 0.10069158655005722,
+        "ic95_alto": 0.1957647634425051,
+        "p_bootstrap": 0.0,
+        "significativo": true
+      },
+      "mcnemar": {
+        "so_a": 50,
+        "so_b": 6,
+        "p_valor": 1.0182093779231849e-09
+      }
+    },
+    "Naive Bayes": {
+      "bootstrap": {
+        "diferenca_observada": 0.12345042271393392,
+        "ic95_baixo": 0.07637084691624074,
+        "ic95_alto": 0.1734292760329437,
+        "p_bootstrap": 0.0,
+        "significativo": true
+      },
+      "mcnemar": {
+        "so_a": 44,
+        "so_b": 8,
+        "p_valor": 4.0393217393130953e-07
+      }
+    }
+  },
+  "n_teste": 306,
+  "n_bootstrap": 5000
+}

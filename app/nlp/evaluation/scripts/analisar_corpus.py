@@ -32,6 +32,8 @@ import matplotlib.pyplot as plt
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 sys.path.insert(0, project_root)
 
+from app.nlp import experimento  # noqa: E402
+
 from app.nlp.config import PATHS
 from app.nlp.datasets.prepare_data_toxicity import load_toxicity_corpus, normalize_text
 
@@ -42,10 +44,18 @@ ANOTADORES = ['P1', 'P2', 'A1']
 # Termos de baixo calão usados no diagnóstico de decidibilidade lexical. Não é
 # um léxico de toxicidade — serve só para medir o quanto o rótulo do corpus
 # pode ser adivinhado pela presença de um palavrão.
+#
+# Correção (revisão do JBCS, 2026-11-19): a versão anterior terminava em `)\w*\b`,
+# isto é, casava qualquer palavra que COMEÇASSE por um termo da lista. "cu" casava
+# "cuidado", "curva", "culpa", "Curitiba"; "cacete" casava "cacetete"; e "otário",
+# com acento, não casava. Agora cada termo traz as próprias flexões e a palavra
+# inteira tem de casar.
 PALAVROES = (
-    r'\b(merda|porra|caralho|foda|fodase|bosta|puta|cu|buceta|viado|idiota|'
-    r'imbecil|babaca|vadia|piranha|desgraçad\w*|lixo|burr\w+|otari\w+|corno|'
-    r'arrombad\w+|cacete|inferno|droga)\w*\b'
+    r'\b(?:merdas?|porras?|porrada|caralh\w*|fod\w*|fud[ei]\w*|bostas?|put[ao]s?|'
+    r'putaria|cu|cus|cuz\w*|cus[aã]o|culh[aã]o|culhões|buceta\w*|piroca\w*|'
+    r'viad(?:o|os|a|as|inho|inhos|agem)|idiotas?|imbecil|imbecis|babacas?|vadias?|'
+    r'piranh\w*|desgraçad\w*|lixos?|burr[oa]s?|burrice|ot[aá]ri[oa]s?|cornos?|'
+    r'arrombad\w*|cacete|infernos?|droga)\b'
 )
 
 
@@ -147,7 +157,29 @@ def decidibilidade_lexical(textos, rotulos) -> dict:
     nao_toxica_com = sum(1 for p, r in zip(tem_palavrao, rotulos) if p and r == 0)
     toxica_sem = sum(1 for p, r in zip(tem_palavrao, rotulos) if not p and r > 0)
 
+    # Regras de referência para ler o macro F1 da regra ingênua (revisor H, m2).
+    # Com prevalência tóxica pi:
+    #  - "sempre tóxica": F1 tóxica = 2pi/(1+pi), F1 não tóxica = 0;
+    #  - aleatória que diz "tóxica" com probabilidade q: precisão = prevalência da
+    #    classe e revocação = q, logo F1 = 2*pi*q/(pi+q) por classe. Com q = 0,5 ou
+    #    q = pi o macro F1 esperado fica em ~0,50 -- é o "acaso" do texto.
+    from sklearn.metrics import precision_score, recall_score
+    pi = n_toxicas / len(rotulos)
+
+    def _f1_aleatoria(q):
+        f1_tox = 2 * pi * q / (pi + q)
+        f1_nao = 2 * (1 - pi) * (1 - q) / ((1 - pi) + (1 - q))
+        return (f1_tox + f1_nao) / 2
+
+    sempre_toxica = float(f1_score(real, [1] * len(real), average='macro'))
+
     return {
+        'prevalencia_toxica_pct': round(pi * 100, 1),
+        'regra_ingenua_precisao_toxica': round(float(precision_score(real, predito)), 4),
+        'regra_ingenua_revocacao_toxica': round(float(recall_score(real, predito)), 4),
+        'referencia_sempre_toxica_f1_macro': round(sempre_toxica, 4),
+        'referencia_aleatoria_q05_f1_macro': round(_f1_aleatoria(0.5), 4),
+        'referencia_aleatoria_estratificada_f1_macro': round(_f1_aleatoria(pi), 4),
         'palavras_de_classe_pura': len(puras),
         'sentencas_decidiveis_por_palavra': cobertas,
         'pct_decidiveis_por_palavra': round(cobertas / len(textos) * 100, 1),
@@ -221,6 +253,11 @@ def main():
     bruto = pd.read_csv(
         PATHS['corpus_toxicidade'], sep=None, engine='python', encoding='utf-8-sig'
     )
+    # As medidas principais descrevem o corpus publicado (todas as frases). Na rodada
+    # v2, o bloco 'experimentos' repete, só para as frases que entram nos experimentos
+    # (sem os grupos de quase-duplicatas), as medidas que sustentam afirmações sobre a
+    # tarefa: distribuição, decidibilidade lexical e concordância.
+    excluidas = experimento.ids_excluidos()
     n_videos = bruto['ID'].nunique() if 'ID' in bruto.columns else None
 
     texto_norm = df['texto'].str.lower()
@@ -231,6 +268,9 @@ def main():
     repetidos = repetidos[repetidos > 1]
 
     stats = {
+        # Todas as medidas abaixo cobrem o corpus inteiro, teste incluído (m3).
+        # Nenhuma delas alimenta a seleção de modelo ou de hiperparâmetros.
+        'escopo': 'corpus inteiro (treino + teste)',
         'total_sentencas': int(len(df)),
         'textos_distintos': int(texto_norm.nunique()),
         'n_videos': int(n_videos) if n_videos is not None else None,
@@ -256,9 +296,27 @@ def main():
         'proximidade_treino_teste': proximidade_treino_teste(),
     }
 
-    output_dir = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'results', 'corpus'
-    )
+    if excluidas:
+        ex = df[~df['id_sentenca'].isin(excluidas)].reset_index(drop=True)
+        dist_ex = [int((ex['label'] == i).sum()) for i in range(len(CLASSES))]
+        part = experimento.carregar_particao_video()
+        palavras_ex = ex['texto'].str.split().str.len()
+        stats['experimentos'] = {
+            'escopo': 'frases dos experimentos (treino + teste), sem as quase-duplicatas',
+            'quase_duplicatas_excluidas': int(len(excluidas)),
+            'total_sentencas': int(len(ex)),
+            'n_videos': int(part.loc[part['particao'] != 'excluida', 'video_id'].nunique()),
+            'comprimento_palavras': {
+                'media': round(float(palavras_ex.mean()), 1),
+                'mediana': float(palavras_ex.median()),
+            },
+            'distribuicao': dict(zip(CLASSES, dist_ex)),
+            'distribuicao_pct': {c: round(v / len(ex) * 100, 1) for c, v in zip(CLASSES, dist_ex)},
+            'concordancia': concordancia(ex),
+            'decidibilidade_lexical': decidibilidade_lexical(ex['texto'].tolist(), ex['label'].tolist()),
+        }
+
+    output_dir = str(experimento.dir_resultados('corpus'))
     os.makedirs(output_dir, exist_ok=True)
 
     with open(os.path.join(output_dir, 'corpus_stats.json'), 'w', encoding='utf-8') as f:
